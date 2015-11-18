@@ -25,8 +25,7 @@ module.exports = function(app) {
 	app.use(session({ secret : '6170', resave : true, saveUninitialized : true }));
 	app.use(passport.initialize());
     app.use(passport.session());
-	app.use(require('less-middleware')({ src: __dirname + '/../public' }));
-	app.use(express.static(__dirname + '/../public'));
- 
+	app.use(express.static(path.join(__dirname, '/../node_modules/bootstrap/dist')));
+	app.use(express.static(__dirname + '/../public')); 
 };
 
