@@ -19,9 +19,9 @@ router.get('/auth/google', passport.authenticate('google', { scope : ['https://w
 
 // the callback after google has authenticated the user
 router.get('/auth/google/callback',
-            passport.authenticate('google', {
-                    successRedirect : '/redirect',
-                    failureRedirect : '/'
-            }));
+           passport.authenticate('google', {
+             successRedirect : '/redirect',
+             failureRedirect : '/'
+           }));
 
 module.exports = router; 
