@@ -1,3 +1,2 @@
-# Don't save compiled CSS
-*.css
+*.swp
 node_modules/
