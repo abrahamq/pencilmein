@@ -9,11 +9,9 @@ var config = require('./config'),
 	favicon = require('serve-favicon'),
 	path = require('path');
 
-
 // Do express configuration and middleware
-
-module.exports = function(app) {
-
+module.exports = function(app) 
+{
 	app.set('port', config.port);
 	app.set('views', __dirname + '/../app/views');
 	app.set('view engine', 'hbs');
@@ -24,7 +22,7 @@ module.exports = function(app) {
 	app.use(cookieParser());
 	app.use(session({ secret : '6170', resave : true, saveUninitialized : true }));
 	app.use(passport.initialize());
-    app.use(passport.session());
+  app.use(passport.session());
 	app.use(express.static(path.join(__dirname, '/../node_modules/bootstrap/dist')));
 	app.use(express.static(__dirname + '/../public')); 
 };
