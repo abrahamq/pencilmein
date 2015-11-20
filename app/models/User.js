@@ -43,6 +43,7 @@ UserSchema.methods =
     newMeeting.duration = duration;
     newMeeting.earliestStart = earliestStart;
     newMeeting.latestEndDate = latestEndDate;
+    this.meetings.push(newMeeting._id);
     newMeeting.save(cb);
   },
 
@@ -53,16 +54,16 @@ UserSchema.methods =
   */
   joinMeeting : function(meetingID, cb)
   {
-        //Find meeting object
-        Meeting.findById(meetingID, function(err, curMeeting)
-        {
-          //if user was invited to meeting 
-          if (curMeeting.isUserInvited(this.googleID))
-          {
-            curMeeting.respondedMembers.push(this.googleID);
-          }
-          curMeeting.save(cb);
-        });
+    //Find meeting object
+    Meeting.findById(meetingID, function(err, curMeeting)
+    {
+      //if user was invited to meeting 
+      if (curMeeting.isUserInvited(this.googleID))
+      {
+        curMeeting.respondedMembers.push(this.googleID);
+      }
+      curMeeting.save(cb);
+    });
   },
 
   /*
@@ -73,17 +74,19 @@ UserSchema.methods =
   */
   inviteToMeeting : function(googleID, meetingID, cb)
   {
-      Meeting.findById(meetingID, function(err, curMeeting) 
-      {
-        curMeeting.inviteMember(googleID, cb);
-      });
+    Meeting.findById(meetingID, function(err, curMeeting) 
+    {
+      curMeeting.inviteMember(googleID, cb);
+    });
   },
 
   /*
     Sets a users availability for a meeting
     @param {meetingID} ID of meeting to set availability for 
+    @param {startTime} start of user availability 
+    @param {endTime} end of availabilit
   */
-  setAvailablity : function(meetingID)
+  setAvailablity : function(meetingID, startTime, endTime)
   {
 
   },
