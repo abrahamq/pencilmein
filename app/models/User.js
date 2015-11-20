@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-
+var Meeting = require('./Meeting.js')
 
 var UserSchema = mongoose.Schema
 ({
@@ -15,6 +15,7 @@ var UserSchema = mongoose.Schema
         type: mongoose.Schema.ObjectId,
         ref: 'Meeting' 
     }],
+
   availabilities : [
     { 
         type: mongoose.Schema.ObjectId,
@@ -24,32 +25,84 @@ var UserSchema = mongoose.Schema
 
 UserSchema.methods = 
 {
-  createMeeting : function()
+  /*
+    Create a new meeting and populate meeting information 
+    @param{title} title of the meeting
+    @param{location} meeting locale
+    @param{duration} duration of the meeting
+    @param{earliestStart} earliest time the meeting can take place 
+    @param{latestEndDate} latest time the meeting can happen 
+    @param{cb} callback upon completion 
+  */
+  createMeeting : function(title, location, duration, earliestStart, latestEndDate, cb)
+  {
+    var newMeeting = new Meeting();
+    newMeeting.creator = this.user
+    newMeeting.title = title; 
+    newMeeting.location = location;
+    newMeeting.duration = duration;
+    newMeeting.earliestStart = earliestStart;
+    newMeeting.latestEndDate = latestEndDate;
+    newMeeting.save(cb);
+  },
+
+  /*
+    If the user was invited to the meeting, join it 
+    @param{meetingID} ID of the meeting to join
+    @param{cb} callback upon completion  
+  */
+  joinMeeting : function(meetingID, cb)
+  {
+        //Find meeting object
+        Meeting.findById(meetingID, function(err, curMeeting)
+        {
+          //if user was invited to meeting 
+          if (curMeeting.isUserInvited(this.googleID))
+          {
+            curMeeting.respondedMembers.push(this.googleID);
+          }
+          curMeeting.save(cb);
+        });
+  },
+
+  /*
+    Invite a user to a meeting
+    @param {googleID} google ID of user to invite 
+    @param {meetingID} ID of meeting to invite user to 
+    @param {cb} callback upon 
+  */
+  inviteToMeeting : function(googleID, meetingID, cb)
+  {
+      Meeting.findById(meetingID, function(err, curMeeting) 
+      {
+        curMeeting.inviteMember(googleID, cb);
+      });
+  },
+
+  /*
+    Sets a users availability for a meeting
+    @param {meetingID} ID of meeting to set availability for 
+  */
+  setAvailablity : function(meetingID)
   {
 
   },
 
-  editMeeting : function()
-  {
-
-  },
-
-  joinMeeting : function()
-  {
-
-  },
-
-  inviteToMeeting : function()
+  /*
+    Gets a user's availability for a meeting 
+    @param {meetingID} ID of meeting to get availability from  
+  */
+  getAvailability : function(meetingID)
   {
 
   }
-}
+} 
 
 UserSchema.statics = 
 {
   /*
     Gets user corresponding to argument from database 
-    @param {gmail} email of user ot lookup
+    @param {gmail} email of user tolookup
     @param {cb} callback to execute upon completion 
   */
   getUser : function(gmail, cb)
