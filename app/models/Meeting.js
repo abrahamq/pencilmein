@@ -13,6 +13,7 @@ var MeetingSchema = mongoose.Schema({
 	respondedMembers: [String],
 	finalizedStart: Date
 });
+
 MeetingSchema.methods=
 {
 	/*
@@ -25,34 +26,31 @@ MeetingSchema.methods=
 
 	/*
 		Adds a member to the meeting
-		@param {username} String -  username of the user to invite
+		@param {username} String -  GoogleID of the user to invite
+    @param {cb} callback upon completion 
 	*/
-	inviteMember : function(username){
-		this.invitedMembers.push(username);
+	inviteMember : function(googleID, cb){
+		this.invitedMembers.push(googleID);
+    this.save(cb);
 	},
 
 	/*
 		Saves user responses to database
-		@param {username} String - username of the user whos response is recorded 
+		@param {username} String - GoogleID of the user whos response is recorded 
+    @param {cb} callback upon completion 
 	*/
-	recordMemberResponse: function(username){
-		this.respondedMembers.push(username);
+	recordMemberResponse: function(googleID, cb){
+		this.respondedMembers.push(googleID);
+    this.save(cb);
 	},
 
 	/*
 		Determins whether a user is invited
-		@param {username} String - username of user 
+		@param {username} String - GoogleID of user 
 	*/
-	checkUserInvited: function(username){
-		check_user = this.invitedMembers.filter(function(member_username){
-			if (member_username == username){
-				return true;
-			}
-		})
-		if (check_user.length == 1) {
-			return true
-		}
-	},
+	isUserInvited: function(googleID){
+	   return this.invitedMembers.indexOf(googleID) !== -1;
+  },
 };
 
 module.exports = mongoose.model('Meeting', MeetingSchema)
