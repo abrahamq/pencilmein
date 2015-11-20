@@ -3,7 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 
 var User = require('../models/User');
-var Meeting = require('../models/Meetings')
+var Meeting = require('../models/Meeting')
 
 router.get('/', function(req, res) {
 
@@ -13,7 +13,7 @@ router.get('/', function(req, res) {
         utils.sendErrResponse(res, 400, 'User meetings do not exist');
       }
       else {
-        utils.renderTemplate(res, 'useroverview' {meetings: user.meetings, userName: req.user.fullname});
+        utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
       }
     })
   });
