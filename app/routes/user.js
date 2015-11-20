@@ -70,6 +70,4 @@ router.post('/availability/submit', function(req, res) {
     }
   })
 })
-
 module.exports = router; 
-
