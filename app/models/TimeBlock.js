@@ -12,4 +12,12 @@ var TimeBlockSchema = mongoose.Schema({
     },
     startDate : Date
 });
+TimeBlockSchema.methods = 
+{
+
+};
+TimeBlockSchema.statics = 
+{
+  
+};
 module.exports = mongoose.model('TimeBlock', TimeBlockSchema);
