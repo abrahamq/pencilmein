@@ -7,12 +7,19 @@ var utils = (function () {
 
   var _utils = {};
 
+  _utils.renderTemplate = function(res, viewFile, content) {
+    res.render(viewFile, content);
+  };
+
   /*
 <<<<<<< HEAD
     Render handlebars template
   */
-  _utils.renderTemplate = function(res, viewFile, content) {
-    res.render(viewFile, content);
+  _utils.sendSuccessResponse = function(res, content) {
+    res.status(200).json({
+      success: true,
+      content: content
+    }).end();
   };
 
   /*

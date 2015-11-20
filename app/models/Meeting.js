@@ -45,12 +45,14 @@ MeetingSchema.methods=
 	},
 
 	/*
-		Determins whether a user is invited
+		Determines whether a user is invited
 		@param {username} String - GoogleID of user 
 	*/
 	isUserInvited: function(googleID){
 	   return this.invitedMembers.indexOf(googleID) !== -1;
   },
+
+
 };
 
 module.exports = mongoose.model('Meeting', MeetingSchema)
