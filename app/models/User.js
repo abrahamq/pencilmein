@@ -9,8 +9,17 @@ var UserSchema = mongoose.Schema
   googleEmail : String,
 
   fullname : String,
-  meetings : [String],
-  availabilities : [String]
+  
+  meetings : [
+    { 
+        type: mongoose.Schema.ObjectId,
+        ref: 'Meeting' 
+    }],
+  availabilities : [
+    { 
+        type: mongoose.Schema.ObjectId,
+        ref: 'Availability' 
+    }]
 });
 
 UserSchema.methods = 
