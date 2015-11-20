@@ -8,6 +8,7 @@ var utils = (function () {
   var _utils = {};
 
   /*
+<<<<<<< HEAD
     Render handlebars template
   */
   _utils.renderTemplate = function(res, viewFile, content) {
@@ -15,6 +16,8 @@ var utils = (function () {
   };
 
   /*
+=======
+>>>>>>> added GET /user route and util success/error functions
     Send a 200 OK with success:true in the request body to the
     response argument provided.
     The caller of this function should return after calling
