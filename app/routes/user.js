@@ -3,6 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 
 var User = require('../models/User');
+
 var Meeting = require('../models/Meeting');
 var utils = require('../../utils/utils');
 
