@@ -1,7 +1,16 @@
 <div class='jumbotron'>
-<h1>Hello {{userName}}</h1> 
+<h1>Hello, {{userName}}</h1> 
+<a class="btn btn-lg btn-primary" id="schedule" href="#" role="button">Schedule a New Meeting</a>
 </div>
 
-<p> {{meetings}} <p>
+<h1>Your Meetings:<h1>
+<ul class="list-group" class="dropdown-header>
+  {{#each meetings}}
+    <li class="list-group-item">{{this.title}} in {{this.location}}</li>
+  {{else}}
+      <p> You have no meetings </p>
+  {{/each}}
+</ul>
+
 
 

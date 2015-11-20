@@ -8,15 +8,15 @@ var utils = require('../../utils/utils');
 
 router.get('/', function(req, res) {
 
-   User.getUser(req.user.googleEmail, function(err, user_orig) {
-     user_orig.populate('meetings', function(err, user) {
-      if (err) {
-        utils.sendErrResponse(res, 400, 'User meetings do not exist');
-      }
-      else {
-        utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
-      }
-    });
+  User.getUser(req.user.googleEmail, function(err, user_orig) {
+    user_orig.populate('meetings', function(err, user) {
+    if (err) {
+      utils.sendErrResponse(res, 400, 'User meetings do not exist');
+    }
+    else {
+      utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
+    }
+   });
   });
 });
 
