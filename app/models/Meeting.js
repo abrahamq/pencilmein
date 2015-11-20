@@ -6,8 +6,11 @@ var MeetingSchema = mongoose.Schema({
 	title: String,
 	location: String,
 	duration: Number,
+	earliestStartDate: Date,
+	latestEndDate: Date,
 	invitedMembers:[String],
-	respondedMembers: [String]
+	respondedMembers: [String],
+	finalizedStart: Date
 });
 MeetingSchema.methods=
 {
