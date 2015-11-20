@@ -48,7 +48,7 @@ module.exports = function(passport)
                       newUser.googleID    = profile.id;
                       newUser.googleAccessToken = token;
                       newUser.googleRefreshToken = refreshToken;
-                      newUser.username = profile.displayName;
+                      newUser.fullname = profile.displayName;
                       newUser.googleEmail = profile.emails[0].value; // pull the first email
 
                       // save the user
