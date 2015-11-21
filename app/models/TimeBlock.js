@@ -21,6 +21,9 @@ TimeBlockSchema.statics =
     getTimeBlock : function(timeBlockId,cb){
         this.model('TimeBlock').findById(timeBlockId,cb);
     },
+    getTimeBlocks : function(timeBlockIds,cb){
+        this.model('TimeBlock').find({'_id': { $in: timeBlockIds}}, cb);
+    },
     setTimeBlockColorAndCreationType: function(timeBlockId,newColor,newCreationType,cb){
         this.model('TimeBlock').getTimeBlock(timeBlockId, function(err,foundBlock){
             if (newColor && (newColor == 'green' || newColor == 'yellow' || newColor == 'red')){ 

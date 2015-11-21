@@ -38,27 +38,26 @@ AvailabilitySchema.methods =
   @param cb args are (error (null or a message), List<timeblock ids> availability.timeBlocks)
   ******* SETS AVAILABILITES START AND END TIME ATTRIBUTES *********
   */
-  initializeTimeBlocks: function(start,endDate,cb){
-    // this.startDate = startDate;
+  initializeTimeBlocks: function(startDate,endDate,cb){
     this.endDate = endDate;
-    var startDate = new Date(start);
+    var startD = new Date(startDate);
     var availability = this; 
-    if (startDate>=endDate){
+    if (startD>=endDate){
       var minutes = endDate.getMinutes();
       this.startDate = new Date(endDate);
       this.startDate.setMinutes(minutes - 30*this.timeBlocks.length);
       return cb(null,this.timeBlocks);
     }
-    var numBlocks = Math.floor((endDate - startDate)/1800000); //splits into 30 min blocks
+    var numBlocks = Math.floor((endDate - startD)/1800000); //splits into 30 min blocks
     var newBlock = new TimeBlock();
-    newBlock.startDate = startDate;
+    newBlock.startDate = startD;
 
     this.timeBlocks.push(newBlock._id);
-    var minutes = startDate.getMinutes();
-    startDate.setMinutes(minutes+30);
+    var minutes = startD.getMinutes();
+    startD.setMinutes(minutes+30);
 
     newBlock.save(function(){
-      availability.initializeTimeBlocks(startDate,endDate,cb);
+      availability.initializeTimeBlocks(startD,endDate,cb);
     });
   },
   /*
@@ -88,6 +87,19 @@ AvailabilitySchema.methods =
     var blockId = this.getIdForBlockAtTime(time);
     TimeBlock.setTimeBlockColorAndCreationType(blockId,newColor,newCreationType,cb);
   },
+  setBlocksInTimeRangeColorAndCreationType: function(startDate, endDate, newColor, newCreationType, cb){
+    if (startDate>=endDate){
+      return cb(null,this.timeBlocks);
+    }
+    var availability = this; 
+    var startD = new Date(startDate);
+    var nextStartD = new Date(startDate);
+    var minutes = startD.getMinutes();
+    nextStartD.setMinutes(minutes+30);
+    this.setBlockAtTimeColorAndCreationType(startD,newColor,newCreationType,function(err,res){
+      availability.setBlocksInTimeRangeColorAndCreationType(nextStartD, endDate, newColor, newCreationType, cb);
+    });
+  }
 
 };
 
