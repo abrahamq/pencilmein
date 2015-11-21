@@ -1,0 +1,16 @@
+#calendar {
+  max-width: auto;
+  max-height: 100vh; 
+  margin: 0 auto;
+}
+
+
+.calendar-container {
+  max-width: 800px;
+  max-height: 100vh; 
+  margin: 0 auto;
+}
+
+#calendar-submit {
+
+}
