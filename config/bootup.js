@@ -24,6 +24,7 @@ module.exports = function(app)
 	app.use(passport.initialize());
   app.use(passport.session());
 	app.use(express.static(path.join(__dirname, '/../node_modules/bootstrap/dist')));
+  app.use(express.static(path.join(__dirname, '/../bower_components')));
 	app.use(express.static(__dirname + '/../public')); 
 };
 
