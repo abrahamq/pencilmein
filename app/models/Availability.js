@@ -3,29 +3,77 @@ var mongoose = require('mongoose');
 var TimeBlock = require('./TimeBlock');
 var AvailabilitySchema = mongoose.Schema({
 	meetingId : String,
+  googleId: String,
 	timeBlocks : [{
         type: mongoose.Schema.ObjectId,
         ref: 'TimeBlock' 
-    }],
+    }]
 });
 AvailabilitySchema.methods = 
-{
-  initializeAvailability : function(startDate,endDate){
-    var numBlocks = Math.floor((endDate - startDate)/1800000); //splits into 30 min blocks
-    for (i=0 ; i < numBlocks ; i++){
-      var newTimeBlock =  new TimeBlock();
-      newTimeBlock.startDate = new Date(startDate);
-      this.timeBlocks.push(newTimeBlock);
-      var minutes = startDate.getMinutes();
-      startDate.setMinutes(minutes+30);
-    }
+{ 
+  /*
+  Basically just a tester function to add and save a time block
+  */
+  addTimeBlock: function(cb){
+    var newBlock = new TimeBlock();
+    newBlock.color = 'red';
+    newBlock.save(function(){
+      TimeBlock.getTimeBlock(newBlock._id, function(err,foundBlock){
+        if (err){
+          cb({msg: 'couldnt find'});
+        }
+        else{
+          cb(err,foundBlock);
+        }
+      });
+    });
   },
-  getBlockAtTime : function(time){
-    if (time - startDate < 0 || time - endDate > 0){ //if the time is outside the availibility
-      return null;
+  /*
+  Initializes an availabilities time block list to be green time blocks, 
+  each representing 30 minutes of time,
+  the first of which starts at the start date,
+  the last of which end at the endDate (aka its start time is 30 minutes before the end)
+  @param Date startDate: start time of the first block
+  @param Date endDate: end time of the last block
+  @param cb args are (error (null or a message), List<timeblock ids> availability.timeBlocks)
+  */
+  initializeTimeBlocks: function(start,endDate,cb){
+    // this.startDate = startDate;
+    this.endDate = endDate;
+    var startDate = new Date(start);
+    var availability = this; 
+    if (startDate>=endDate){
+      var minutes = endDate.getMinutes();
+      this.startDate = new Date(endDate);
+      this.startDate.setMinutes(minutes - 30*this.timeBlocks.length);
+      cb(null,this.timeBlocks);
     }
-    var blockNum = Math.floor((time-startDate)/1800000)-1;
-    return this.timeBlocks[blockNum];
+    var numBlocks = Math.floor((endDate - startDate)/1800000); //splits into 30 min blocks
+    var newBlock = new TimeBlock();
+    newBlock.startDate = startDate;
+
+    this.timeBlocks.push(newBlock._id);
+    var minutes = startDate.getMinutes();
+    startDate.setMinutes(minutes+30);
+
+    newBlock.save(function(){
+      availability.initializeTimeBlocks(startDate,endDate,cb);
+    });
+  },
+  /*
+  Finds the time block id that starts at a given time
+  @param Date time: start time of the block to be found
+  @result block Id: Id of block that starts at time
+  */
+  getIdForBlockAtTime : function(time){
+    // console.log("time: ",time,"start: ",this.startDate);
+    if (time - this.startDate < 0 || time - this.endDate > 0){ //if the time is outside the availibility
+      return "time outside of range";
+    }
+    var blockNum = Math.floor((time-this.startDate)/1800000);
+    // console.log("block Num: ",blockNum);
+    var blockId = this.timeBlocks[blockNum];
+    return blockId;
   },
   setAvailableBlockAtTime : function(time){
     if (time - startDate < 0 || time - endDate > 0){ //if the time is outside the availibility
@@ -51,6 +99,12 @@ AvailabilitySchema.methods =
     var block = this.timeBlocks[blockNum];
     block.color = 'yellow';
   }
+};
+AvailabilitySchema.statics = 
+{
+    getAvailability : function(availabilityId,cb){
+        this.model('Availability').findById(availabilityId,cb);
+    }   
 };
 
 module.exports = mongoose.model('Availability', AvailabilitySchema);
