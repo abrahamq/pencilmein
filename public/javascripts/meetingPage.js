@@ -42,5 +42,20 @@ $(document).ready(function()
         window.location.replace(resp.content.redirect);
     });
   });
+
+  //Bootstrap date picker 
+   $(function () {
+    $('#datetimepicker1').datetimepicker({
+        stepping : '30',
+        sideBySide : true
+     });
+   });
+
+    $(function () {
+      $('#datetimepicker2').datetimepicker({
+         stepping : '30',
+         sideBySide : true
+      });
+    });
 });
 
