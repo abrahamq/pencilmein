@@ -4,10 +4,36 @@ var mongoose = require("mongoose");
 var TimeBlock = require("../app/models/TimeBlock.js");
 var Availability = require("../app/models/Availability.js");
 
-mongoose.connect('mongodb://localhost/testfdb');
+mongoose.connect('mongodb://localhost/testAvDb');
 mongoose.connection.on("open", function(err) {
   mongoose.connection.db.dropDatabase();
 });
+// beforeEach(function (done) {
+
+// function clearDB() {
+//   for (var i in mongoose.connection.collections) {
+//     mongoose.connection.collections[i].remove(function() {});
+//   }
+//   return done();
+// }
+
+// if (mongoose.connection.readyState === 0) {
+//   mongoose.connect('mongodb://localhost/test', function (err) {
+//     if (err) {
+//       throw err;
+//     }
+//     return clearDB();
+//   });
+// } else {
+//   return clearDB();
+// }
+// });
+
+// afterEach(function (done) {
+// mongoose.disconnect();
+// return done();
+// });
+
 describe('Simple Availability', function() {
   describe('make new availability', function() {
     //setup database state 
@@ -196,49 +222,48 @@ describe('Editing RANGE of time blocks', function() {
       av.save(function(){
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
-              console.log("IIIIIIII am the call back");
               TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
-                console.log(foundBlockList);
-                console.log(allBlocks);
+                // console.log(foundBlockList);
+                // console.log(allBlocks);
                 assert.equal(e,null);
                 assert.equal(allBlocks.length,3);
                 assert.equal(allBlocks[0].color,'yellow');
                 assert.equal(allBlocks[1].color,'yellow');
                 assert.equal(allBlocks[2].color,'yellow');
                 done();
-              })
+              });
             });
 
           });
         });
       });
     });
-    describe('Finding blocks in range from 48 blocks', function() {
-    //setup database state 
-    var startDate = new Date(2015,10,3,4,00);
-    var endDate = new Date(2015,10,4,4,00);
+    // describe('Finding blocks in range from 48 blocks', function() {
+    // //setup database state 
+    // var startDate = new Date(2015,10,3,4,00);
+    // var endDate = new Date(2015,10,4,4,00);
 
-    var rangeStart = new Date(2015,10,3,4,00);
-    var rangeEnd = new Date(2015,10,3,5,30);
-    var av = new Availability();
-    av.meetingId="newmeet";
-    it('Changing 48 blocks in all', function(done) {
-      av.save(function(){
-        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
-              TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
-                //console.log(allBlocks);
-                assert.equal(e,null);
-                assert.equal(allBlocks.length,48);
-                assert.equal(allBlocks[0].color,'yellow');
-                done();
-              })
-            });
+    // var rangeStart = new Date(2015,10,3,4,00);
+    // var rangeEnd = new Date(2015,10,3,5,30);
+    // var av = new Availability();
+    // av.meetingId="newmeet";
+    // it('Changing 48 blocks in all', function(done) {
+    //   av.save(function(){
+    //     av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+    //         av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
+    //           TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+    //             //console.log(allBlocks);
+    //             assert.equal(e,null);
+    //             assert.equal(allBlocks.length,48);
+    //             assert.equal(allBlocks[0].color,'yellow');
+    //             done();
+    //           })
+    //         });
 
-          });
-        });
-      });
-    });
+    //       });
+    //     });
+    //   });
+    // });
   // describe('editing all of 3 time blocks', function() {
   //     //setup database state 
   //     var startDate = new Date(2015,10,3,4,00);

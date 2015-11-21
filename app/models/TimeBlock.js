@@ -32,14 +32,11 @@ TimeBlockSchema.statics =
             if (newCreationType && (newCreationType =='calendar' || newCreationType == 'manual' || newColor == 'general')){
                 foundBlock.creationType = newCreationType;
             }
-            foundBlock.save(cb(null,foundBlock));
+            // var interBlock = foundBlock;
+            foundBlock.save(function(){
+                cb(null,foundBlock);
+            });
         });
     },
-    setTimeBlockCreationType: function(timeBlockId,newCreationType,cb){
-        this.model('TimeBlock').getTimeBlock(timeBlockId, function(err,foundBlock){
-            foundBlock.creationType = newCreationType;
-            foundBlock.save(cb(null,foundBlock));
-        });
-    } 
 };
 module.exports = mongoose.model('TimeBlock', TimeBlockSchema);
