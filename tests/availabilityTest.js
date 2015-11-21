@@ -102,10 +102,15 @@ describe('check block id lookup based on time', function() {
               var firstId = foundBlockList[0];
               assert.equal(av.getIdForBlockAtTime(time),firstId);
 
-              // var secondId = foundBlockList[1];
-              // var minutes = time.getMinutes();
-              // time.setMinutes(minutes+30);
-              // assert.equal(av.getIdForBlockAtTime(time),secondId);
+              var secondId = foundBlockList[1];
+              var minutes = time.getMinutes();
+              time.setMinutes(minutes+30);
+              assert.equal(av.getIdForBlockAtTime(time),secondId);
+
+              var thirdId = foundBlockList[2];
+              var minutes = time.getMinutes();
+              time.setMinutes(minutes+30);
+              assert.equal(av.getIdForBlockAtTime(time),thirdId);
               done();
           });
         });
