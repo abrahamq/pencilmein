@@ -15,8 +15,6 @@ var OAuth2 = google.auth.OAuth2;
 var oAuth2Client = new OAuth2();
 var calendar = google.calendar('v3');
 
-
-
 router.get('/', function(req, res) {
   User.getUser(req.user.googleEmail, function(err, user_orig) {
     user_orig.populate('meetings', function(err, user) {
