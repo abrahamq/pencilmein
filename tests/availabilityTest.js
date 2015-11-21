@@ -81,6 +81,33 @@ describe('Initialize availabilities time blocks', function() {
       });
     });
   });
+  describe('Checking set start times of initialized blocks', function() {
+      //setup database state 
+      var startDate = new Date(2015,10,3,4,00);
+      var secondStartDate = new Date(2015,10,3,4,30);
+      var thirdStartDate = new Date(2015,10,3,5,00);
+      var newTime = new Date(startDate);
+      var endDate = new Date(2015,10,3,5,30);
+      var avv = new Availability();
+      avv.meetingId="newmeet";
+      it('block starts should start at start date, last one starts 30 mins before end date', function(done) {
+        avv.save(function(){
+          avv.initializeTimeBlocks(startDate,endDate,function(error,allIds){
+            TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+              assert.equal(avv.startDate.getTime(),startDate.getTime());
+              assert.equal(avv.endDate.getTime(),endDate.getTime());
+              assert.equal(e,null);
+              assert.equal(allBlocks.length,3);
+              assert.equal(allBlocks[0].color,'green');
+              assert.equal(allBlocks[0].startDate.getTime(),startDate.getTime());
+              assert.equal(allBlocks[1].startDate.getTime(),secondStartDate.getTime());
+              assert.equal(allBlocks[2].startDate.getTime(),thirdStartDate.getTime());
+              done();
+            });
+          });
+        });
+      });
+  });
   describe('initializing time blocks for entire day', function() {
       //setup database state 
       var startDate = new Date(2015,10,3,4,00);
@@ -130,8 +157,9 @@ describe('check block id lookup based on time', function() {
         });
       });
   });
+
 });
-describe('editing time blocks', function() {
+describe('Editing SINGLE time block', function() {
   describe('editing first of 3 time blocks', function() {
       //setup database state 
       var startDate = new Date(2015,10,3,4,00);
@@ -153,24 +181,56 @@ describe('editing time blocks', function() {
       });
   });
 });
-describe('editing range of time blocks', function() {
-  describe('Finding blocks in range', function() {
+describe('Editing RANGE of time blocks', function() {
+  describe('Total 3 time blocks', function() {
     //setup database state 
     var startDate = new Date(2015,10,3,4,00);
-    var nextDate = new Date(2015,10,3,4,30);
     var endDate = new Date(2015,10,3,5,30);
+    //makes blocks [4-4:30],[4:30-5],[5-5:30]
+    var rangeStart = new Date(2015,10,3,4,00);
+    var rangeEnd = new Date(2015,10,3,5,30);
+
     var av = new Availability();
     av.meetingId="newmeet";
-    it('3 blocks in all', function(done) {
+    it('Editing all 3 to yellow', function(done) {
       av.save(function(){
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            av.setBlocksInTimeRangeColorAndCreationType(startDate, endDate, 'yellow','manual',function(err,allIds){
+            av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
+              console.log("IIIIIIII am the call back");
               TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
                 console.log(foundBlockList);
+                console.log(allBlocks);
                 assert.equal(e,null);
                 assert.equal(allBlocks.length,3);
                 assert.equal(allBlocks[0].color,'yellow');
-                console.log(allBlocks);
+                assert.equal(allBlocks[1].color,'yellow');
+                assert.equal(allBlocks[2].color,'yellow');
+                done();
+              })
+            });
+
+          });
+        });
+      });
+    });
+    describe('Finding blocks in range from 48 blocks', function() {
+    //setup database state 
+    var startDate = new Date(2015,10,3,4,00);
+    var endDate = new Date(2015,10,4,4,00);
+
+    var rangeStart = new Date(2015,10,3,4,00);
+    var rangeEnd = new Date(2015,10,3,5,30);
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('Changing 48 blocks in all', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+            av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
+              TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+                //console.log(allBlocks);
+                assert.equal(e,null);
+                assert.equal(allBlocks.length,48);
+                assert.equal(allBlocks[0].color,'yellow');
                 done();
               })
             });

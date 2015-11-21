@@ -40,24 +40,23 @@ AvailabilitySchema.methods =
   */
   initializeTimeBlocks: function(startDate,endDate,cb){
     this.endDate = endDate;
-    var startD = new Date(startDate);
     var availability = this; 
-    if (startD>=endDate){
+    if (startDate>=endDate){
       var minutes = endDate.getMinutes();
       this.startDate = new Date(endDate);
       this.startDate.setMinutes(minutes - 30*this.timeBlocks.length);
       return cb(null,this.timeBlocks);
     }
-    var numBlocks = Math.floor((endDate - startD)/1800000); //splits into 30 min blocks
+    var numBlocks = Math.floor((endDate - startDate)/1800000); //splits into 30 min blocks
     var newBlock = new TimeBlock();
-    newBlock.startDate = startD;
-
+    newBlock.startDate = startDate;
     this.timeBlocks.push(newBlock._id);
-    var minutes = startD.getMinutes();
-    startD.setMinutes(minutes+30);
 
+    var nextStart = new Date(startDate);
+    var minutes = nextStart.getMinutes();
+    nextStart.setMinutes(minutes+30);
     newBlock.save(function(){
-      availability.initializeTimeBlocks(startD,endDate,cb);
+      availability.initializeTimeBlocks(nextStart,endDate,cb);
     });
   },
   /*
@@ -99,6 +98,7 @@ AvailabilitySchema.methods =
     var minutes = startD.getMinutes();
     nextStartD.setMinutes(minutes+30);
     this.setBlockAtTimeColorAndCreationType(startD,newColor,newCreationType,function(err,res){
+      console.log("setting block at time: ",startD," to new color: ",newColor);
       console.log("RES WAS : ",res);
       availability.setBlocksInTimeRangeColorAndCreationType(nextStartD, endDate, newColor, newCreationType, cb);
     });
