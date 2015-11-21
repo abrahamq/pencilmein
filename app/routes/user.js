@@ -3,13 +3,13 @@ var router = express.Router();
 var passport = require('passport');
 
 var User = require('../models/User');
-var Availability = require('../models/Availability')
+var Availability = require('../models/Availability');
 var Meeting = require('../models/Meeting');
 
 var utils = require('../../utils/utils');
 var gcalAvailability = require('../javascripts/gcalAvailability');
 
-var auth = require('../../config/auth')
+var auth = require('../../config/auth');
 var google = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
 var oAuth2Client = new OAuth2();
@@ -28,7 +28,12 @@ router.get('/', function(req, res) {
  });
 });
 
+router.get('/calendarView/:meetingId', function(req, res){
+  utils.sendSuccessResponse(res, {meetingId: req.params.meetingId}); 
+}); 
 
+
+//Gives you all events in user's google calendar 
 router.get('/availability', function(req, res) {
   oAuth2Client.setCredentials({
     access_token : req.user.googleAccessToken,
@@ -44,6 +49,7 @@ router.get('/availability', function(req, res) {
 });
 
 // wait for the Availability model to debug before pushing
+// gets all availabilities that are still open in meeting 
 router.get('/availability/:meetingID', function(req, res) {
   Availability.find({'googleID': req.user.googleID, 'meetingId': req.params.meetingID}, function(err, availability) {
     if (err) {
@@ -51,8 +57,8 @@ router.get('/availability/:meetingID', function(req, res) {
     } else {
       utils.sendSuccessResponse(res, {availability: availability, userName: req.user.fullname});
     }
-  })
-})
+  });
+});
 
 /*
   POST /availability/submit
@@ -68,7 +74,7 @@ router.post('/availability/submit', function(req, res) {
     } else {
       user.setAvailability(userEvents);
     }
-  })
-})
+  });
+});
 
 module.exports = router; 

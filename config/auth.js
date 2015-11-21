@@ -8,7 +8,7 @@ var getGoogleAuth = function(){
   googleAuth.clientSecret =  '8eTO6hfH4qrQZ7MYWRcNT032'; 
 
   if( process.env.PRODUCTION){
-    googleAuth.callbackURL = 'http://pencilmein.xyz/auth/google/callback'; 
+    googleAuth.callbackURL = 'http://www.pencilmein.xyz/auth/google/callback'; 
   } else {
     googleAuth.callbackURL = 'http://localhost:3000/auth/google/callback'; 
   } 
