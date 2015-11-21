@@ -29,10 +29,13 @@ router.post('/create', isLoggedIn, function(req, res)
         //update session 
         req.login(meetingCreator, function(err)
         {
-          //save meeting creator 
-          meetingCreator.save(function()
+          req.session.save(function()
           {
-              utils.sendSuccessResponse(res, {redirect : '/user'});
+            //save meeting creator 
+            meetingCreator.save(function()
+            {
+                utils.sendSuccessResponse(res, {redirect : '/user'});
+            });
           });
        });
       });
