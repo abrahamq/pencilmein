@@ -16,7 +16,7 @@ AvailabilitySchema.methods =
   */
   addTimeBlock: function(cb){
     var newBlock = new TimeBlock();
-    newBlock.color = 'red';
+    newBlock.color = 'green';
     newBlock.save(function(){
       TimeBlock.getTimeBlock(newBlock._id, function(err,foundBlock){
         if (err){
@@ -36,6 +36,7 @@ AvailabilitySchema.methods =
   @param Date startDate: start time of the first block
   @param Date endDate: end time of the last block
   @param cb args are (error (null or a message), List<timeblock ids> availability.timeBlocks)
+  ******* SETS AVAILABILITES START AND END TIME ATTRIBUTES *********
   */
   initializeTimeBlocks: function(start,endDate,cb){
     // this.startDate = startDate;
@@ -73,31 +74,21 @@ AvailabilitySchema.methods =
     return  this.timeBlocks[blockNum];
   },
   /*
-  Updates this availability's block at a given time's color
+  Updates this availability's block at a given time's color and creation type
+  (Invalid or null args values will not update the block's attribute of that arg type)
   @param Date time: start time of block whose color we want to change
   @param String newColor: color we want to change it to
-  @param cb: will be given arg1) error arg2) TimeBlock that was changed
-  */
-  setBlockAtTimeColor: function(time,newColor,cb){
-    if (time - this.startDate < 0 || time - this.endDate > 0){ //if the time is outside the availibility
-      cb({msg: "time is outside of availability range"});
-    }
-    var blockId = this.getIdForBlockAtTime(time);
-    TimeBlock.setTimeBlockColor(blockId,newColor,cb);
-  },
-  /*
-  Updates this availability's block at a given time's creation type
-  @param Date time: start time of block whose creation type we want to change
   @param String newCreationType : creationType we want to change it to
   @param cb: will be given arg1) error arg2) TimeBlock that was changed
   */
-  setBlockAtTimeCreationType: function(time,newCreationType,cb){
+  setBlockAtTimeColorAndCreationType: function(time,newColor,newCreationType,cb){
     if (time - this.startDate < 0 || time - this.endDate > 0){ //if the time is outside the availibility
       cb({msg: "time is outside of availability range"});
     }
     var blockId = this.getIdForBlockAtTime(time);
-    TimeBlock.setTimeBlockCreationType(blockId,newCreationType,cb);
-  }
+    TimeBlock.setTimeBlockColorAndCreationType(blockId,newColor,newCreationType,cb);
+  },
+
 };
 
 AvailabilitySchema.statics = 
