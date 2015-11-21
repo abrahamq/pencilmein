@@ -29,21 +29,39 @@ router.get('/', function(req, res) {
 });
 
 router.get('/calendarView/:meetingId', function(req, res){
-  utils.sendSuccessResponse(res, {meetingId: req.params.meetingId}); 
+  utils.renderTemplate(res, 'calendarView', {meetingId: req.params.meetingId}); 
 }); 
 
 
 //Gives you all events in user's google calendar 
 router.get('/availability', function(req, res) {
+  var test = { "events": [ {
+        title: 'All Day Event',
+        start: '2014-11-01'
+      },
+      {
+        title: 'Long Event',
+        start: '2014-11-07',
+        end: '2014-11-10'
+      },
+      {
+        id: 999,
+        title: 'Repeating Event',
+        start: '2014-11-09T16:00:00'
+      }]
+  }; 
   oAuth2Client.setCredentials({
     access_token : req.user.googleAccessToken,
     refresh_token : req.user.googleRequestToken
   });
   var mtg_startDate = (new Date()).toISOString();
-  var mtg_endDate = '2015-11-25T10:00:00-05:00';
+  var mtg_endDate = '2015-12-25T10:00:00-05:00';//TODO: make this reasonable 
   gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
     if (events) {
-     utils.sendSuccessResponse(res, {events: events}); 
+      var stringEvents = JSON.stringify(events); 
+      var withTitleInsteadOfSubmit = stringEvents.replace(/summary/g, 'title'); 
+      var jsonEvent = JSON.parse(withTitleInsteadOfSubmit); 
+      utils.sendSuccessResponse(res, {events: jsonEvent}); 
     }
   });
 });
