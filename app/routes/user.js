@@ -8,8 +8,8 @@ var utils = require('../../utils/utils');
 var isLoggedIn = require('./authMiddleware');
 
 router.get('/', isLoggedIn, function(req, res) {
-
   User.getUser(req.user.googleEmail, function(err, user_orig) {
+    console.log("About to user overview: ", user_orig);
     user_orig.populate('meetings', function(err, user) {
     if (err) {
       utils.sendErrResponse(res, 400, 'User meetings do not exist');
