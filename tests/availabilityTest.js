@@ -117,3 +117,34 @@ describe('check block id lookup based on time', function() {
       });
   });
 });
+
+
+mongoose.connection.db.dropDatabase();
+describe('editing time blocks', function() {
+  describe('initializing availability with 3 time blocks', function() {
+      //setup database state 
+      var startDate = new Date(2015,10,3,4,00);
+      var newTime = new Date(startDate);
+      var endDate = new Date(2015,10,3,5,30);
+      var avv = new Availability();
+      avv.meetingId="newmeet";
+      it('should return block', function(done) {
+        avv.save(function(){
+          avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+            // assert.equal(foundBlockList.length,3);
+            // console.log("HERE");  
+            // done();  
+    
+            avv.setBlockAtTimeColor(newTime,'yellow',function(err,finalBlock){
+              console.log(finalBlock);
+  
+              assert.equal(err,null);
+              assert.equal(finalBlock.color,'yellow');
+              done();
+              
+            });
+          });
+        });
+      });
+  });
+});

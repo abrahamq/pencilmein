@@ -46,7 +46,7 @@ AvailabilitySchema.methods =
       var minutes = endDate.getMinutes();
       this.startDate = new Date(endDate);
       this.startDate.setMinutes(minutes - 30*this.timeBlocks.length);
-      cb(null,this.timeBlocks);
+      return cb(null,this.timeBlocks);
     }
     var numBlocks = Math.floor((endDate - startDate)/1800000); //splits into 30 min blocks
     var newBlock = new TimeBlock();
@@ -71,31 +71,20 @@ AvailabilitySchema.methods =
     }
     var blockNum = Math.floor((time-this.startDate)/1800000);
     return  this.timeBlocks[blockNum];
-    
   },
-  setAvailableBlockAtTime : function(time){
-    if (time - startDate < 0 || time - endDate > 0){ //if the time is outside the availibility
-      return false;
+  setBlockAtTimeColor: function(time,newColor,cb){
+    if (time - this.startDate < 0 || time - this.endDate > 0){ //if the time is outside the availibility
+      cb({msg: "time is outside of availability range"});
     }
-    var blockNum = Math.floor((time-startDate)/1800000)-1;
-    var block = this.timeBlocks[blockNum];
-    block.color = 'green';
+    var blockId = this.getIdForBlockAtTime(time);
+    TimeBlock.setTimeBlockColor(blockId,newColor,cb);
   },
-  setUnvailableBlockAtTime : function(time){
-    if (time - startDate < 0 || time - endDate > 0){ //if the time is outside the availibility
-      return false;
+  setBlockAtTimeCreationType: function(time,newCreationType,cb){
+    if (time - this.startDate < 0 || time - this.endDate > 0){ //if the time is outside the availibility
+      cb({msg: "time is outside of availability range"});
     }
-    var blockNum = Math.floor((time-startDate)/1800000)-1;
-    var block = this.timeBlocks[blockNum];
-    block.color = 'red';
-  },
-  setPossibleBlockAtTime : function(time){
-    if (time - startDate < 0 || time - endDate > 0){ //if the time is outside the availibility
-      return false;
-    }
-    var blockNum = Math.floor((time-startDate)/1800000)-1;
-    var block = this.timeBlocks[blockNum];
-    block.color = 'yellow';
+    var blockId = this.getIdForBlockAtTime(time);
+    TimeBlock.setTimeBlockCreationType(blockId,newCreationType,cb);
   }
 };
 AvailabilitySchema.statics = 

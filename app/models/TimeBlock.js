@@ -28,6 +28,14 @@ TimeBlockSchema.statics =
                 cb(null,foundBlock);
             });
         });
+    },
+    setTimeBlockCreationType: function(timeBlockId,newCreationType,cb){
+        this.model('TimeBlock').getTimeBlock(timeBlockId, function(err,foundBlock){
+            foundBlock.creationType = newCreationType;
+            foundBlock.save(function(){
+                cb(null,foundBlock);
+            });
+        });
     } 
 };
 module.exports = mongoose.model('TimeBlock', TimeBlockSchema);
