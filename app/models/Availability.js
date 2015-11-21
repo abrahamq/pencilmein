@@ -66,14 +66,12 @@ AvailabilitySchema.methods =
   @result block Id: Id of block that starts at time
   */
   getIdForBlockAtTime : function(time){
-    // console.log("time: ",time,"start: ",this.startDate);
     if (time - this.startDate < 0 || time - this.endDate > 0){ //if the time is outside the availibility
       return "time outside of range";
     }
     var blockNum = Math.floor((time-this.startDate)/1800000);
-    // console.log("block Num: ",blockNum);
-    var blockId = this.timeBlocks[blockNum];
-    return blockId;
+    return  this.timeBlocks[blockNum];
+    
   },
   setAvailableBlockAtTime : function(time){
     if (time - startDate < 0 || time - endDate > 0){ //if the time is outside the availibility
