@@ -280,7 +280,7 @@ describe('Editing MULTIPLE RANGES of time blocks', function() {
 
     var av = new Availability();
     av.meetingId="newmeet";
-    it('Editing second 2 to yellow', function(done) {
+    it('Editing over single range with new function, second 2 to yellow', function(done) {
       av.save(function(){
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd]], 'yellow','manual',function(err,allIds){
@@ -298,31 +298,39 @@ describe('Editing MULTIPLE RANGES of time blocks', function() {
         });
       });
     });
-    describe('Finding blocks in range from 48 blocks', function() {
-    //setup database state 
-    var startDate = new Date(2015,10,3,4,00);
-    var endDate = new Date(2015,10,4,4,00);
+    describe('Editing multiple ranges in 48 blocks', function() {
+      //setup database state 
+      var startDate = new Date(2015,10,3,4,00);
+      var endDate = new Date(2015,10,4,4,00);
 
-    var rangeStart = new Date(2015,10,3,4,30);
-    var rangeEnd = new Date(2015,10,3,5,30);
-    var av = new Availability();
-    av.meetingId="newmeet";
-    it('Changing 48 blocks in all', function(done) {
-      av.save(function(){
-        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
+      var rangeStart = new Date(2015,10,3,4,30);
+      var rangeEnd = new Date(2015,10,3,5,30);
+
+      var range2Start = new Date(2015,10,3,6,30);
+      var range2End = new Date(2015,10,3,8,00);
+      var av = new Availability();
+      av.meetingId="newmeet";
+      it('Changing 48 blocks in all', function(done) {
+        av.save(function(){
+          av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+            av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'yellow','manual',function(err,allIds){
               TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+                // console.log(foundBlockList);
                 //console.log(allBlocks);
                 assert.equal(e,null);
                 assert.equal(allBlocks.length,48);
-                assert.equal(allBlocks[0].color,'green');
-                assert.equal(allBlocks[1].color,'yellow');
-                assert.equal(allBlocks[2].color,'yellow');
-                assert.equal(allBlocks[3].color,'green');
+                assert.equal(allBlocks[0].color,'green'); //4-4.30
+                assert.equal(allBlocks[1].color,'yellow');//4.30-5
+                assert.equal(allBlocks[2].color,'yellow');//5-5:30
+                assert.equal(allBlocks[3].color,'green'); //5:30-6
+                assert.equal(allBlocks[4].color,'green');//6-6:30
+                assert.equal(allBlocks[5].color,'yellow');//6:30-7
+                assert.equal(allBlocks[6].color,'yellow');//7-7:30
+                assert.equal(allBlocks[7].color,'yellow');//7:30-8
+                assert.equal(allBlocks[8].color,'green');//8-8:30
                 done();
-              })
+              });
             });
-
           });
         });
       });
