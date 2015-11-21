@@ -85,10 +85,18 @@ $(function() { // document ready
 
 var setupBlankCalendar = function(){
   $('#calendar').fullCalendar({
+    customButtons: {
+      submit: {
+        text: 'Submit',
+        click: function() {
+          alert('clicked the custom button!');
+        }
+      }
+    },
     header: {
       left: 'prev,next today',
       center: 'title',
-      right: 'month,agendaWeek,agendaDay'
+      right: 'month,agendaWeek,agendaDay,submit'
     },
     defaultDate: '2015-11-12',
     editable: true,
