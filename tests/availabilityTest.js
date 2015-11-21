@@ -70,6 +70,25 @@ describe('initialize single block', function() {
       });
   });
 });
+describe('initialize single blocks', function() {
+  describe('initializing single blocks', function() {
+      //setup database state 
+      var startDate = new Date(2015,10,3,4,00);
+      var endDate = new Date(2015,10,3,5,30);
+      var av = new Availability();
+      av.meetingId="newmeet";
+      it('should return block', function(done) {
+      av.save(function(){
+        console.log('in av save');
+          av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+              assert.equal(error,null);
+              assert.equal(foundBlockList.length,1);
+              done();
+          });
+        });
+      });
+  });
+});
 
 // describe('Availability', function() {
 //   describe('#testAvail', function() {
