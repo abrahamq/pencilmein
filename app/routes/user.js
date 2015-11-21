@@ -74,7 +74,9 @@ router.post('/availability/submit', function(req, res) {
     } else {
       user.setAvailability(userEvents);
     }
+
   });
 });
+
 
 module.exports = router; 
