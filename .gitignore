@@ -1,5 +1,6 @@
 *.swp
 node_modules/
+bower_components/
 .*
 !/.gitignore
 **/.DS_Store
