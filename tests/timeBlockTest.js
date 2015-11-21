@@ -20,11 +20,10 @@ describe('TimeBlock', function() {
       });
       it('should find timeblock', function(done) {
           block.save(function(){
-            TimeBlock.getTimeBlock(block._id, function(err,foundBlock)
-              {
-                assert.equal(foundBlock.color, 'green');
-                done();
-              });
+            TimeBlock.getTimeBlock(block._id, function(err,foundBlock){
+              assert.equal(foundBlock.color, 'green');
+              done();
+            });
           });
       });
   });
