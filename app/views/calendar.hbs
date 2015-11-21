@@ -8,7 +8,7 @@
 <script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js'></script>
 <script src='http://fullcalendar.io/js/fullcalendar-2.4.0/fullcalendar.js'></script>
 
-<script src='/javascripts/calendarView.js'></script>
+<script src='/javascripts/calendar.js'></script>
 
 
 <link href='/css/calendarView.css' rel='stylesheet' />
@@ -21,9 +21,13 @@
 </head>
 <body>
   <div id='meetingId' data-meeting={{{meetingId}}}></div>
-  <div id="container-fluid"> 
+  <div class="container-fluid"> 
     <div id='calendar'></div>
   </div>
+  <div class="row"> 
+    <div class="col-lg-7-offset"> 
+    </div> 
+  </div> 
 </body>
 </html>
 

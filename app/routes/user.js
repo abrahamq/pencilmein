@@ -28,8 +28,8 @@ router.get('/', function(req, res) {
  });
 });
 
-router.get('/calendarView/:meetingId', function(req, res){
-  utils.renderTemplate(res, 'calendarView', {meetingId: req.params.meetingId}); 
+router.get('/calendar/:meetingId', function(req, res){
+  utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId}); 
 }); 
 
 
