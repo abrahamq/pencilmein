@@ -7,7 +7,7 @@ var AvailabilitySchema = mongoose.Schema({
 	timeBlocks : [{
         type: mongoose.Schema.ObjectId,
         ref: 'TimeBlock' 
-    }]
+  }]
 });
 AvailabilitySchema.methods = 
 { 
@@ -26,6 +26,12 @@ AvailabilitySchema.methods =
           cb(err,foundBlock);
         }
       });
+    });
+  },
+  getTimeBlocks: function(cb){
+    var allIds = this.timeBlocks;
+    TimeBlock.getTimeBlocks(allIds,function(err,foundBlocks){
+      cb(err,foundBlocks);
     });
   },
   /*
@@ -86,6 +92,14 @@ AvailabilitySchema.methods =
     var blockId = this.getIdForBlockAtTime(time);
     TimeBlock.setTimeBlockColorAndCreationType(blockId,newColor,newCreationType,cb);
   },
+  /*
+  Updates all blocks color and creation type in the given time range
+  @param Date startDate: start date of first block to be changed
+  @param Date endDate: end date of last block to be changed
+  @param String newColor: all blocks colors in the range will be updated to new color
+  @param String newCreationType: all blocks creation types in the range will be updated to this
+  @param cb will be given args 1) error and 2) list of time block ids for availability
+  */
   setBlocksInTimeRangeColorAndCreationType: function(startDate, endDate, newColor, newCreationType, cb){
     // console.log("start date: ",startDate," end date: ",endDate);
     if (startDate>=endDate){
@@ -99,6 +113,13 @@ AvailabilitySchema.methods =
     this.setBlockAtTimeColorAndCreationType(startD,newColor,newCreationType,function(err,res){
       availability.setBlocksInTimeRangeColorAndCreationType(nextStartD, endDate, newColor, newCreationType, cb);
     });
+  /*
+  Updates all blocks color and creation type in the given time ranges
+  @param [[startDate,endDate]] timeRanges: list of time ranges, each time range is a list of startDate,endDate
+  @param String newColor: all blocks colors in the range will be updated to new color
+  @param String newCreationType: all blocks creation types in the range will be updated to this
+  @param cb will be given args 1) error and 2) list of time block ids for availability
+  */
   },
   setBlocksInTimeRangesColorAndCreationType: function(timeRanges, newColor, newCreationType, cb){
     // console.log("start date: ",startDate," end date: ",endDate);

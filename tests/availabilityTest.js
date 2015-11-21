@@ -57,18 +57,18 @@ describe('Simple Availability', function() {
 //THIS IS A BULLSHIT TEST TO CHECK SIMPLE ADD TIME BLOCK FN
 describe('Add single block', function() {
   describe('adding single block', function() {
-      //setup database state 
-      var av = new Availability();
-      av.meetingId="newmeet";
-      it('should return block', function(done) {
+    //setup database state 
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('should return block', function(done) {
       av.save(function(){
         av.addTimeBlock(function(error,record){
           assert.equal(error,null);
           assert.equal(record.color,'green');
           done();
         });
-        });
       });
+    });
   });
 });
 describe('Initialize availabilities time blocks', function() {
@@ -98,7 +98,12 @@ describe('Initialize availabilities time blocks', function() {
     it('Getting all blocks based on list of ids', function(done) {
       av.save(function(){
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-          TimeBlock.getTimeBlocks(foundBlockList,function(err,foundBlocks){
+          // TimeBlock.getTimeBlocks(foundBlockList,function(err,foundBlocks){
+          //   assert.equal(err,null);
+          //   assert.equal(foundBlocks.length,3);
+          //   done();
+          // });
+          av.getTimeBlocks(function(err,foundBlocks){
             assert.equal(err,null);
             assert.equal(foundBlocks.length,3);
             done();
@@ -119,7 +124,7 @@ describe('Initialize availabilities time blocks', function() {
       it('block starts should start at start date, last one starts 30 mins before end date', function(done) {
         avv.save(function(){
           avv.initializeTimeBlocks(startDate,endDate,function(error,allIds){
-            TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+            avv.getTimeBlocks(function(e,allBlocks){
               assert.equal(avv.startDate.getTime(),startDate.getTime());
               assert.equal(avv.endDate.getTime(),endDate.getTime());
               assert.equal(e,null);
@@ -222,7 +227,7 @@ describe('Editing SINGLE RANGE of time blocks', function() {
       av.save(function(){
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
-              TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+              av.getTimeBlocks(function(e,allBlocks){
                 // console.log(foundBlockList);
                 // console.log(allBlocks);
                 assert.equal(e,null);
@@ -251,7 +256,7 @@ describe('Editing SINGLE RANGE of time blocks', function() {
       av.save(function(){
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
-              TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+              av.getTimeBlocks(function(e,allBlocks){
                 //console.log(allBlocks);
                 assert.equal(e,null);
                 assert.equal(allBlocks.length,48);
@@ -262,7 +267,6 @@ describe('Editing SINGLE RANGE of time blocks', function() {
                 done();
               })
             });
-
           });
         });
       });
@@ -284,7 +288,7 @@ describe('Editing MULTIPLE RANGES of time blocks', function() {
       av.save(function(){
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd]], 'yellow','manual',function(err,allIds){
-              TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+              av.getTimeBlocks(function(e,allBlocks){
                 // console.log(foundBlockList);
                 assert.equal(e,null);
                 assert.equal(allBlocks.length,3);
@@ -314,7 +318,7 @@ describe('Editing MULTIPLE RANGES of time blocks', function() {
         av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'yellow','manual',function(err,allIds){
-              TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+              av.getTimeBlocks(function(e,allBlocks){
                 // console.log(foundBlockList);
                 //console.log(allBlocks);
                 assert.equal(e,null);
