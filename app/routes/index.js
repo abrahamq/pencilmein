@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 require('../../config/passport.js');
+require('./middleware');
 
 /*
  * GET home page.
@@ -11,8 +12,10 @@ router.get('/', function(req, res) {
   res.render('index', {title: 'PencilMeIn', showLoginButton: !req.isAuthenticated()});
 });
 
-router.get('/redirect', function(req, res) {
-	res.render('secondpageplaceholder');
+//logging out
+router.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
 });
 
 //Google Authentication 

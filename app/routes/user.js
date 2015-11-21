@@ -5,8 +5,9 @@ var passport = require('passport');
 var User = require('../models/User');
 var Meeting = require('../models/Meeting');
 var utils = require('../../utils/utils');
+var isLoggedIn = require('./authMiddleware');
 
-router.get('/', function(req, res) {
+router.get('/', isLoggedIn, function(req, res) {
 
   User.getUser(req.user.googleEmail, function(err, user_orig) {
     user_orig.populate('meetings', function(err, user) {
@@ -21,3 +22,5 @@ router.get('/', function(req, res) {
 });
 
 module.exports = router; 
+
+
