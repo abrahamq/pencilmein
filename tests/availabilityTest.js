@@ -154,29 +154,54 @@ describe('editing time blocks', function() {
   });
 });
 describe('editing range of time blocks', function() {
-  describe('editing all of 3 time blocks', function() {
-      //setup database state 
-      var startDate = new Date(2015,10,3,4,00);
-      var newTime = new Date(startDate);
-      var endDate = new Date(2015,10,3,5,30);
-      var avv = new Availability();
-      avv.meetingId="newmeet";
-      it('all should turn red and manual', function(done) {
-        avv.save(function(){
-          avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            avv.setBlocksInTimeRangeColorAndCreationType(newTime,endDate,'red','manual',function(err,res){
-              TimeBlock.getTimeBlocks(foundBlockList,function(err,foundBlocks){
-                assert.equal(err,null);
-                assert.equal(foundBlocks.length,3);
-                assert.equal(foundBlocks[0].color,'red');
-                assert.equal(foundBlocks[1].color,'red');
-                // assert.equal(foundBlocks[2].color,'red');
-                console.log(foundBlocks);
+  describe('Finding blocks in range', function() {
+    //setup database state 
+    var startDate = new Date(2015,10,3,4,00);
+    var nextDate = new Date(2015,10,3,4,30);
+    var endDate = new Date(2015,10,3,5,30);
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('3 blocks in all', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+            av.setBlocksInTimeRangeColorAndCreationType(startDate, endDate, 'yellow','manual',function(err,allIds){
+              TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+                console.log(foundBlockList);
+                assert.equal(e,null);
+                assert.equal(allBlocks.length,3);
+                assert.equal(allBlocks[0].color,'yellow');
+                console.log(allBlocks);
                 done();
-              });
+              })
             });
+
           });
         });
       });
-  });
+    });
+  // describe('editing all of 3 time blocks', function() {
+  //     //setup database state 
+  //     var startDate = new Date(2015,10,3,4,00);
+  //     var newTime = new Date(startDate);
+  //     var endDate = new Date(2015,10,3,5,30);
+  //     var avv = new Availability();
+  //     avv.meetingId="newmeet";
+  //     it('all should turn red and manual', function(done) {
+  //       avv.save(function(){
+  //         avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+  //           avv.setBlocksInTimeRangeColorAndCreationType(newTime,endDate,'red','manual',function(err,res){
+  //             TimeBlock.getTimeBlocks(foundBlockList,function(err,foundBlocks){
+  //               assert.equal(err,null);
+  //               assert.equal(foundBlocks.length,3);
+  //               assert.equal(foundBlocks[0].color,'red');
+  //               assert.equal(foundBlocks[1].color,'red');
+  //               // assert.equal(foundBlocks[2].color,'red');
+  //               // console.log(foundBlocks);
+  //               done();
+  //             });
+  //           });
+  //         });
+  //       });
+  //     });
+  // });
 });
