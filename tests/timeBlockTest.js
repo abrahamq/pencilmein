@@ -3,10 +3,11 @@ var mongoose = require("mongoose");
 //modules under test 
 var TimeBlock = require("../app/models/TimeBlock.js");
 
-mongoose.connect('mongodb://localhost/testdb');
+mongoose.connect('mongodb://localhost/blockTestDb');
 mongoose.connection.on("open", function(err) {
   mongoose.connection.db.dropDatabase();
 });
+
 
 describe('TimeBlock', function() {
   describe('simple', function() {

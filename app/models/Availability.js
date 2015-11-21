@@ -87,9 +87,8 @@ AvailabilitySchema.methods =
     TimeBlock.setTimeBlockColorAndCreationType(blockId,newColor,newCreationType,cb);
   },
   setBlocksInTimeRangeColorAndCreationType: function(startDate, endDate, newColor, newCreationType, cb){
-    console.log("start date: ",startDate," end date: ",endDate);
+    // console.log("start date: ",startDate," end date: ",endDate);
     if (startDate>=endDate){
-      console.log("is returning");
       return cb(null,this.timeBlocks);
     }
     var availability = this; 
@@ -98,12 +97,9 @@ AvailabilitySchema.methods =
     var minutes = startD.getMinutes();
     nextStartD.setMinutes(minutes+30);
     this.setBlockAtTimeColorAndCreationType(startD,newColor,newCreationType,function(err,res){
-      console.log("setting block at time: ",startD," to new color: ",newColor);
-      console.log("RES WAS : ",res);
       availability.setBlocksInTimeRangeColorAndCreationType(nextStartD, endDate, newColor, newCreationType, cb);
     });
   }
-
 };
 
 AvailabilitySchema.statics = 
