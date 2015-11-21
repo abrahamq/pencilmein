@@ -121,27 +121,31 @@ describe('check block id lookup based on time', function() {
 
 mongoose.connection.db.dropDatabase();
 describe('editing time blocks', function() {
-  describe('initializing availability with 3 time blocks', function() {
+  describe('editing first of 3 time blocks', function() {
       //setup database state 
       var startDate = new Date(2015,10,3,4,00);
       var newTime = new Date(startDate);
       var endDate = new Date(2015,10,3,5,30);
       var avv = new Availability();
       avv.meetingId="newmeet";
-      it('should return block', function(done) {
+      it('should return block with yellow color', function(done) {
         avv.save(function(){
           avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            // assert.equal(foundBlockList.length,3);
-            // console.log("HERE");  
-            // done();  
-    
             avv.setBlockAtTimeColor(newTime,'yellow',function(err,finalBlock){
-              console.log(finalBlock);
-  
               assert.equal(err,null);
               assert.equal(finalBlock.color,'yellow');
               done();
-              
+            });
+          });
+        });
+      });
+      it('should return block with manual creation type', function(done) {
+        avv.save(function(){
+          avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+            avv.setBlockAtTimeCreationType(newTime,'manual',function(err,finalBlock){
+              assert.equal(err,null);
+              assert.equal(finalBlock.creationType,'manual');
+              done();
             });
           });
         });
