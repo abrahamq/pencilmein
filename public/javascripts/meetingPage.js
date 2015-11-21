@@ -7,6 +7,7 @@ $(document).ready(function()
     {
       var num = parseInt($(clicked).attr('id').charAt(7));
       var newElement = $('<input type="invitee" class="form-control" id=invitee'+(num+1)+' placeholder="Eg. funnybunny@gmail.com">');  
+
       if (num === parseInt($('#state').val()) && $(clicked).val())
       {
         $(clicked).after(newElement);
@@ -18,6 +19,7 @@ $(document).ready(function()
   //Handle submission of meeting creation form 
   $('#createMeeting').submit(function(e)
   {
+
     e.preventDefault();
     var data = {};
     //Grab meeting components 
@@ -57,5 +59,48 @@ $(document).ready(function()
          sideBySide : true
       });
     });
+
+  $('[data-toggle="titlePop"]').popover(); 
+  $('[data-toggle="locPop"]').popover(); 
+  $('[data-toggle="startPop"]').popover(); 
+  $('[data-toggle="endPop"]').popover();  
+  $('[data-toggle="invitePop"]').popover();  
+  $('[data-toggle="durationPop"]').popover();  
+
+  /*
+   $('#createMeeting').validate({
+       // container: '#messages',
+        feedbackIcons: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        fields: {
+            location: {
+                validators: {
+                    notEmpty: {
+                        message: 'The location is required and cannot be empty'
+                    }
+                }
+            },
+            title: {
+                validators: {
+                    notEmpty: {
+                        message: 'The title is required and cannot be empty'
+                    }
+                }
+            },
+
+
+        }
+    });
+*/
+    $('#createMeeting').validate({
+         debug : true,
+         rules: {
+                    title: "required",
+                    location: "required",
+                },
+    })
 });
 
