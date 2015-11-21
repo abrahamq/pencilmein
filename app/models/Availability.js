@@ -72,6 +72,12 @@ AvailabilitySchema.methods =
     var blockNum = Math.floor((time-this.startDate)/1800000);
     return  this.timeBlocks[blockNum];
   },
+  /*
+  Updates this availability's block at a given time's color
+  @param Date time: start time of block whose color we want to change
+  @param String newColor: color we want to change it to
+  @param cb: will be given arg1) error arg2) TimeBlock that was changed
+  */
   setBlockAtTimeColor: function(time,newColor,cb){
     if (time - this.startDate < 0 || time - this.endDate > 0){ //if the time is outside the availibility
       cb({msg: "time is outside of availability range"});
@@ -79,6 +85,12 @@ AvailabilitySchema.methods =
     var blockId = this.getIdForBlockAtTime(time);
     TimeBlock.setTimeBlockColor(blockId,newColor,cb);
   },
+  /*
+  Updates this availability's block at a given time's creation type
+  @param Date time: start time of block whose creation type we want to change
+  @param String newCreationType : creationType we want to change it to
+  @param cb: will be given arg1) error arg2) TimeBlock that was changed
+  */
   setBlockAtTimeCreationType: function(time,newCreationType,cb){
     if (time - this.startDate < 0 || time - this.endDate > 0){ //if the time is outside the availibility
       cb({msg: "time is outside of availability range"});
@@ -87,6 +99,7 @@ AvailabilitySchema.methods =
     TimeBlock.setTimeBlockCreationType(blockId,newCreationType,cb);
   }
 };
+
 AvailabilitySchema.statics = 
 {
     getAvailability : function(availabilityId,cb){
