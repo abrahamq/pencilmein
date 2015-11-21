@@ -28,6 +28,7 @@ module.exports = function(passport)
 	    },
 
 	    function(token, refreshToken, profile, done) {
+          console.log("Refresh token is ", refreshToken); 
 	  		  //find user with profile.id. if doesn't exist then create new user 
 	  		  // and add to database
           // User.findOne won't fire until we have all our data back from Google
@@ -47,7 +48,10 @@ module.exports = function(passport)
                       // set all of the relevant information
                       newUser.googleID    = profile.id;
                       newUser.googleAccessToken = token;
+
                       newUser.googleRefreshToken = refreshToken;
+                      
+
                       newUser.fullname = profile.displayName;
                       newUser.googleEmail = profile.emails[0].value; // pull the first email
 
