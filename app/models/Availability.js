@@ -99,6 +99,18 @@ AvailabilitySchema.methods =
     this.setBlockAtTimeColorAndCreationType(startD,newColor,newCreationType,function(err,res){
       availability.setBlocksInTimeRangeColorAndCreationType(nextStartD, endDate, newColor, newCreationType, cb);
     });
+  },
+  setBlocksInTimeRangesColorAndCreationType: function(timeRanges, newColor, newCreationType, cb){
+    // console.log("start date: ",startDate," end date: ",endDate);
+    if (timeRanges.length==0){
+      return cb(null,this.timeBlocks);
+    }
+    var availability = this;
+    var currentRange = timeRanges[0].slice();
+    var nextRanges = timeRanges.slice(1);
+    this.setBlocksInTimeRangeColorAndCreationType(currentRange[0],currentRange[1],newColor,newCreationType,function(err,allIds){
+      availability.setBlocksInTimeRangesColorAndCreationType(nextRanges, newColor, newCreationType, cb);
+    });
   }
 };
 

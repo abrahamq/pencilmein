@@ -207,7 +207,7 @@ describe('Editing SINGLE time block', function() {
       });
   });
 });
-describe('Editing RANGE of time blocks', function() {
+describe('Editing SINGLE RANGE of time blocks', function() {
   describe('Total 3 time blocks', function() {
     //setup database state 
     var startDate = new Date(2015,10,3,4,00);
@@ -238,55 +238,94 @@ describe('Editing RANGE of time blocks', function() {
         });
       });
     });
-    // describe('Finding blocks in range from 48 blocks', function() {
-    // //setup database state 
-    // var startDate = new Date(2015,10,3,4,00);
-    // var endDate = new Date(2015,10,4,4,00);
+    describe('Finding blocks in range from 48 blocks', function() {
+    //setup database state 
+    var startDate = new Date(2015,10,3,4,00);
+    var endDate = new Date(2015,10,4,4,00);
 
-    // var rangeStart = new Date(2015,10,3,4,00);
-    // var rangeEnd = new Date(2015,10,3,5,30);
-    // var av = new Availability();
-    // av.meetingId="newmeet";
-    // it('Changing 48 blocks in all', function(done) {
-    //   av.save(function(){
-    //     av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-    //         av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
-    //           TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
-    //             //console.log(allBlocks);
-    //             assert.equal(e,null);
-    //             assert.equal(allBlocks.length,48);
-    //             assert.equal(allBlocks[0].color,'yellow');
-    //             done();
-    //           })
-    //         });
+    var rangeStart = new Date(2015,10,3,4,30);
+    var rangeEnd = new Date(2015,10,3,5,30);
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('Changing 48 blocks in all', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+            av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
+              TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+                //console.log(allBlocks);
+                assert.equal(e,null);
+                assert.equal(allBlocks.length,48);
+                assert.equal(allBlocks[0].color,'green');
+                assert.equal(allBlocks[1].color,'yellow');
+                assert.equal(allBlocks[2].color,'yellow');
+                assert.equal(allBlocks[3].color,'green');
+                done();
+              })
+            });
 
-    //       });
-    //     });
-    //   });
-    // });
-  // describe('editing all of 3 time blocks', function() {
-  //     //setup database state 
-  //     var startDate = new Date(2015,10,3,4,00);
-  //     var newTime = new Date(startDate);
-  //     var endDate = new Date(2015,10,3,5,30);
-  //     var avv = new Availability();
-  //     avv.meetingId="newmeet";
-  //     it('all should turn red and manual', function(done) {
-  //       avv.save(function(){
-  //         avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-  //           avv.setBlocksInTimeRangeColorAndCreationType(newTime,endDate,'red','manual',function(err,res){
-  //             TimeBlock.getTimeBlocks(foundBlockList,function(err,foundBlocks){
-  //               assert.equal(err,null);
-  //               assert.equal(foundBlocks.length,3);
-  //               assert.equal(foundBlocks[0].color,'red');
-  //               assert.equal(foundBlocks[1].color,'red');
-  //               // assert.equal(foundBlocks[2].color,'red');
-  //               // console.log(foundBlocks);
-  //               done();
-  //             });
-  //           });
-  //         });
-  //       });
-  //     });
-  // });
+          });
+        });
+      });
+    });
+});
+
+describe('Editing MULTIPLE RANGES of time blocks', function() {
+  describe('Single Range of multiple time tal 3 time blocks', function() {
+    //setup database state 
+    var startDate = new Date(2015,10,3,4,00);
+    var endDate = new Date(2015,10,3,5,30);
+    //makes blocks [4-4:30],[4:30-5],[5-5:30]
+    var rangeStart = new Date(2015,10,3,4,30);
+    var rangeEnd = new Date(2015,10,3,5,30);
+
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('Editing second 2 to yellow', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+            av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd]], 'yellow','manual',function(err,allIds){
+              TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+                // console.log(foundBlockList);
+                assert.equal(e,null);
+                assert.equal(allBlocks.length,3);
+                assert.equal(allBlocks[0].color,'green');
+                assert.equal(allBlocks[1].color,'yellow');
+                assert.equal(allBlocks[2].color,'yellow');
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+    describe('Finding blocks in range from 48 blocks', function() {
+    //setup database state 
+    var startDate = new Date(2015,10,3,4,00);
+    var endDate = new Date(2015,10,4,4,00);
+
+    var rangeStart = new Date(2015,10,3,4,30);
+    var rangeEnd = new Date(2015,10,3,5,30);
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('Changing 48 blocks in all', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+            av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
+              TimeBlock.getTimeBlocks(allIds,function(e,allBlocks){
+                //console.log(allBlocks);
+                assert.equal(e,null);
+                assert.equal(allBlocks.length,48);
+                assert.equal(allBlocks[0].color,'green');
+                assert.equal(allBlocks[1].color,'yellow');
+                assert.equal(allBlocks[2].color,'yellow');
+                assert.equal(allBlocks[3].color,'green');
+                done();
+              })
+            });
+
+          });
+        });
+      });
+    });
+
 });
