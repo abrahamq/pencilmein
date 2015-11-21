@@ -56,22 +56,20 @@ describe('initialize single block', function() {
       var endDate = new Date(2015,10,3,5,30);
       var av = new Availability();
       av.meetingId="newmeet";
-      console.log("before");
       it('should return block', function(done) {
       av.save(function(){
         console.log('in av save');
-          av.initializeTimeBlock(startDate,endDate,function(error,foundBlock){
+          av.initializeTimeBlock(startDate,endDate,function(error,foundBlockList){
               assert.equal(error,null);
-              assert.equal(foundBlock.color,'green');
-              assert.equal(foundBlock.startDate.getDate(),startDate.getDate());
+              assert.equal(foundBlockList.length,1);
               done();
           });
         });
       });
   });
 });
-describe('initialize single blocks', function() {
-  describe('initializing single blocks', function() {
+describe('initialize time blocks', function() {
+  describe('initializing time blocks', function() {
       //setup database state 
       var startDate = new Date(2015,10,3,4,00);
       var endDate = new Date(2015,10,3,5,30);
@@ -82,7 +80,8 @@ describe('initialize single blocks', function() {
         console.log('in av save');
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
               assert.equal(error,null);
-              assert.equal(foundBlockList.length,1);
+              assert.equal(foundBlockList.length,3);
+              console.log(foundBlockList);
               done();
           });
         });
