@@ -21,20 +21,21 @@ TimeBlockSchema.statics =
     getTimeBlock : function(timeBlockId,cb){
         this.model('TimeBlock').findById(timeBlockId,cb);
     },
-    setTimeBlockColor: function(timeBlockId,newColor,cb){
+    setTimeBlockColorAndCreationType: function(timeBlockId,newColor,newCreationType,cb){
         this.model('TimeBlock').getTimeBlock(timeBlockId, function(err,foundBlock){
-            foundBlock.color = newColor;
-            foundBlock.save(function(){
-                cb(null,foundBlock);
-            });
+            if (newColor && (newColor == 'green' || newColor == 'yellow' || newColor == 'red')){ 
+                foundBlock.color = newColor; 
+            }
+            if (newCreationType && (newCreationType =='calendar' || newCreationType == 'manual' || newColor == 'general')){
+                foundBlock.creationType = newCreationType;
+            }
+            foundBlock.save(cb(null,foundBlock));
         });
     },
     setTimeBlockCreationType: function(timeBlockId,newCreationType,cb){
         this.model('TimeBlock').getTimeBlock(timeBlockId, function(err,foundBlock){
             foundBlock.creationType = newCreationType;
-            foundBlock.save(function(){
-                cb(null,foundBlock);
-            });
+            foundBlock.save(cb(null,foundBlock));
         });
     } 
 };
