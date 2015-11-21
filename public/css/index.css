@@ -6,7 +6,12 @@
 .btn-google-plus{
 	color:#fff;
 	background-color:#dd4b39;
-	border-color:rgba(0,0,0,0.2)
+	border-color:rgba(0,0,0,0.2);
+}
+
+.sign-in-text{
+	font-size:18px; 
+	margin-right:1px; 
 }
 
 .btn-google-plus:hover,.btn-google-plus:focus,.btn-google-plus:active,.btn-google-plus.active,.open .dropdown-toggle.btn-google-plus{

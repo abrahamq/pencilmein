@@ -29,38 +29,22 @@
                                    <link rel="shortcut icon" href="/ico/favicon.png">
   </head>
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
+  <nav class="navbar navbar-inverse navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="/">PencilMeIn</a>
     </div>
+
     <div>
       <ul class="nav navbar-nav">
         <li><a href="/about">About</a></li>
       </ul>
       {{#if showLoginButton}}
-      <ul class="nav navbar-nav navbar-right">
-	      <li class="dropdown">
-	      <a href="#" class="dropdowan-toggle" data-toggle="dropdown"><b>Login</b> <span class="caret"></span></a>
-	      <ul id="login-dp" class="dropdown-menu">
-		      <li>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="social-buttons">
-                <a href="/auth/google" class="btn btn-block btn-social btn-google-plus"><i class="fa fa-google-plus"></i>Sign in with Google
-                </a>
-              </div>
-            </div>
-          </div>
-          </li>
+        <a href="/auth/google" class="btn navbar-btn navbar-right btn-google-plus sign-in-text btn-primary">Sign in with Google</a>
+    {{/if}}
 
-	      </ul> 
-	      </li>
-      </ul>
-      {{/if}}
-
-     </div>
   </div>
+</div>
 </nav>
 
     <div id="content">
