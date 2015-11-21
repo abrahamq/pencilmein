@@ -49,40 +49,35 @@ describe('Add single block', function() {
       });
   });
 });
-describe('initialize single block', function() {
-  describe('initializing single block', function() {
+describe('initialize time blocks', function() {
+  describe('initializing availability with 3 time blocks', function() {
       //setup database state 
       var startDate = new Date(2015,10,3,4,00);
       var endDate = new Date(2015,10,3,5,30);
       var av = new Availability();
       av.meetingId="newmeet";
       it('should return block', function(done) {
-      av.save(function(){
-        console.log('in av save');
-          av.initializeTimeBlock(startDate,endDate,function(error,foundBlockList){
+        av.save(function(){
+          av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
               assert.equal(error,null);
-              assert.equal(foundBlockList.length,1);
+              assert.equal(foundBlockList.length,3);
               done();
           });
         });
       });
   });
-});
-describe('initialize time blocks', function() {
-  describe('initializing time blocks', function() {
+  describe('initializing time blocks2', function() {
       //setup database state 
       var startDate = new Date(2015,10,3,4,00);
-      var endDate = new Date(2015,10,3,5,30);
+      var endDate = new Date(2015,10,4,4,00);
       var av = new Availability();
       av.meetingId="newmeet";
       it('should return block', function(done) {
-      av.save(function(){
-        console.log('in av save');
+        av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-              assert.equal(error,null);
-              assert.equal(foundBlockList.length,3);
-              console.log(foundBlockList);
-              done();
+            assert.equal(error,null);
+            assert.equal(foundBlockList.length,48);
+            done();
           });
         });
       });
