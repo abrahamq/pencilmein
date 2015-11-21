@@ -1,6 +1,4 @@
 var optimeet = (function() {
-  
-
 
   var _optimeet = {}
 
@@ -19,7 +17,6 @@ var optimeet = (function() {
   var block_num_to_time = function(block_num, startDate) {
 
   }
-
 
   Object.freeze(_optimeet);
   return _optimeet
