@@ -40,8 +40,11 @@
     <div>
       <ul class="nav navbar-nav">
         <li><a href="/about">About</a></li>
+        {{#unless showLoginButton}}
+        <li><a href="/user">My Meetings</a></li>
+        {{/unless}}
       </ul>
-      {{#if showLoginButton}}
+    {{#if showLoginButton}}
         <a href="/auth/google" class="btn navbar-btn navbar-right btn-google-plus sign-in-text btn-primary">Sign in with Google</a>
     {{/if}}
 
