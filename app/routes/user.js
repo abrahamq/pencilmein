@@ -7,15 +7,17 @@ var Availability = require('../models/Availability');
 var Meeting = require('../models/Meeting');
 
 var utils = require('../../utils/utils');
-var gcalAvailability = require('../javascripts/gcalAvailability');
 
+
+var gcalAvailability = require('../javascripts/gcalAvailability');
 var auth = require('../../config/auth');
 var google = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
 var oAuth2Client = new OAuth2();
 var calendar = google.calendar('v3');
+var isLoggedIn = require('./authMiddleware');
 
-router.get('/', function(req, res) {
+router.get('/', isLoggedIn, function(req, res) {
   User.getUser(req.user.googleEmail, function(err, user_orig) {
     user_orig.populate('meetings', function(err, user) {
     if (err) {
@@ -98,3 +100,5 @@ router.post('/availability/submit', function(req, res) {
 
 
 module.exports = router; 
+
+

@@ -36,6 +36,7 @@ UserSchema.methods =
   */
   createMeeting : function(title, location, duration, earliestStart, latestEndDate, cb)
   {
+    var userObj = this;
     var newMeeting = new Meeting();
     newMeeting.creator = this.user
     newMeeting.title = title; 
@@ -44,7 +45,10 @@ UserSchema.methods =
     newMeeting.earliestStart = earliestStart;
     newMeeting.latestEndDate = latestEndDate;
     this.meetings.push(newMeeting._id);
-    newMeeting.save(cb);
+    newMeeting.save(function()
+      {
+        cb(newMeeting._id)
+      });
   },
 
   /*
@@ -63,6 +67,7 @@ UserSchema.methods =
         curMeeting.respondedMembers.push(this.googleID);
       }
       curMeeting.save(cb);
+
     });
   },
 

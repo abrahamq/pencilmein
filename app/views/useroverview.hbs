@@ -1,16 +1,21 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="javascripts/userPage.js"></script>
+
 <div class='jumbotron'>
 <h1>Hello, {{userName}}</h1> 
 <a class="btn btn-lg btn-primary" id="schedule" href="#" role="button">Schedule a New Meeting</a>
 </div>
 
-<h1>Your Meetings:<h1>
+
+<h1>Your Meetings:</h1>
+{{#if meetings.length}}
 <ul class="list-group" class="dropdown-header">
   {{#each meetings}}
     <li class="list-group-item">{{this.title}} in {{this.location}}</li>
-  {{else}}
-      <p> You have no meetings </p>
   {{/each}}
 </ul>
-
+{{else}}
+  <p>You have no meetings. </p>
+{{/if}}
 
 
