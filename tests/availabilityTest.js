@@ -63,6 +63,24 @@ describe('Initialize availabilities time blocks', function() {
       });
     });
   });
+  describe('initializing availability with 3 time blocks', function() {
+    //setup database state 
+    var startDate = new Date(2015,10,3,4,00);
+    var endDate = new Date(2015,10,3,5,30);
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('Getting all blocks based on list of ids', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+          TimeBlock.getTimeBlocks(foundBlockList,function(err,foundBlocks){
+            assert.equal(err,null);
+            assert.equal(foundBlocks.length,3);
+            done();
+          });
+        });
+      });
+    });
+  });
   describe('initializing time blocks for entire day', function() {
       //setup database state 
       var startDate = new Date(2015,10,3,4,00);
@@ -113,9 +131,6 @@ describe('check block id lookup based on time', function() {
       });
   });
 });
-
-
-mongoose.connection.db.dropDatabase();
 describe('editing time blocks', function() {
   describe('editing first of 3 time blocks', function() {
       //setup database state 
@@ -132,6 +147,33 @@ describe('editing time blocks', function() {
               assert.equal(finalBlock.color,'yellow');
               assert.equal(finalBlock.creationType,'manual');
               done();
+            });
+          });
+        });
+      });
+  });
+});
+describe('editing range of time blocks', function() {
+  describe('editing all of 3 time blocks', function() {
+      //setup database state 
+      var startDate = new Date(2015,10,3,4,00);
+      var newTime = new Date(startDate);
+      var endDate = new Date(2015,10,3,5,30);
+      var avv = new Availability();
+      avv.meetingId="newmeet";
+      it('all should turn red and manual', function(done) {
+        avv.save(function(){
+          avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+            avv.setBlocksInTimeRangeColorAndCreationType(newTime,endDate,'red','manual',function(err,res){
+              TimeBlock.getTimeBlocks(foundBlockList,function(err,foundBlocks){
+                assert.equal(err,null);
+                assert.equal(foundBlocks.length,3);
+                assert.equal(foundBlocks[0].color,'red');
+                assert.equal(foundBlocks[1].color,'red');
+                // assert.equal(foundBlocks[2].color,'red');
+                console.log(foundBlocks);
+                done();
+              });
             });
           });
         });
