@@ -26,6 +26,13 @@ describe('TimeBlock', function() {
             });
           });
       });
+      it('should find timeblock with red color', function(done) {
+          TimeBlock.setTimeBlockColor(block._id,'red',function(err,foundBlock){
+            assert.equal(err,null);
+            assert.equal(foundBlock.color,"red");
+            done();
+          });
+      });
   });
 });
 
