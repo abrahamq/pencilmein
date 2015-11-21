@@ -3,11 +3,19 @@ var router = express.Router();
 var passport = require('passport');
 
 var User = require('../models/User');
-
 var Availability = require('../models/Availability')
-
 var Meeting = require('../models/Meeting');
+
 var utils = require('../../utils/utils');
+var gcalAvailability = require('../javascripts/gcalAvailability');
+
+var auth = require('../../config/auth')
+var google = require('googleapis');
+var OAuth2 = google.auth.OAuth2;
+var oAuth2Client = new OAuth2();
+var calendar = google.calendar('v3');
+
+
 
 router.get('/', function(req, res) {
   User.getUser(req.user.googleEmail, function(err, user_orig) {
@@ -20,6 +28,21 @@ router.get('/', function(req, res) {
     }
    });
  });
+});
+
+
+router.get('/availability', function(req, res) {
+  oAuth2Client.setCredentials({
+    access_token : req.user.googleAccessToken,
+    refresh_token : req.user.googleRequestToken
+  });
+  var mtg_startDate = (new Date()).toISOString();
+  var mtg_endDate = '2015-11-25T10:00:00-05:00';
+  gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
+    if (events) {
+     utils.sendSuccessResponse(res, {events: events}); 
+    }
+  });
 });
 
 // wait for the Availability model to debug before pushing

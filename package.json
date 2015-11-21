@@ -13,6 +13,7 @@
     "express": "^4.13.3",
     "express-session": "^1.12.1",
     "favicon": "0.0.2",
+    "googleapis": "^2.1.6",
     "handlebars": "^4.0.2",
     "hbs": "^4.0.0",
     "kerberos": "0.0.17",
