@@ -18,6 +18,8 @@ TimeBlockSchema.methods =
 };
 TimeBlockSchema.statics = 
 {
-  
+    getTimeBlock : function(timeBlockId,cb){
+        this.model('TimeBlock').findById(timeBlockId,cb);
+    }   
 };
 module.exports = mongoose.model('TimeBlock', TimeBlockSchema);

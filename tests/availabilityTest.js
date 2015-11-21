@@ -61,12 +61,13 @@ describe('initialize time blocks', function() {
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
               assert.equal(error,null);
               assert.equal(foundBlockList.length,3);
+              assert.equal(av.startDate.getTime(),startDate.getTime());
               done();
           });
         });
       });
   });
-  describe('initializing time blocks2', function() {
+  describe('initializing time blocks for entire day', function() {
       //setup database state 
       var startDate = new Date(2015,10,3,4,00);
       var endDate = new Date(2015,10,4,4,00);
@@ -77,48 +78,37 @@ describe('initialize time blocks', function() {
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             assert.equal(error,null);
             assert.equal(foundBlockList.length,48);
+            assert.equal(av.startDate.getTime(),startDate.getTime());
             done();
           });
         });
       });
   });
 });
+describe('check block id lookup based on time', function() {
+  describe('lookup from 3 time blocks', function() {
+      //setup database state 
+      var start = new Date(2015,10,3,4,00);
+      var end = new Date(2015,10,3,5,30);
+      var time = new Date(start);
+      var av = new Availability();
+      it('should find correct id', function(done) {
+        av.save(function(){
+          av.initializeTimeBlocks(start,end,function(error,foundBlockList){
+              // console.log("time is ",time, " start is ",start);
+              // console.log(foundBlockList);
+              assert.equal(error,null);
+              assert.equal(foundBlockList.length,3);
+              var firstId = foundBlockList[0];
+              assert.equal(av.getIdForBlockAtTime(time),firstId);
 
-// describe('Availability', function() {
-//   describe('#testAvail', function() {
-//       //setup database state 
-//       var avail = new Availability();
-//       var startDate = new Date(2015,10,3,4,00);
-//       var endDate = new Date(2015,10,3,5,30);
-//       console.log("About to save");
-//       (new TimeBlock()).save(function(){ console.log("WORK")});
-//       avail.initializeTimeBlocks(startDate,endDate,function(err,res){
-        
-//         it ('init avail', function(done){
-//           assert.equal(err,null);
-//           console.log("HDSLKDJFL");
-//           // assert.equal(avail.timeBlocks.length, 3);
-//           // console.log(avail.timeBlocks);
-//           done();
-//         }); 
-//       });
-
-//       // it ('get block', function(done){
-//       //   var start = new Date(2015,10,3,4,00);
-//       //   var firstBlock = avail.getBlockAtTime(start,function(err,res){
-//       //     if (err==null){
-//       //       assert.equal(res,'fuck');
-//       //       done();
-//       //     }
-//       //     else{
-//       //       console.log(err.msg);
-//       //       done();
-//       //     }
-//       //   });
-//       //   //assert.equal(avail.timeBlocks.length, 3);
-//       //   // assert.equal(firstBlock,'green');
-//       // });
-
-//   });
-// });
-
+              // var secondId = foundBlockList[1];
+              // var minutes = time.getMinutes();
+              // time.setMinutes(minutes+30);
+              // assert.equal(av.getIdForBlockAtTime(time),secondId);
+              done();
+          });
+        });
+      });
+  });
+});
