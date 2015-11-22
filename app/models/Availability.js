@@ -28,6 +28,9 @@ AvailabilitySchema.methods =
       });
     });
   },
+  /*
+  @param cb: arg1) error arg2) list of time block objects that correspond to this availabilites time blocks
+  */
   getTimeBlocks: function(cb){
     var allIds = this.timeBlocks;
     TimeBlock.getTimeBlocks(allIds,function(err,foundBlocks){
@@ -164,7 +167,37 @@ AvailabilitySchema.statics =
     */
     findByGoogleIdAndMeetingId: function(googId, meetId, cb){
       this.model('Availability').findOne({googleId: googId, meetingId: meetId},cb);
-    } 
+    },
+    /*
+    Will be called initially by getTimeBlocksListsForAvailabilities with timeBlocksLists as []
+    @param availabilites: list of Availabilities objects remaining that we still need to get blocks
+    @param timeBlocksLists: list of TimeBlock objects that have been recursively collected so far
+    @param cb: arg1) err arg2) will be final timeBlocksLists (list of lists of time blocks), each list corresponds to 
+    the list of time blocks for some original availability
+    */
+    getTimeBlocksListsForAvailabilitiesRecurse: function(availabilities, timeBlocksLists, cb){
+      if (availabilities.length==0){
+        return cb(null,timeBlocksLists);
+      }
+      var thisRef = this;
+      var availability = availabilities[0];
+      nextAvailabilities = availabilities.slice(1);
+      availability.getTimeBlocks(function(err,foundBlocks){
+        timeBlocksLists.push(foundBlocks);
+        thisRef.model('Availability').getTimeBlocksListsForAvailabilitiesRecurse(nextAvailabilities, timeBlocksLists, cb);
+      });
+    }, 
+    /*
+    @param availabilities: list of Availabilities
+    @param cb: arg1) err, arg2) list of lists of time blocks
+    callback will finally be given the list of lists of time blocks, each list corresponds to 
+    an availability and is all of the time blocks that that av. contains
+    */
+    getTimeBlocksListsForAvailabilities: function(availabilities, cb){
+      //this.model('Availability').findById(availabilities,cb);
+      this.model('Availability').getTimeBlocksListsForAvailabilitiesRecurse(availabilities,[],cb);
+    }
+
 };
 
 module.exports = mongoose.model('Availability', AvailabilitySchema);
