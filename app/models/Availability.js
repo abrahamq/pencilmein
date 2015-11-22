@@ -157,7 +157,14 @@ AvailabilitySchema.statics =
     */
     getAvailabilityByGoogleId: function(googId, cb){
       this.model('Availability').find({googleId: googId},cb);
-    }  
+    }, 
+        /*
+    @param String googleId
+    @result Availability object
+    */
+    getAvailabilityByGoogleIdAndMeetingId: function(googId, meetId, cb){
+      this.model('Availability').findOne({googleId: googId, meetingId: meetId},cb);
+    } 
 };
 
 module.exports = mongoose.model('Availability', AvailabilitySchema);

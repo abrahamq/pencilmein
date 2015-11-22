@@ -70,6 +70,15 @@ describe('Simple Availability', function() {
         });
       });
     });
+    it('should find availability in database by google id id', function(done) {
+      av.save(function(){
+        Availability.getAvailabilityByGoogleIdAndMeetingId('kwefah','newmeet', function(err,foundAv){
+          assert.equal(foundAv.meetingId, 'newmeet');
+          assert.equal(foundAv.googleId, 'kwefah');
+          done();
+        });
+      });
+    });
 
   });
 });
