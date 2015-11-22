@@ -3,9 +3,13 @@
 }
 
 .carousel-caption{
-	top: 50%; 
-	bottom: auto;
-	color: blue; 
+	position:relative; 
+	left: auto; 
+	right: auto;
+	top: 0; 
+	color: black; 
+	padding-bottom:5px; 
+	padding-top:5px; 
 }
 
 
