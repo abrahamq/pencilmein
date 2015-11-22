@@ -141,28 +141,28 @@ AvailabilitySchema.statics =
     @param idObject availabiltyId: 
     @result Availabilty object
     */
-    getAvailabilityById : function(availabilityId,cb){
+    findByAvailabilityId : function(availabilityId,cb){
       this.model('Availability').findById(availabilityId,cb);
     }, 
     /*
     @param String meetId
     @result Availability object
     */
-    getAvailabilityByMeetingId: function(meetId, cb){
+    findByMeetingId: function(meetId, cb){
       this.model('Availability').find({meetingId: meetId},cb);
     },
     /*
     @param String googleId
     @result Availability object
     */
-    getAvailabilityByGoogleId: function(googId, cb){
+    findByGoogleId: function(googId, cb){
       this.model('Availability').find({googleId: googId},cb);
     }, 
         /*
     @param String googleId
     @result Availability object
     */
-    getAvailabilityByGoogleIdAndMeetingId: function(googId, meetId, cb){
+    findByGoogleIdAndMeetingId: function(googId, meetId, cb){
       this.model('Availability').findOne({googleId: googId, meetingId: meetId},cb);
     } 
 };

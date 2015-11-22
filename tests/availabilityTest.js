@@ -45,7 +45,7 @@ describe('Simple Availability', function() {
     });
     it('should find availability in database by id', function(done) {
       av.save(function(){
-        Availability.getAvailabilityById(av._id, function(err,foundAv){
+        Availability.findByAvailabilityId(av._id, function(err,foundAv){
           assert.equal(foundAv.meetingId, 'newmeet');
           assert.equal(foundAv.googleId, 'kwefah');
           done();
@@ -54,7 +54,7 @@ describe('Simple Availability', function() {
     });
     it('should find availability in database by meeting id', function(done) {
       av.save(function(){
-        Availability.getAvailabilityByMeetingId('newmeet', function(err,foundAvs){
+        Availability.findByMeetingId('newmeet', function(err,foundAvs){
           assert.equal(foundAvs[0].meetingId, 'newmeet');
           assert.equal(foundAvs[0].googleId, 'kwefah');
           done();
@@ -63,16 +63,16 @@ describe('Simple Availability', function() {
     });
     it('should find availability in database by google id id', function(done) {
       av.save(function(){
-        Availability.getAvailabilityByGoogleId('kwefah', function(err,foundAvs){
+        Availability.findByGoogleId('kwefah', function(err,foundAvs){
           assert.equal(foundAvs[0].meetingId, 'newmeet');
           assert.equal(foundAvs[0].googleId, 'kwefah');
           done();
         });
       });
     });
-    it('should find availability in database by google id id', function(done) {
+    it('should find availability in database by google id and meeting id', function(done) {
       av.save(function(){
-        Availability.getAvailabilityByGoogleIdAndMeetingId('kwefah','newmeet', function(err,foundAv){
+        Availability.findByGoogleIdAndMeetingId('kwefah','newmeet', function(err,foundAv){
           assert.equal(foundAv.meetingId, 'newmeet');
           assert.equal(foundAv.googleId, 'kwefah');
           done();
