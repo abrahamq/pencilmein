@@ -11,7 +11,9 @@ var MeetingSchema = mongoose.Schema({
 	latestEndDate: Date,
 	invitedMembers:[String],
 	respondedMembers: [String],
-	finalizedStart: Date
+	finalizedStart: Date,
+	InStartDate: Date,
+	InEndDate: Date
 });
 
 MeetingSchema.methods=
