@@ -65,22 +65,26 @@ $(function() { // document ready
   setupBlankCalendar(); 
 
   //set up the calendar with the user's google calendar events  
-  $.getJSON("/user/availability", function(data){
-    console.log(data); 
-    $('#calendar').fullCalendar('addEventSource', data.content.events);
-  }); 
-
-  //now add the available slots in green 
-  $.getJSON("/user/availability/" + meetingId, function(data){
-    console.log(data); 
-    $('#calendar').fullCalendar('addEventSource', { 
-      events: data.content.events, 
-      color: 'green'
+//  $.getJSON("/user/availability", function(data){
+//    console.log(data); 
+//    $('#calendar').fullCalendar('addEventSource', data.content.events);
+//  }); 
+//
+//  //now add the available slots in green 
+//  $.getJSON("/user/availability/" + meetingId, function(data){
+//    console.log(data); 
+//    $('#calendar').fullCalendar('addEventSource', { 
+//      events: data.content.events, 
+//      color: 'green'
+//    });
+//  }); 
+  
+  //send post request when user clicks button 
+  $('#calendar-submit').click( function(){
+    $.post('/user/availability/submit', {body: "" }, function(res){
+      window.location.replace(res.content.redirect); 
     });
   }); 
-
-
-
 });
 
 var setupBlankCalendar = function(){
