@@ -61,42 +61,39 @@ var cal = {
 
 $(function() { // document ready
   var meetingId = $('#meetingId').data('meeting');
+  var _csrf = $('#_csrf').data('_csrf');
 
   setupBlankCalendar(); 
 
   //set up the calendar with the user's google calendar events  
-  $.getJSON("/user/availability", function(data){
-    console.log(data); 
-    $('#calendar').fullCalendar('addEventSource', data.content.events);
-  }); 
-
-  //now add the available slots in green 
-  $.getJSON("/user/availability/" + meetingId, function(data){
-    console.log(data); 
-    $('#calendar').fullCalendar('addEventSource', { 
-      events: data.content.events, 
-      color: 'green'
+//  $.getJSON("/user/availability", function(data){
+//    console.log(data); 
+//    $('#calendar').fullCalendar('addEventSource', data.content.events);
+//  }); 
+//
+//  //now add the available slots in green 
+//  $.getJSON("/user/availability/" + meetingId, function(data){
+//    console.log(data); 
+//    $('#calendar').fullCalendar('addEventSource', { 
+//      events: data.content.events, 
+//      color: 'green'
+//    });
+//  }); 
+  
+  //send post request when user clicks button 
+  $('#calendar-submit').click( function(){
+    $.post('/user/availability/submit', {meetingId: meetingId, _csrf: _csrf}, function(res){
+      window.location.replace(res.content.redirect); 
     });
   }); 
-
-
-
 });
 
 var setupBlankCalendar = function(){
   $('#calendar').fullCalendar({
-    customButtons: {
-      submit: {
-        text: 'Submit',
-        click: function() {
-          alert('clicked the custom button!');
-        }
-      }
-    },
     header: {
       left: 'prev,next today',
       center: 'title',
-      right: 'month,agendaWeek,agendaDay,submit'
+      right: 'month,agendaWeek,agendaDay'
     },
     defaultDate: '2015-11-12',
     editable: true,

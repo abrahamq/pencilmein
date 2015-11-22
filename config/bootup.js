@@ -8,6 +8,7 @@ var config = require('./config'),
 	session = require('express-session'),
 	favicon = require('serve-favicon'),
 	path = require('path');
+  csurf = require('csurf'); 
 
 // Do express configuration and middleware
 module.exports = function(app) 
@@ -23,6 +24,7 @@ module.exports = function(app)
 	app.use(session({ secret : '6170', resave : true, saveUninitialized : true }));
 	app.use(passport.initialize());
   app.use(passport.session());
+  app.use(csurf()); 
 	app.use(express.static(path.join(__dirname, '/../node_modules/bootstrap/dist')));
   app.use(express.static(path.join(__dirname, '/../bower_components')));
 	app.use(express.static(__dirname + '/../public')); 

@@ -33,7 +33,7 @@ router.get('/', isLoggedIn, function(req, res) {
 });
 
 router.get('/calendar/:meetingId', function(req, res){
-  utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId}); 
+  utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId, _csrf: req.csrfToken()}); 
 }); 
 
 //Gives you all events in user's google calendar 
@@ -143,8 +143,10 @@ router.post('/availability/submit', function(req, res) {
             });
           });
         });
+      //user.setAvailability(userEvents);
+      //now tell the client where to redirect to. 
+      utils.sendSuccessResponse(res, {redirect: '/user'}); 
     }
-
   });
 });
 //post request to update availability w google cal info
