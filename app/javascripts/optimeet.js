@@ -48,7 +48,7 @@ var optimeet = (function() {
 
     var all_available = find_in(time_blocks, mtg_duration);
     if (all_available.length > 0) {
-      return all_available
+      return all_available;
     }
     else if (allow_squeeze){
       var sorted_if_need_be = find_squeeze(if_need_be);
@@ -56,11 +56,11 @@ var optimeet = (function() {
         var slots =  sorted_if_need_be.map(function(slots) {
           slots.startIndex;
         });
-        return slots
+        return slots;
       }
     } 
     else {
-      return []
+      return [];
     }
   }
 
@@ -69,7 +69,7 @@ var optimeet = (function() {
     var window_size = duration_to_blocks(duration);
     var current_window = blocks.slice(0, window_size); 
     var window_start = 0;
-    var possible_in = []
+    var possible_in = [];
     if (check_window(current_window)){
       possible_in.push(window_start);
     }
@@ -78,7 +78,7 @@ var optimeet = (function() {
       current_window.push(blocks[i]);
       current_window.splice(0,1);
       if (check_window(current_window)) {
-        possible_in.push(window_start)
+        possible_in.push(window_start);
       }
     }
     return possible_in;
@@ -86,9 +86,9 @@ var optimeet = (function() {
 
   var check_window = function(current_window) {
     if (current_window.reduce(function(a,b){return a+b}) == current_window.length) {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
   }
 
@@ -115,7 +115,7 @@ var optimeet = (function() {
     var sorted_squeeze_list = squeeze_list.sort(function(window1, window2) {
       return window1.cost - window2.cost;
     })
-    return sorted_squeeze_list
+    return sorted_squeeze_list;
   }
 
   var squeeze_heuristic = function(squeeze_blocks) {
@@ -123,7 +123,7 @@ var optimeet = (function() {
     squeeze_blocks.forEach(function(block) {
       heuristic += block.count;
     });
-    return heuristic
+    return heuristic;
   }
  
   var duration_to_blocks = function(duration) {
@@ -147,12 +147,11 @@ var optimeet = (function() {
 
 
   Object.freeze(_optimeet);
-  return _optimeet
+  return _optimeet;
 
 })();
-// })();
 
-// module.exports = optimeet;
+module.exports = optimeet;
 
 
 

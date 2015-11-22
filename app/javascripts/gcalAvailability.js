@@ -40,7 +40,7 @@ var gcalAvailability = (function() {
       auth: oAuth2Client
     }, function(err, response) {
       cb(null , true)
-    })
+    });
   };
 
   _gcalAvailability.addEventToCalendar = function(calendar, oAuth2Client, invitee_emails, title, location, startDate, endDate, cb) {
@@ -48,6 +48,7 @@ var gcalAvailability = (function() {
     invitee_emails.forEach(function(invitee) {
       attendees.push({'email': invitee})
     })
+    console.log(typeof startDate);
     var cal_event = {
       'summary': title,
       'location': location,
@@ -55,7 +56,7 @@ var gcalAvailability = (function() {
         'dateTime': startDate
       },
       'end' : {
-        'dateTime': endTime
+        'dateTime': endDate
       },
       'attendees': attendees,
     };
@@ -65,8 +66,10 @@ var gcalAvailability = (function() {
       'resource' : cal_event,
       auth: oAuth2Client
     }, function(err, response) {
-      cb(null , true)
-    })
+      console.log('add to cal error : ', err);
+      console.log('add to cal response : ', response);
+      cb(err , response)
+    });
   };
   
 
@@ -87,7 +90,7 @@ var gcalAvailability = (function() {
         }
         evt_endTime = roundDate(evt_endTime);
         eventsList.push({summary: evt.summary, start: evt_startTime, end: evt_endTime});
-      })
+      });
     } else {
       console.log('No events found.');
     }
