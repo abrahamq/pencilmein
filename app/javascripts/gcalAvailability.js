@@ -3,27 +3,50 @@ var gcalAvailability = (function() {
   var _gcalAvailability = {}
 
   _gcalAvailability.listUpcomingEvents = function(calendar, oAuth2Client, mtg_startDate, mtg_endDate, cb) {
-    // var mtg_startDate = (new Date()).toISOString();
-    // var mtg_endDate = '2015-11-25T10:00:00-05:00';
-    
     calendar.events.list({
       'calendarId': 'primary',
-      'timeMin': mtg_startDate,
-      'timeMax': mtg_endDate,
+      'timeMin': mtg_startDate.toISOString(),
+      'timeMax': mtg_endDate.toISOString(),
       'showDeleted': false,
       'singleEvents': true,
       'orderBy': 'startTime',
       auth: oAuth2Client
     }, function(err, response) {
+      console.log('in upcoming events response : ', response);
       eventsList = processEvents(response);
       cb(null,eventsList);
     });
   };
 
-  _gcalAvailability.addEventToCalendar = function(calendar, oAuth2Client, invitee_email, title, location, startDate, endDate, cb) {
+  _gcalAvailability.testAddEvent = function(calendar, oAuth2Client, cb) {
+
+    var startDate = (new Date()).toISOString();
+    var endDate = '2015-12-25T10:00:00-05:00';
+    var cal_event = {
+      'summary': 'pencilmeintest',
+      'location': 'stud',
+      'start': {
+        'dateTime': startDate
+      },
+      'end' : {
+        'dateTime': endDate
+      },
+      'attendees': ['caroline.m.chin@gmail.com'],
+    };
+    calendar.events.insert({
+      'calendarId' : 'primary',
+      'sendNotifications' : true,
+      'resource' : cal_event,
+      auth: oAuth2Client
+    }, function(err, response) {
+      cb(null , true)
+    })
+  };
+
+  _gcalAvailability.addEventToCalendar = function(calendar, oAuth2Client, invitee_emails, title, location, startDate, endDate, cb) {
     var attendees = [];
-    invitees.forEach(function(invitee) {
-      attendees.push({'email': invitees})
+    invitee_emails.forEach(function(invitee) {
+      attendees.push({'email': invitee})
     })
     var cal_event = {
       'summary': title,

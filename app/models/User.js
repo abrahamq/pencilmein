@@ -34,7 +34,7 @@ UserSchema.methods =
     @param{latestEndDate} latest time the meeting can happen 
     @param{cb} callback upon completion 
   */
-  createMeeting : function(title, location, duration, earliestStart, latestEndDate, cb)
+  createMeeting : function(title, location, duration, earliestStartDate, latestEndDate, invitedMembers, cb)
   {
     var userObj = this;
     var newMeeting = new Meeting();
@@ -42,8 +42,10 @@ UserSchema.methods =
     newMeeting.title = title; 
     newMeeting.location = location;
     newMeeting.duration = duration;
-    newMeeting.earliestStart = earliestStart;
+    newMeeting.earliestStartDate = earliestStartDate;
     newMeeting.latestEndDate = latestEndDate;
+    newMeeting.invitedMembers = invitedMembers;
+
     this.meetings.push(newMeeting._id);
     newMeeting.save(function()
       {
