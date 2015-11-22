@@ -34,7 +34,7 @@ router.post('/create', isLoggedIn, function(req, res)
             //save meeting creator 
             meetingCreator.save(function()
             {
-                utils.sendSuccessResponse(res, {redirect : '/user'});
+                utils.sendSuccessResponse(res, {redirect : 'user/calendar/' + meetingId});
             });
           });
        });

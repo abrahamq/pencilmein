@@ -67,8 +67,7 @@ $(document).ready(function()
   $('[data-toggle="invitePop"]').popover();  
   $('[data-toggle="durationPop"]').popover();  
 
-  /*
-   $('#createMeeting').validate({
+   $('#createMeeting').bootstrapValidator({
        // container: '#messages',
         feedbackIcons: {
             valid: 'glyphicon glyphicon-ok',
@@ -90,17 +89,9 @@ $(document).ready(function()
                     }
                 }
             },
-
+            
 
         }
     });
-*/
-    $('#createMeeting').validate({
-         debug : true,
-         rules: {
-                    title: "required",
-                    location: "required",
-                },
-    })
 });
 
