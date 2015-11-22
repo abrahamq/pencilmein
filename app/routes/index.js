@@ -25,12 +25,10 @@ router.get('/auth/google/callback',
            passport.authenticate('google', { failureRedirect : '/'}), 
            function(req, res)
            {
-              var referer = req.referer;
-              console.log(referer);
-              if (referer && referer.indexOf('calendar') > -1)
-              {
-                res.redirect(req.referer);
-              } else 
+              if (req.session.redirect_to){
+                res.redirect(req.session.redirect_to);
+              }
+              else 
               {
                 res.redirect('/user');
               }
