@@ -6,10 +6,11 @@
 .form-control 
 {
   width : 30%;
-    margin-bottom : 15px;
+  margin-bottom : 50px;
 }
 
-.input-group 
+.date 
 {
   width : 30%;
+  margin-bottom : 40px;
 }
