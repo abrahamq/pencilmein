@@ -92,7 +92,7 @@ router.post('/availability/submit', function(req, res) {
     if (err) {
       utils.sendErrResponse(res, 400, "no user found");
     } else {
-      user.setAvailability(userEvents);
+      //user.setAvailability(userEvents);
       //now tell the client where to redirect to. 
       utils.sendSuccessResponse(res, {redirect: '/user'}); 
     }

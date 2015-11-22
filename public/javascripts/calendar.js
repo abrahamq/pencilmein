@@ -61,6 +61,7 @@ var cal = {
 
 $(function() { // document ready
   var meetingId = $('#meetingId').data('meeting');
+  var _csrf = $('#_csrf').data('_csrf');
 
   setupBlankCalendar(); 
 
@@ -81,7 +82,7 @@ $(function() { // document ready
   
   //send post request when user clicks button 
   $('#calendar-submit').click( function(){
-    $.post('/user/availability/submit', {meetingId: meetingId }, function(res){
+    $.post('/user/availability/submit', {meetingId: meetingId, _csrf: _csrf}, function(res){
       window.location.replace(res.content.redirect); 
     });
   }); 
@@ -89,18 +90,10 @@ $(function() { // document ready
 
 var setupBlankCalendar = function(){
   $('#calendar').fullCalendar({
-    customButtons: {
-      submit: {
-        text: 'Submit',
-        click: function() {
-          alert('clicked the custom button!');
-        }
-      }
-    },
     header: {
       left: 'prev,next today',
       center: 'title',
-      right: 'month,agendaWeek,agendaDay,submit'
+      right: 'month,agendaWeek,agendaDay'
     },
     defaultDate: '2015-11-12',
     editable: true,
