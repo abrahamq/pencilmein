@@ -7,6 +7,7 @@
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"> </script>
 
   <link rel="stylesheet" href="/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <script src="/javascripts/meetingPage.js"></script>
 
 <div id=_csrf data-_csrf={{_csrf}}></div> 
@@ -30,7 +31,7 @@
       <label class="control-label col-sm-2" for="earliestStartTime">Earliest Start Time:</label>
       <div class="col-sm-10">
       <div class='input-group date' id='datetimepicker1'>
-          <input data-toggle="startPop" data-content="When's the earliest time your meeting can start?" data-placement="top" data-trigger="hover" type='text' class="form-control" id="startTime"/>
+          <input data-toggle="startPop" data-content="When's the earliest time your meeting can start?" data-placement="top" data-trigger="hover" type='text' class="form-control" name="startTime" id="startTime"/>
           <span class="input-group-addon">
               <span class="glyphicon glyphicon-calendar"></span>
           </span>
@@ -41,7 +42,7 @@
       <label class="control-label col-sm-2" for="latestEndTime">Latest End Time:</label>
       <div class="col-sm-10">
       <div class='input-group date' id='datetimepicker2'>
-          <input data-toggle="endPop" data-placement="top" data-content="When is the latest time your meeting can end?" type='text' data-trigger="hover" class="form-control" id="endTime"/>
+          <input data-toggle="endPop" data-placement="top" data-content="When is the latest time your meeting can end?" name="endTime" type='text' data-trigger="hover" class="form-control" id="endTime"/>
           <span class="input-group-addon">
               <span class="glyphicon glyphicon-calendar"></span>
           </span>
@@ -49,21 +50,38 @@
       </div>
   </div>
   <div class="form-group">
-    <label class="control-label col-sm-2" for="location">Duration:</label>
+    <label class="control-label col-sm-2" for="duration">Duration:</label>
     <div class="col-sm-10"> 
-      <input data-toggle="durationPop" data-trigger="hover" data-content="How long will your meeting last. Enter only in minutes and in multiples of 30. Eg. 30, 60, 90" type="duration" class="form-control" id="duration" placeholder="Enter Meeting Duration">
+      <input data-toggle="durationPop" data-trigger="hover" data-content="How long will your meeting last. Enter only in minutes and in multiples of 30. Eg. 30, 60, 90" type="duration" class="form-control" name="duration" id="duration" placeholder="Enter Meeting Duration">
     </div>
   </div>
-   <div class="form-group">
-    <label class="control-label col-sm-2" for="invitees">Invitees:</label>
-    <div class="col-sm-10">
-      <input id="state" type="hidden" value="1">
-      <input type="invitee" data-toggle="invitePop" data-trigger="hover" data-content="Enter the google emails for everyone you want to invite to the meeting. After entering an invitee, click the last field to invite more people." class="form-control" id="invitee1" placeholder="Eg. funnybunny@gmail.com">
-    </div><a href="#"></a>
-  </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Invitees</label>
+        <div class="col-sm-10">
+        <div class="input-group invitees">
+            <input type="invitee" data-toggle="invitePop" data-trigger="hover" data-content="Enter the google emails for everyone you want to invite to the meeting. After entering an invitee, click the last field to invite more people." placeholder="Eg. funnybunny@gmail.com"class="form-control" name="invitee[]" />
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>
+          </span>
+         </div>
+      </div>
+    </div>
+
+    <!-- The option field template containing an option field and a Remove button -->
+    <div class="form-group hide" id="inviteeTemplate">
+         <label class="col-sm-2 control-label "></label>
+        <div class="col-sm-10">
+        <div class="input-group invitees">
+            <input class="form-control" placeholder="Eg. funnybunny@gmail.com" type="invitee" name="invitee[]"/>
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default removeButton"><i class="fa fa-minus"></i></button>
+            </span>
+        </div>
+      </div>
+    </div>
   <div class="form-group"> 
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-default">Create Your Meeting</button>
+      <button type="submit" id="submission" class="btn btn-default">Create Your Meeting</button>
     </div>
   </div>
 </form>
