@@ -22,9 +22,19 @@ router.get('/auth/google', passport.authenticate('google', { scope : ['https://w
 
 // the callback after google has authenticated the user
 router.get('/auth/google/callback',
-           passport.authenticate('google', {
-             successRedirect : '/user',
-             failureRedirect : '/'
-           }));
+           passport.authenticate('google', { failureRedirect : '/'}), 
+           function(req, res)
+           {
+              var referer = req.referer;
+              console.log(referer);
+              if (referer && referer.indexOf('calendar') > -1)
+              {
+                res.redirect(req.referer);
+              } else 
+              {
+                res.redirect('/user');
+              }
+              
+           });
 
 module.exports = router; 

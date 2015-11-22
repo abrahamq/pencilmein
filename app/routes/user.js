@@ -31,6 +31,11 @@ router.get('/', isLoggedIn, function(req, res) {
 });
 
 router.get('/calendar/:meetingId', function(req, res){
+  if (!req.user)
+  {
+    res.referer = "http://localhost:3000/user/calendar/" + req.params.meetingId;
+    res.redirect('/auth/google');
+  }
   Meeting.findById(req.params.meetingId, function(err, result){
     if(err){
       utils.sendErrResponse(res, 404, null); 
