@@ -31,7 +31,7 @@ router.get('/', isLoggedIn, function(req, res) {
 });
 
 router.get('/calendar/:meetingId', function(req, res){
-  utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId}); 
+  utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId, _csrf: req.csrfToken()}); 
 }); 
 
 
