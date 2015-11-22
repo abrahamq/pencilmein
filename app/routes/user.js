@@ -31,7 +31,13 @@ router.get('/', isLoggedIn, function(req, res) {
 });
 
 router.get('/calendar/:meetingId', function(req, res){
-  utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId, _csrf: req.csrfToken()}); 
+  Meeting.findById(req.params.meetingId, function(err, result){
+    if(err){
+      utils.sendErrResponse(res, 404, null); 
+    }else{
+      utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId, meetingTitle:result.title, _csrf: req.csrfToken()}); 
+    }
+  }); 
 }); 
 
 
