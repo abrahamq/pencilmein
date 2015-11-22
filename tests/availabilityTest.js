@@ -39,7 +39,6 @@ describe('Simple Availability', function() {
     //setup database state 
     var av = new Availability();
     av.meetingId="newmeet";
-<<<<<<< HEAD
     av.googleId="kwefah";
     it ('availability has meeting name that was just set', function(){
       assert.equal(av.meetingId, 'newmeet');
