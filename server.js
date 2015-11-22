@@ -28,7 +28,7 @@ var mongoDirectory = '/data/db';
 
 mongoose.connect('mongodb://localhost:27017/pmidb');
 var db = mongoose.connection;
-db.on("error", function(err) {console.log("Mongoose error:", err)});
+db.on("error", function(err) {console.log("Mongoose error:", err);});
 
 
 module.exports = app;

@@ -2,6 +2,12 @@
 	margin: 80px; 
 }
 
+.carousel-caption{
+	top: 50%; 
+	bottom: auto;
+	color: blue; 
+}
+
 
 .btn-google-plus{
 	color:#fff;

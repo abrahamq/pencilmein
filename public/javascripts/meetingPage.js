@@ -32,8 +32,11 @@ $(document).ready(function()
     });
 
     data.invitees = invitees;
-    
-    //Send data to server   
+
+    //grab csrf token before posting
+    data._csrf = $('#_csrf').data('_csrf'); 
+
+    //Send data to server 
     $.post("/meeting/create", data, function(resp){
         //console.log(resp);
         window.location.replace(resp.content.redirect);
