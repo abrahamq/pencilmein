@@ -217,6 +217,62 @@ describe('check block id lookup based on time', function() {
         });
       });
   });
+  describe('test static lookup of blocks from list of availabilites w just one av.', function() {
+      //setup database state 
+      var start = new Date(2015,10,3,4,00);
+      var end = new Date(2015,10,3,5,30);
+      var time = new Date(start);
+      var av = new Availability();
+      var Av = Availability;
+      av.meetingId = "newmeet";
+      av.googleId = "kwefah";
+      it('should find correct id', function(done) {
+        av.initializeTimeBlocks(start,end,function(error,foundBlockList){
+          av.save(function(){
+            Availability.getTimeBlocksListsForAvailabilities([av],function(err,blocksLists){
+              assert.equal(err,null);
+              assert.equal(blocksLists.length,1);
+              assert.equal(blocksLists[0].length,3);
+              assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
+              done();
+            });
+          });
+        });
+
+      });
+  });
+  describe('test static lookup of blocks from list of availabilites with 2 avs', function() {
+      //setup database state
+      var start = new Date(2015,10,3,4,00);
+      var end = new Date(2015,10,3,5,30);
+      var time = new Date(start);
+      var av = new Availability();
+      var av2 = new Availability();
+      av.meetingId = "newmeet";
+      av.googleId = "kwefah";
+      av2.meetingId = "newmeet2";
+      av2.googleId = "kwefah";
+      it('should find correct id', function(done) {
+        av.initializeTimeBlocks(start,end,function(error,foundBlockList){
+          av.save(function(){
+            av2.initializeTimeBlocks(start,end,function(error2, founcBlockList2){
+              av2.save(function(){
+                Availability.getTimeBlocksListsForAvailabilities([av,av2],function(err,blocksLists){
+                  assert.equal(err,null);
+                  assert.equal(blocksLists.length,2);
+                  assert.equal(blocksLists[0].length,3);
+                  assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
+                  assert.equal(blocksLists[1].length,3);
+                  assert.equal(blocksLists[1][0].startDate.getTime(),start.getTime());
+                  done();
+                }); 
+              });
+            })
+          });
+        });
+
+      });
+  });
 
 });
 describe('Editing SINGLE time block', function() {
