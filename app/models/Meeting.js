@@ -54,7 +54,9 @@ MeetingSchema.methods=
 	   return this.invitedMembers.indexOf(googleID) !== -1;
   },
 
-
+  getInviteeEmailList: function() {
+  	// 
+  }
 };
 
 module.exports = mongoose.model('Meeting', MeetingSchema)

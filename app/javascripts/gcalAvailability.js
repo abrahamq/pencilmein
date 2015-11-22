@@ -3,8 +3,8 @@ var gcalAvailability = (function() {
   var _gcalAvailability = {}
 
   _gcalAvailability.listUpcomingEvents = function(calendar, oAuth2Client, mtg_startDate, mtg_endDate, cb) {
-    var mtg_startDate = (new Date()).toISOString();
-    var mtg_endDate = '2015-11-25T10:00:00-05:00';
+    // var mtg_startDate = (new Date()).toISOString();
+    // var mtg_endDate = '2015-11-25T10:00:00-05:00';
     
     calendar.events.list({
       'calendarId': 'primary',
@@ -19,6 +19,33 @@ var gcalAvailability = (function() {
       cb(null,eventsList);
     });
   };
+
+  _gcalAvailability.addEventToCalendar = function(calendar, oAuth2Client, invitee_email, title, location, startDate, endDate, cb) {
+    var attendees = [];
+    invitees.forEach(function(invitee) {
+      attendees.push({'email': invitees})
+    })
+    var cal_event = {
+      'summary': title,
+      'location': location,
+      'start' {
+        'dateTime': startDate
+      },
+      'end' : {
+        'dateTime': endTime
+      },
+      'attendees': attendees,
+    };
+    calendar.events.insert({
+      'calendarId' : 'primary',
+      'sendNotifications' : true,
+      'resource' : cal_event,
+      auth: oAuth2Client
+    }, function(err, response) {
+      cb(null , true)
+    }
+    });
+  }
 
   var processEvents = function(resp) {
     var events = resp.items;
