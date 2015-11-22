@@ -20,12 +20,13 @@
 
 </head>
 <body>
-  <div id='meetingId' data-meeting={{{meetingId}}}></div>
+  <div id='meetingId' data-meeting={{meetingId}}></div>
+  <div id='_csrf' data-_csrf={{_csrf}}></div>
   <div class="row text-center center-block control-group"> 
     <div class="calendar-container"> 
       <div id='calendar'></div>
         <div class="col-xs-12" style="height:5px;"></div>
-        <a class="btn btn-danger text-center btn-lg">submit</a> 
+        <a class="btn btn-danger text-center btn-lg" id="calendar-submit">submit</a> 
     </div>
   </div>
 </body>
