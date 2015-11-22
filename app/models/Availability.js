@@ -12,7 +12,8 @@ var AvailabilitySchema = mongoose.Schema({
 AvailabilitySchema.methods = 
 { 
   /*
-  Basically just a tester function to add and save a time block
+  Adds a time new time block to the database
+  Just a tester function to add and save a time block
   */
   addTimeBlock: function(cb){
     var newBlock = new TimeBlock();
@@ -29,6 +30,7 @@ AvailabilitySchema.methods =
     });
   },
   /*
+  Gets all time blocks that an availability instance has
   @param cb: arg1) error arg2) list of time block objects that correspond to this availabilites time blocks
   */
   getTimeBlocks: function(cb){
@@ -38,8 +40,8 @@ AvailabilitySchema.methods =
     });
   },
   /*
-  Initializes an availabilities time block list to be green time blocks, 
-  each representing 30 minutes of time,
+  Initializes an availabilities time block list
+  Makes all green time blocks, each representing 30 minutes of time,
   the first of which starts at the start date,
   the last of which end at the endDate (aka its start time is 30 minutes before the end)
   @param Date startDate: start time of the first block
@@ -141,6 +143,7 @@ AvailabilitySchema.methods =
 AvailabilitySchema.statics = 
 {   
     /*
+    Finds a single availability by its id
     @param idObject availabiltyId: 
     @result Availabilty object
     */
@@ -148,25 +151,38 @@ AvailabilitySchema.statics =
       this.model('Availability').findById(availabilityId,cb);
     }, 
     /*
+    Finds availabilities with a given meeting Id
     @param String meetId
-    @result Availability object
+    @result List of Availability objects
     */
     findByMeetingId: function(meetId, cb){
       this.model('Availability').find({meetingId: meetId},cb);
     },
     /*
+    Finds availabilities with given google id
     @param String googleId
-    @result Availability object
+    @result List of Availability objects
     */
     findByGoogleId: function(googId, cb){
       this.model('Availability').find({googleId: googId},cb);
     }, 
-        /*
+    /*
+    Finds a single availability given both a google id and meeting id
     @param String googleId
     @result Availability object
     */
     findByGoogleIdAndMeetingId: function(googId, meetId, cb){
       this.model('Availability').findOne({googleId: googId, meetingId: meetId},cb);
+    },
+        /*
+    @param availabilities: list of Availabilities
+    @param cb: arg1) err, arg2) list of lists of time blocks
+    callback will finally be given the list of lists of time blocks, each list corresponds to 
+    an availability and is all of the time blocks that that av. contains
+    */
+    getTimeBlocksListsForAvailabilities: function(availabilities, cb){
+      //this.model('Availability').findById(availabilities,cb);
+      this.model('Availability').getTimeBlocksListsForAvailabilitiesRecurse(availabilities,[],cb);
     },
     /*
     Will be called initially by getTimeBlocksListsForAvailabilities with timeBlocksLists as []
@@ -186,18 +202,7 @@ AvailabilitySchema.statics =
         timeBlocksLists.push(foundBlocks);
         thisRef.model('Availability').getTimeBlocksListsForAvailabilitiesRecurse(nextAvailabilities, timeBlocksLists, cb);
       });
-    }, 
-    /*
-    @param availabilities: list of Availabilities
-    @param cb: arg1) err, arg2) list of lists of time blocks
-    callback will finally be given the list of lists of time blocks, each list corresponds to 
-    an availability and is all of the time blocks that that av. contains
-    */
-    getTimeBlocksListsForAvailabilities: function(availabilities, cb){
-      //this.model('Availability').findById(availabilities,cb);
-      this.model('Availability').getTimeBlocksListsForAvailabilitiesRecurse(availabilities,[],cb);
-    }
-
+    } 
 };
 
 module.exports = mongoose.model('Availability', AvailabilitySchema);

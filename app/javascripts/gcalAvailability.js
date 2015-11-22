@@ -17,32 +17,7 @@ var gcalAvailability = (function() {
       cb(null,eventsList);
     });
   };
-
-  _gcalAvailability.testAddEvent = function(calendar, oAuth2Client, cb) {
-
-    var startDate = (new Date()).toISOString();
-    var endDate = '2015-12-25T10:00:00-05:00';
-    var cal_event = {
-      'summary': 'pencilmeintest',
-      'location': 'stud',
-      'start': {
-        'dateTime': startDate
-      },
-      'end' : {
-        'dateTime': endDate
-      },
-      'attendees': ['caroline.m.chin@gmail.com'],
-    };
-    calendar.events.insert({
-      'calendarId' : 'primary',
-      'sendNotifications' : true,
-      'resource' : cal_event,
-      auth: oAuth2Client
-    }, function(err, response) {
-      cb(null , true)
-    });
-  };
-
+  
   _gcalAvailability.addEventToCalendar = function(calendar, oAuth2Client, invitee_emails, title, location, startDate, endDate, cb) {
     var attendees = [];
     invitee_emails.forEach(function(invitee) {

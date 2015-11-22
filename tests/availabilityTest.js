@@ -8,32 +8,6 @@ mongoose.connect('mongodb://localhost/testAvaDb');
 mongoose.connection.on("open", function(err) {
   mongoose.connection.db.dropDatabase();
 });
-// beforeEach(function (done) {
-
-// function clearDB() {
-//   for (var i in mongoose.connection.collections) {
-//     mongoose.connection.collections[i].remove(function() {});
-//   }
-//   return done();
-// }
-
-// if (mongoose.connection.readyState === 0) {
-//   mongoose.connect('mongodb://localhost/test', function (err) {
-//     if (err) {
-//       throw err;
-//     }
-//     return clearDB();
-//   });
-// } else {
-//   return clearDB();
-// }
-// });
-
-// afterEach(function (done) {
-// mongoose.disconnect();
-// return done();
-// });
-
 describe('Simple Availability', function() {
   describe('make new availability', function() {
     //setup database state 

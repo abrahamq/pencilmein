@@ -91,8 +91,6 @@ router.get('/availability/:meetingID', function(req, res) {
     - events [startDate, endDate]
 */
 router.post('/availability/submit', function(req, res) {
-  console.log('in availability submit');
-
   var userId = req.user.googleID;
   var userEvents = req.body.events;
   var meetingId = req.body.meetingId;
@@ -101,8 +99,6 @@ router.post('/availability/submit', function(req, res) {
     if (err) {
       utils.sendErrResponse(res, 400, "no user found");
     } else {
-        console.log('user : ', user);
-
         oAuth2Client.setCredentials({
           access_token : req.user.googleAccessToken,
           refresh_token : req.user.googleRequestToken
@@ -120,14 +116,8 @@ router.post('/availability/submit', function(req, res) {
           availability.meetingId = meetingId;
           availability.initializeTimeBlocks(mtg_startDate, mtg_endDate, function(err, blockIds){
             availability.save(function(){
-              console.log(err);
-              console.log('availability initialized ');
-
               gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
                 if (events) {
-
-                  console.log('events : ', events);
-
                   var stringEvents = JSON.stringify(events); 
                   var withTitleInsteadOfSubmit = stringEvents.replace(/summary/g, 'title'); 
                   var jsonEvent = JSON.parse(withTitleInsteadOfSubmit);
@@ -141,7 +131,6 @@ router.post('/availability/submit', function(req, res) {
 
                         if (found_meeting.isClosed()){
                           Availability.findByMeetingId(meetingId, function(err, availabilities) {
-                            console.log(availabilities);
                             Availability.getTimeBlocksListsForAvailabilities(availabilities, function(err, blocksLists) {
                               var optimal_in = optimeet.getIn(availabilities, mtg_startDate, duration);
                               meeting.recordIn(optimal_in.startDate, optimal_in.endDate, function(err) {
@@ -151,7 +140,6 @@ router.post('/availability/submit', function(req, res) {
                                     if (err) {
                                       // utils.sendErrResponse(res, 400, "cannot create google calendar event");
                                     } else {
-                                      console.log('in sueccess function in user route');
                                       utils.sendSuccessResponse(res, {redirect: '/user'}); 
                                     }
                                   });  
