@@ -45,7 +45,10 @@ UserSchema.methods =
     newMeeting.earliestStart = earliestStart;
     newMeeting.latestEndDate = latestEndDate;
     this.meetings.push(newMeeting._id);
-    newMeeting.save(cb(newMeeting._id));
+    newMeeting.save(function()
+      {
+        cb(newMeeting._id)
+      });
   },
 
   /*

@@ -8,7 +8,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/meeting.css" rel="stylesheet">
 
     <style>
@@ -40,8 +40,11 @@
     <div>
       <ul class="nav navbar-nav">
         <li><a href="/about">About</a></li>
+        {{#unless showLoginButton}}
+        <li><a href="/user">My Meetings</a></li>
+        {{/unless}}
       </ul>
-      {{#if showLoginButton}}
+    {{#if showLoginButton}}
         <a href="/auth/google" class="btn navbar-btn navbar-right btn-google-plus sign-in-text btn-primary">Sign in with Google</a>
     {{/if}}
 
@@ -58,6 +61,6 @@
 
     </div> <!-- /content -->
 
-    <script src="js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
   </body>
 </html>
