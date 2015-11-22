@@ -28,7 +28,7 @@ MeetingSchema.methods=
 
 	/*
 		Adds a member to the meeting
-		@param {username} String -  GoogleID of the user to invite
+		@param {googleID} String -  GoogleID of the user to invite
     @param {cb} callback upon completion 
 	*/
 	inviteMember : function(googleID, cb){
@@ -38,7 +38,7 @@ MeetingSchema.methods=
 
 	/*
 		Saves user responses to database
-		@param {username} String - GoogleID of the user whos response is recorded 
+		@param {googleID} String - GoogleID of the user whos response is recorded 
     @param {cb} callback upon completion 
 	*/
 	recordMemberResponse: function(googleID, cb){
@@ -54,8 +54,26 @@ MeetingSchema.methods=
 	   return this.invitedMembers.indexOf(googleID) !== -1;
   },
 
-  getInviteeEmailList: function() {
-  	// 
+  /*
+  	Returns the email addresses of all the invited members of meetings
+  	@param {cb} callback upon completion
+  */
+  getInviteeEmailList: function(cb) {
+  	var invitedMembers = this.invitedMembers;
+  	User.find({'_id' : { $in: invitedMembers}}, 'googleEmail', function(err,email) {
+  		cb(err, email);
+  	})
+  },
+
+  /*
+  	Saves optimized In for a meeting
+  	@param {startDate} Date - start date of the In
+  	@param {endDate} Date - end date of the In
+  */
+  recordIn : function(startDate, endDate, cb) {
+  	this.InStartDate = startDate;
+  	this.InEndDate = endDate;
+  	this.save(cb)
   }
 };
 

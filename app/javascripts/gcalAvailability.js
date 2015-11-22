@@ -28,7 +28,7 @@ var gcalAvailability = (function() {
     var cal_event = {
       'summary': title,
       'location': location,
-      'start' {
+      'start': {
         'dateTime': startDate
       },
       'end' : {
@@ -43,9 +43,9 @@ var gcalAvailability = (function() {
       auth: oAuth2Client
     }, function(err, response) {
       cb(null , true)
-    }
-    });
-  }
+    })
+  };
+  
 
   var processEvents = function(resp) {
     var events = resp.items;

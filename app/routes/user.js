@@ -3,13 +3,13 @@ var router = express.Router();
 var passport = require('passport');
 
 var User = require('../models/User');
-<<<<<<< HEAD
 
 var Availability = require('../models/Availability')
 var Meeting = require('../models/Meeting');
 
 var utils = require('../../utils/utils');
 var gcalAvailability = require('../javascripts/gcalAvailability');
+var optimeet = require('../javascripts/optimeet');
 
 var auth = require('../../config/auth');
 var google = require('googleapis');
@@ -35,7 +35,6 @@ router.get('/', isLoggedIn, function(req, res) {
 router.get('/calendar/:meetingId', function(req, res){
   utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId}); 
 }); 
-
 
 //Gives you all events in user's google calendar 
 router.get('/availability', function(req, res) {
@@ -104,7 +103,10 @@ router.post('/availability/submit', function(req, res) {
         Meeting.findById(meetingId,function(err,meeting){
           var mtg_startDate = meeting.earliestStartDate;
           var mtg_endDate = meeting.latestEndDate;
+          var duration = meeting.duration;
+          var location = meeting.location;
           var availability = new Availability();
+
           availability.googleId = userId;
           availability.meetingId = meetingId;
           availability.initializeTimeBlocks(mtg_startDate, mtg_endDate, function(err, blockIds){
@@ -122,7 +124,17 @@ router.post('/availability/submit', function(req, res) {
                     availability.save(function(){
                       utils.sendSuccessResponse(res, {events: jsonEvent}); 
                       if (meeting.isClosed()){
-                        //SCHEDULE IN
+                        Availability.findByMeetingId(meetingId, function(err, availability) {
+                          console.log(availability);
+                        // find in
+                        // var optimal_in = optimeet.getIn(availabilities, mtg_startDate, duration);
+                        // meeting.recordIn(optimal_in.startDate, optimal_in.endDate, function(err) {
+                          // 
+                        // })
+                        // gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_email, )
+                        // make event                          
+                        })
+
                       }
                     });
                   });
