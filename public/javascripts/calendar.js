@@ -81,7 +81,7 @@ $(function() { // document ready
   
   //send post request when user clicks button 
   $('#calendar-submit').click( function(){
-    $.post('/user/availability/submit', {body: "" }, function(res){
+    $.post('/user/availability/submit', {meetingId: meetingId }, function(res){
       window.location.replace(res.content.redirect); 
     });
   }); 
