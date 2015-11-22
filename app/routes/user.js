@@ -30,10 +30,11 @@ router.get('/', isLoggedIn, function(req, res) {
  });
 });
 
-router.get('/calendar/:meetingId', function(req, res){
+router.get('/calendar/:meetingId', function(req, res, next){
   Meeting.findById(req.params.meetingId, function(err, result){
     if(err){
-      utils.sendErrResponse(res, 404, null); 
+      //let it 404 
+      next();
     }else{
       utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId, meetingTitle:result.title, _csrf: req.csrfToken()}); 
     }

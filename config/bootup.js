@@ -29,5 +29,9 @@ module.exports = function(app)
   app.use(express.static(path.join(__dirname, '/../bower_components')));
 	app.use(express.static(__dirname + '/../public')); 
 	app.use(express.static(__dirname + '/../bower_components')); 
+  //404 handler 
+//	app.use( function(req, res){
+//    res.send('404 page not found', 404); 
+//  }); 
 };
 
