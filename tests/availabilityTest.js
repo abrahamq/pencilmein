@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 var TimeBlock = require("../app/models/TimeBlock.js");
 var Availability = require("../app/models/Availability.js");
 
-mongoose.connect('mongodb://localhost/testAvDb');
+mongoose.connect('mongodb://localhost/testAvaDb');
 mongoose.connection.on("open", function(err) {
   mongoose.connection.db.dropDatabase();
 });
@@ -39,14 +39,33 @@ describe('Simple Availability', function() {
     //setup database state 
     var av = new Availability();
     av.meetingId="newmeet";
-    
+    av.googleId="kwefah";
     it ('availability has meeting name that was just set', function(){
       assert.equal(av.meetingId, 'newmeet');
     });
-    it('should find availability in database', function(done) {
+    it('should find availability in database by id', function(done) {
       av.save(function(){
-        Availability.getAvailability(av._id, function(err,foundAv){
+        Availability.getAvailabilityById(av._id, function(err,foundAv){
           assert.equal(foundAv.meetingId, 'newmeet');
+          assert.equal(foundAv.googleId, 'kwefah');
+          done();
+        });
+      });
+    });
+    it('should find availability in database by meeting id', function(done) {
+      av.save(function(){
+        Availability.getAvailabilityByMeetingId('newmeet', function(err,foundAvs){
+          assert.equal(foundAvs[0].meetingId, 'newmeet');
+          assert.equal(foundAvs[0].googleId, 'kwefah');
+          done();
+        });
+      });
+    });
+    it('should find availability in database by google id id', function(done) {
+      av.save(function(){
+        Availability.getAvailabilityByGoogleId('kwefah', function(err,foundAvs){
+          assert.equal(foundAvs[0].meetingId, 'newmeet');
+          assert.equal(foundAvs[0].googleId, 'kwefah');
           done();
         });
       });
@@ -54,6 +73,7 @@ describe('Simple Availability', function() {
 
   });
 });
+
 //THIS IS A BULLSHIT TEST TO CHECK SIMPLE ADD TIME BLOCK FN
 describe('Add single block', function() {
   describe('adding single block', function() {

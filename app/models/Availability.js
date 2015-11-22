@@ -137,9 +137,15 @@ AvailabilitySchema.methods =
 
 AvailabilitySchema.statics = 
 {
-    getAvailability : function(availabilityId,cb){
-        this.model('Availability').findById(availabilityId,cb);
-    }   
+    getAvailabilityById : function(availabilityId,cb){
+      this.model('Availability').findById(availabilityId,cb);
+    }, 
+    getAvailabilityByMeetingId: function(meetId, cb){
+      this.model('Availability').find({meetingId: meetId},cb);
+    },
+    getAvailabilityByGoogleId: function(googId, cb){
+      this.model('Availability').find({googleId: googId},cb);
+    }  
 };
 
 module.exports = mongoose.model('Availability', AvailabilitySchema);
