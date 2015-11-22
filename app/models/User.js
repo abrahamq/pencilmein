@@ -34,17 +34,25 @@ UserSchema.methods =
     @param{latestEndDate} latest time the meeting can happen 
     @param{cb} callback upon completion 
   */
-  createMeeting : function(title, location, duration, earliestStart, latestEndDate, cb)
+  createMeeting : function(title, location, duration, earliestStartDate, latestEndDate, invitedMembers, cb)
   {
     var userObj = this;
     var newMeeting = new Meeting();
+    console.log('in user object user email ', this.googleEmail);
+    console.log('invited memebrs arg ', invitedMembers);
+    var invitedMembersAndCreator = invitedMembers.concat([this.googleEmail]);
+    console.log('in user object invited members ', invitedMembersAndCreator );
     newMeeting.creator = this.user
     newMeeting.title = title; 
     newMeeting.location = location;
     newMeeting.duration = duration;
-    newMeeting.earliestStart = earliestStart;
+    newMeeting.earliestStartDate = earliestStartDate;
     newMeeting.latestEndDate = latestEndDate;
+
+    newMeeting.invitedMembers = invitedMembersAndCreator;
+
     this.meetings.push(newMeeting._id);
+    console.log('New meetings id is ', newMeeting._id);
     newMeeting.save(function()
       {
         cb(newMeeting._id)
