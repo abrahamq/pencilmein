@@ -13,7 +13,6 @@ November 23rd TA Meeting Agenda:
 5. What does "almost final" demo mean
 
 
-
 * First do: 
     ```
     npm install 
