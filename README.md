@@ -1,5 +1,12 @@
 #PencilMeIn
 
+November 23rd TA Meeting Agenda:
+1. Modified MVP specifications
+2. clarification of "Demo to mentors" in final project schedule
+3. MVP walk through and feedback
+4. Debugging advice
+5. What does "almost final" demo mean
+
 
 * First do: 
     ```
