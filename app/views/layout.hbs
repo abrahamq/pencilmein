@@ -44,9 +44,11 @@
         <li><a href="/user">My Meetings</a></li>
         {{/unless}}
       </ul>
-    {{#if showLoginButton}}
+      {{#if showLoginButton}}
         <a href="/auth/google" class="btn navbar-btn navbar-right btn-google-plus sign-in-text btn-primary">Sign in with Google</a>
-    {{/if}}
+      {{else}} 
+        <a href="/logout" class="btn navbar-btn navbar-right btn-google-plus sign-in-text btn-primary">Logout</a>
+      {{/if}}
 
   </div>
 </div>

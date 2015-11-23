@@ -13,6 +13,7 @@ var gcalAvailability = (function() {
       auth: oAuth2Client
     }, function(err, response) {
       console.log('in upcoming events response : ', response);
+      console.log(err); 
       eventsList = processEvents(response);
       cb(null,eventsList);
     });
