@@ -12,7 +12,6 @@ var gcalAvailability = (function() {
       'orderBy': 'startTime',
       auth: oAuth2Client
     }, function(err, response) {
-      console.log('in upcoming events response : ', response);
       eventsList = processEvents(response);
       cb(null,eventsList);
     });
