@@ -32,7 +32,12 @@ router.get('/', isLoggedIn, function(req, res) {
  });
 });
 
-router.get('/calendar/:meetingId', function(req, res, next){
+
+router.get('/calendar/:meetingId', function(req, res){
+  if (!req.user){
+    req.session.redirect_to = '/user/calendar/' + req.params.meetingId; 
+    res.redirect('/auth/google'); 
+  }
   Meeting.findById(req.params.meetingId, function(err, result){
     if(err){
       //let it 404 

@@ -18,13 +18,21 @@ router.get('/logout', function(req, res) {
 });
 
 //Google Authentication 
-router.get('/auth/google', passport.authenticate('google', { scope : ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/userinfo.profile','profile','email']}));
+router.get('/auth/google', passport.authenticate('google', { scope : ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/userinfo.profile','profile','email'], accessType: 'offline', approvalPrompt: 'force' }));
 
 // the callback after google has authenticated the user
 router.get('/auth/google/callback',
-           passport.authenticate('google', {
-             successRedirect : '/user',
-             failureRedirect : '/'
-           }));
+           passport.authenticate('google', { failureRedirect : '/'}), 
+           function(req, res)
+           {
+              if (req.session.redirect_to){
+                res.redirect(req.session.redirect_to);
+              }
+              else 
+              {
+                res.redirect('/user');
+              }
+              
+           });
 
 module.exports = router; 
