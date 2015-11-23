@@ -12,7 +12,7 @@
 {{#if meetings.length}}
 <ul class="list-group" class="dropdown-header">
   {{#each meetings}}
-    <li class="list-group-item">{{this.title}} in {{this.location}}</li>
+    <li name="meeting" id={{this._id}} class="list-group-item">{{this.title}} in {{this.location}}</li>
   {{/each}}
 </ul>
 {{else}}
