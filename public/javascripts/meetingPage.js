@@ -38,7 +38,6 @@ $(document).ready(function()
 
     //Send data to server 
     $.post("/meeting/create", data, function(resp){
-        //console.log(resp);
         window.location.replace(resp.content.redirect);
     });
   
@@ -49,7 +48,7 @@ $(document).ready(function()
   {
     $('#createMeeting').bootstrapValidator('revalidateField', 'startTime');
     $('#createMeeting').bootstrapValidator('revalidateField', 'endTime');
-  }
+  };
 
   //Bootstrap date picker for start time 
   $(function () {
@@ -111,7 +110,7 @@ $(document).ready(function()
                                 var startDate = new Date($('#startTime').val());
                                 var endDate = new Date($('#endTime').val());
                                 var range = parseInt(endDate - startDate) / 60000;
-                                return (dur > 0 && dur % 30 == 0) && (dur <= range);
+                                return (dur > 0 && dur % 30 === 0) && (dur <= range);
                             }
                     }
                 }

@@ -7,13 +7,11 @@ $(function() { // document ready
 
   //set up the calendar with the user's google calendar events  
   $.getJSON("/user/availability", function(data){
-    console.log(data); 
     $('#calendar').fullCalendar('addEventSource', data.content.events);
   }); 
 
   //now add the available slots in green 
   $.getJSON("/user/availability/" + meetingId, function(data){
-    console.log(data); 
     $('#calendar').fullCalendar('addEventSource', { 
       events: data.content.events, 
       color: 'green'
