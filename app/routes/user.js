@@ -150,7 +150,7 @@ router.post('/availability/submit', function(req, res) {
                               meeting.recordIn(optimal_in.startDate, optimal_in.endDate, function(err) {
                                 // meeting.getInviteeEmailList(function(err, invitee_emails) {
                                   var invitee_emails = meeting.invitedMembers;
-                                  gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, title, location, optimal_in.startDate, optimal_in.endDate, function(err, res) {
+                                  gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, title, location, optimal_in.startDate, optimal_in.endDate, function(err) {
                                     if (err) {
                                       // utils.sendErrResponse(res, 400, "cannot create google calendar event");
                                     } else {
