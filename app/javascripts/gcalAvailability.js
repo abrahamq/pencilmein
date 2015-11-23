@@ -1,6 +1,6 @@
 var gcalAvailability = (function() {
   
-  var _gcalAvailability = {}
+  var _gcalAvailability = {};
 
   _gcalAvailability.listUpcomingEvents = function(calendar, oAuth2Client, mtg_startDate, mtg_endDate, cb) {
     calendar.events.list({
@@ -21,9 +21,8 @@ var gcalAvailability = (function() {
   _gcalAvailability.addEventToCalendar = function(calendar, oAuth2Client, invitee_emails, title, location, startDate, endDate, cb) {
     var attendees = [];
     invitee_emails.forEach(function(invitee) {
-      attendees.push({'email': invitee})
-    })
-    console.log(typeof startDate);
+      attendees.push({'email': invitee});
+    });
     var cal_event = {
       'summary': title,
       'location': location,
@@ -41,16 +40,14 @@ var gcalAvailability = (function() {
       'resource' : cal_event,
       auth: oAuth2Client
     }, function(err, response) {
-      console.log('add to cal error : ', err);
-      console.log('add to cal response : ', response);
-      cb(err , response)
+      cb(err , response);
     });
   };
   
 
   var processEvents = function(resp) {
     var events = resp.items;
-    var eventsList = []
+    var eventsList = [];
 
     if (events.length > 0) {
       events.forEach(function(evt) {
@@ -67,7 +64,6 @@ var gcalAvailability = (function() {
         eventsList.push({summary: evt.summary, start: evt_startTime, end: evt_endTime});
       });
     } else {
-      console.log('No events found.');
     }
     return eventsList;
   };
@@ -79,14 +75,14 @@ var gcalAvailability = (function() {
       date.setMinutes(30);
     } 
     else if (minutes > 30) {
-      date.setMinutes(60)
+      date.setMinutes(60);
     }
-    return date
-  }
+    return date;
+  };
 
   Object.freeze(_gcalAvailability);
 
-  return _gcalAvailability
+  return _gcalAvailability;
 
 })();
 module.exports = gcalAvailability;
