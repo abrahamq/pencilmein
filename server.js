@@ -6,6 +6,7 @@ var express = require('express'),
     mongoose = require('mongoose');
 
 var utils = require('./utils/utils.js'); 
+var logger = require('./config/log.js'); 
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.use(function(error, req, res, next){
 // Start web server
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
+  logger.log("Express server listening on port " + app.get('port'));
 });
 
 
