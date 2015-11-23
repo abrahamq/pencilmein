@@ -25,6 +25,7 @@ router.get('/', isLoggedIn, function(req, res) {
       utils.sendErrResponse(res, 400, 'User meetings do not exist');
     }
     else {
+      console.log("At the useroverview page, our access token is ", user.googleAccessToken);
       utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
     }
    });
@@ -66,21 +67,23 @@ router.get('/availability', function(req, res) {
       }]
   }; 
   console.log("Making request with access token ", req.user.googleAccessToken);
-  oAuth2Client.setCredentials({
-    access_token : req.user.googleAccessToken,
-    refresh_token : req.user.googleRefreshToken
-  });
-  var mtg_startDate = (new Date());
-  var mtg_endDate = new Date('2015-12-25T10:00:00-05:00');//TODO: make this reasonable 
-  gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
-    if (events) {
-      var stringEvents = JSON.stringify(events); 
-      var withTitleInsteadOfSubmit = stringEvents.replace(/summary/g, 'title'); 
-      var jsonEvent = JSON.parse(withTitleInsteadOfSubmit); 
-      //
-
-      utils.sendSuccessResponse(res, {events: jsonEvent}); 
-    }
+  User.getUser(req.user.googleEmail, function(err, user)
+  {
+    oAuth2Client.setCredentials({
+      access_token : user.googleAccessToken,
+      refresh_token : user.googleRefreshToken
+    });
+    var mtg_startDate = (new Date());
+    var mtg_endDate = new Date('2015-12-25T10:00:00-05:00');//TODO: make this reasonable 
+    gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
+      if (events) {
+        var stringEvents = JSON.stringify(events); 
+        var withTitleInsteadOfSubmit = stringEvents.replace(/summary/g, 'title'); 
+        var jsonEvent = JSON.parse(withTitleInsteadOfSubmit); 
+        //
+        utils.sendSuccessResponse(res, {events: jsonEvent}); 
+      }
+    });
   });
 });
 
@@ -106,16 +109,19 @@ router.get('/availability/:meetingID', function(req, res) {
 router.post('/availability/submit', function(req, res) {
   var oAuth2Client = new OAuth2();
   var userId = req.user.googleID;
+  var curEmail = req.user.googleEmail;
   var userEvents = req.body.events;
   var meetingId = req.body.meetingId;
 
-  User.find({'googleId': userId}, function(err, user) {
+  User.getUser(curEmail, function(err, user) {
     if (err) {
       utils.sendErrResponse(res, 400, "no user found");
     } else {
+        console.log("About to auth with user " , user);
+        console.log("About to authenticate with credentials " + user.googleAccessToken);
         oAuth2Client.setCredentials({
-          access_token : req.user.googleAccessToken,
-          refresh_token : req.user.googleRefreshToken
+          access_token : user.googleAccessToken,
+          refresh_token : user.googleRefreshToken
         });
         Meeting.findById(meetingId,function(err,meeting){
 
@@ -159,7 +165,8 @@ router.post('/availability/submit', function(req, res) {
                                       utils.sendSuccessResponse(res, {redirect: '/user'}); 
                                     }
                                   });  
-                              });                            
+                              });  
+                              // recordInAndAddEvents(meeting, optimal_in.startDate, optimal_in.endDate);                          
                             });
                           });
                         } else {
@@ -177,5 +184,28 @@ router.post('/availability/submit', function(req, res) {
     }
   });
 });
+/*
+Records the finalized In for a meeting and adds the In to the google calendars of the invited members
+@param Meeting meeting: meeting that the In is being scheduled for
+@param Date inStartDate: start date/time of the finalized in
+@param Date inEndDate: end date/time of the finalized in
+@param calendar 
+@param oAuth2Client
+@param String title
+@param cb will be given arg1) error
+*/
+var recordInAndAddEvents = function(meeting, inStartDate, inEndDate, calendar, oAuth2Client){
+  meeting.recordIn(inStartDate, inEndDate, function(err) {
+    var invitee_emails = meeting.invitedMembers;
+    gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, meeting.title, meeting.location, inStartDate, inEndDate, function(err){
+      if (err) {
+        // utils.sendErrResponse(res, 400, "cannot create google calendar event");
+      } else {
+        utils.sendSuccessResponse(res, {redirect: '/user'}); 
+      }  
+    });
+  });    
+}
+
 
 module.exports = router; 
