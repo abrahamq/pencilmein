@@ -113,7 +113,7 @@ router.post('/availability/submit', function(req, res) {
     } else {
         oAuth2Client.setCredentials({
           access_token : req.user.googleAccessToken,
-          refresh_token : req.user.googleRequestToken
+          refresh_token : req.user.googleRefreshToken
         });
         Meeting.findById(meetingId,function(err,meeting){
 
