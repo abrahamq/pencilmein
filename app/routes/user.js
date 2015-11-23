@@ -4,7 +4,7 @@ var passport = require('passport');
 
 var User = require('../models/User');
 
-var Availability = require('../models/Availability')
+var Availability = require('../models/Availability');
 var Meeting = require('../models/Meeting');
 
 var utils = require('../../utils/utils');
@@ -25,25 +25,31 @@ router.get('/', isLoggedIn, function(req, res) {
     user_orig.populate('meetings', function(err, user) {
     if (err) {
       utils.sendErrResponse(res, 400, 'User meetings do not exist');
+      return;
     }
     else {
       utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
+      return;
     }
    });
  });
 });
 
 
-router.get('/calendar/:meetingId', function(req, res){
+router.get('/calendar/:meetingId', function(req, res, next){
   if (!req.user){
     req.session.redirect_to = '/user/calendar/' + req.params.meetingId; 
     res.redirect('/auth/google'); 
+    res.end(); 
+    return; 
   }
   Meeting.findById(req.params.meetingId, function(err, result){
     if(err){
+      logger.error("Could not find meeting id: " + req.params.meetingId + "error: " + err); 
       //let it 404 
       next();
     }else{
+      logger.info("rendering calendar view page"); 
       utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId, meetingTitle:result.title, _csrf: req.csrfToken()}); 
     }
   }); 
@@ -67,7 +73,6 @@ router.get('/availability', function(req, res) {
         start: '2014-11-09T16:00:00'
       }]
   }; 
-  console.log("Making request with access token ", req.user.googleAccessToken);
   logger.info("Making request with access token ", req.user.googleAccessToken); 
   oAuth2Client.setCredentials({
     access_token : req.user.googleAccessToken,
@@ -83,6 +88,7 @@ router.get('/availability', function(req, res) {
       //
 
       utils.sendSuccessResponse(res, {events: jsonEvent}); 
+      return; 
     }
   });
 });
@@ -94,8 +100,10 @@ router.get('/availability/:meetingID', function(req, res) {
   Availability.findByGoogleIdAndMeetingId(req.user.googleID, req.params.meetingID, function(err, availability) {
     if (err) {
       utils.sendErrResponse(res, 400, 'no availability found');
+      return;
     } else {
       utils.sendSuccessResponse(res, {availability: availability, userName: req.user.fullname});
+      return;
     }
   });
 });
@@ -115,6 +123,7 @@ router.post('/availability/submit', function(req, res) {
   User.find({'googleId': userId}, function(err, user) {
     if (err) {
       utils.sendErrResponse(res, 400, "no user found");
+      return;
     } else {
         oAuth2Client.setCredentials({
           access_token : req.user.googleAccessToken,
@@ -142,7 +151,6 @@ router.post('/availability/submit', function(req, res) {
                   jsonEvent.forEach(function(a){
                     timeRanges.push([new Date(a.start),new Date(a.end)]);
                   });
-                  console.log('in user route time ranges ', timeRanges);
                   availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar',function(e,allIds){
                     availability.save(function(){
                       meeting.recordMemberResponse(userId, function(err, found_meeting) {
@@ -160,6 +168,7 @@ router.post('/availability/submit', function(req, res) {
                                       // utils.sendErrResponse(res, 400, "cannot create google calendar event");
                                     } else {
                                       utils.sendSuccessResponse(res, {redirect: '/user'}); 
+                                      return;
                                     }
                                   });  
                               });                            
@@ -167,6 +176,7 @@ router.post('/availability/submit', function(req, res) {
                           });
                         } else {
                           utils.sendSuccessResponse(res, {redirect: '/user'}); 
+                          return;
                         }
                       });
 

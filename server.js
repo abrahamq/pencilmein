@@ -19,18 +19,21 @@ require('./config/routes')(app);
 
 // 404 handler 
 app.use(function(req, res){
+  logger.info("Got 404 error: on orignal url: " + req.originalUrl + "err:" +error + "req" +req + "res" + res + "next" + next); 
   utils.renderTemplate(res, '404Page');  
+  return;
 }); 
 
 // 500 handler
 app.use(function(error, req, res, next){
-  utils.renderTemplate(res, '404Page');  
+  logger.info("Got 500 error: on route: " + req.originalUrl + "err:" +error.stack + "req" +req + "res" + res + "next" + next); 
+  utils.renderTemplate(res, '404Page');  //are we not supposed to call next? 
+  return;
 }); 
 
 
 // Start web server
 http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
   logger.log("Express server listening on port " + app.get('port'));
 });
 
@@ -45,7 +48,7 @@ var mongoDirectory = '/data/db';
 
 mongoose.connect('mongodb://localhost:27017/pmidb');
 var db = mongoose.connection;
-db.on("error", function(err) {console.log("Mongoose error:", err);});
+db.on("error", function(err) {logger.err("Mongoose error", err);});
 
 
 module.exports = app;
