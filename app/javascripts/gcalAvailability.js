@@ -12,8 +12,13 @@ var gcalAvailability = (function() {
       'orderBy': 'startTime',
       auth: oAuth2Client
     }, function(err, response) {
-      eventsList = processEvents(response);
-      cb(null,eventsList);
+      if (err) {
+        logger.error("Error in listUpcomingEvents " + err); 
+        cb(err); 
+      } else {
+        eventsList = processEvents(response);
+        cb(null,eventsList);
+      } 
     });
   };
   
@@ -39,7 +44,12 @@ var gcalAvailability = (function() {
       'resource' : cal_event,
       auth: oAuth2Client
     }, function(err, response) {
-      cb(err , response);
+      if (err){
+        logger.error("Error in addEventToCalendar " + err); 
+        cb(err); 
+      }else{
+        cb(err , response);
+      }
     });
   };
   
