@@ -67,10 +67,10 @@ router.get('/availability', function(req, res) {
   }; 
   oAuth2Client.setCredentials({
     access_token : req.user.googleAccessToken,
-    refresh_token : req.user.googleRequestToken
+    refresh_token : req.user.googleRefreshToken
   });
-  var mtg_startDate = (new Date()).toISOString();
-  var mtg_endDate = '2015-12-25T10:00:00-05:00';//TODO: make this reasonable 
+  var mtg_startDate = (new Date());
+  var mtg_endDate = new Date('2015-12-25T10:00:00-05:00');//TODO: make this reasonable 
   gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
     if (events) {
       var stringEvents = JSON.stringify(events); 
