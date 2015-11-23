@@ -23,12 +23,11 @@ module.exports = function(passport)
 
 	        clientID        : configAuth.googleAuth.clientID,
 	        clientSecret    : configAuth.googleAuth.clientSecret,
-	        callbackURL     : configAuth.googleAuth.callbackURL,
-
+	        callbackURL     : configAuth.googleAuth.callbackURL
 	    },
 
 	    function(token, refreshToken, profile, done) {
-	  		  //find user with profile.id. if doesn't exist then create new user 
+          //find user with profile.id. if doesn't exist then create new user 
 	  		  // and add to database
           // User.findOne won't fire until we have all our data back from Google
           process.nextTick(function() {

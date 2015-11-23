@@ -26,18 +26,15 @@ router.post('/create', isLoggedIn, function(req, res)
     meetingCreator.createMeeting(title, location, duration, earliestStartTime, latestEndTime, invitees, 
       function(meetingId)
       {
-        //update session 
-        req.login(meetingCreator, function(err)
+      //update session 
+        req.session.save(function()
         {
-          req.session.save(function()
+          //save meeting creator 
+          meetingCreator.save(function()
           {
-            //save meeting creator 
-            meetingCreator.save(function()
-            {
-                utils.sendSuccessResponse(res, {redirect : 'user/calendar/' + meetingId});
-            });
+              utils.sendSuccessResponse(res, {redirect : '/user'});
           });
-       });
+        });
       });
   });
 });
