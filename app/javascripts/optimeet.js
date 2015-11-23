@@ -25,10 +25,12 @@ var optimeet = (function() {
 
   var findAllTimeIndex = function(availabilities, mtg_startDate, mtg_duration, allow_squeeze) {
     var num_slots = availabilities[0].length;
-    var time_blocks = Array.apply(null, new Array(num_slots)).map(Number.prototype.valueOf,1);
+    console.log('availabilities ', availabilities);
+    var time_blocks = [];
     var if_need_be = [];
     
     for (i = 0; i < num_slots; i++) {
+      time_blocks.push(1);
       if_need_be.push({index: i, count: 0});
     }
     availabilities.forEach(function(user_avail) {
@@ -44,21 +46,13 @@ var optimeet = (function() {
           if_need_be[i].count = Infinity;
         }
       }
+      console.log('timeblocks : ', time_blocks);
     })
 
     var all_available = find_in(time_blocks, mtg_duration);
     if (all_available.length > 0) {
       return all_available;
     }
-    else if (allow_squeeze){
-      var sorted_if_need_be = find_squeeze(if_need_be);
-      if (sorted_if_need_be[0].count > 0) {
-        var slots =  sorted_if_need_be.map(function(slots) {
-          slots.startIndex;
-        });
-        return slots;
-      }
-    } 
     else {
       return [];
     }

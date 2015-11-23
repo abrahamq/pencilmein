@@ -54,12 +54,12 @@ var gcalAvailability = (function() {
         if (!evt_startTime) {
           evt_startTime = evt.start.date;
         }
-        evt_startTime = roundDate(evt_startTime);
+        evt_startTime = roundStartDate(evt_startTime);
         var evt_endTime = evt.end.dateTime;
         if (!evt_endTime) {
           evt_endTime = evt.end.date;
         }
-        evt_endTime = roundDate(evt_endTime);
+        evt_endTime = roundEndDate(evt_endTime);
         eventsList.push({summary: evt.summary, start: evt_startTime, end: evt_endTime});
       });
     } else {
@@ -67,10 +67,23 @@ var gcalAvailability = (function() {
     return eventsList;
   };
 
-  var roundDate = function(datestring){
+  var roundStartDate = function(datestring){
     var date = new Date(datestring);
-    minutes = date.getMinutes();
+    var minutes = date.getMinutes();
     if (minutes < 30) {
+      date.setMinutes(0);
+    } 
+    else if (minutes > 30) {
+      date.setMinutes(30);
+    }
+    return date;
+  };
+
+  var roundEndDate = function(datestring){
+    var date = new Date(datestring);
+    var minutes = date.getMinutes();
+
+    if ((0 < minutes) &&(minutes < 30)) {
       date.setMinutes(30);
     } 
     else if (minutes > 30) {
