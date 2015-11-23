@@ -5,7 +5,10 @@ var express = require('express'),
     http = require('http');
     mongoose = require('mongoose');
 
+var utils = require('./utils/utils.js'); 
+
 var app = express();
+
 
 // Configure app bootup
 require('./config/bootup')(app);
@@ -13,10 +16,22 @@ require('./config/bootup')(app);
 // Configure routes
 require('./config/routes')(app);
 
+// 404 handler 
+app.use(function(req, res){
+  utils.renderTemplate(res, '404Page');  
+}); 
+
+// 500 handler
+app.use(function(error, req, res, next){
+  utils.renderTemplate(res, '404Page');  
+}); 
+
+
 // Start web server
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
+
 
 /*
 Start database server

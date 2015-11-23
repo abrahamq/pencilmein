@@ -106,6 +106,7 @@ $(document).ready(function()
                     callback: {
                             message: 'Duration must be positive, a multiple of 30 minutes, and no greater than your supplied time range',
                             callback: function (value, validator, $field) {
+                                if (isNaN(value)) { return false; }
                                 var dur = parseInt(value);
                                 var startDate = new Date($('#startTime').val());
                                 var endDate = new Date($('#endTime').val());

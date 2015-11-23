@@ -23,7 +23,8 @@ router.post('/create', isLoggedIn, function(req, res)
 
   //create meeting 
   User.getUser(req.user.googleEmail, function(err, meetingCreator) {
-    meetingCreator.createMeeting(title, location, duration, earliestStartTime, latestEndTime, 
+    console.log('in meeting route invitees : ', invitees);
+    meetingCreator.createMeeting(title, location, duration, earliestStartTime, latestEndTime, invitees, 
       function(meetingId)
       {
         //update session 
