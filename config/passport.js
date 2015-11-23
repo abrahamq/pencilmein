@@ -32,7 +32,7 @@ module.exports = function(passport)
           // User.findOne won't fire until we have all our data back from Google
           process.nextTick(function() {
               // try to find the user based on their google id
-              User.findOne({ 'google.id' : profile.id }, function(err, user) {
+              User.findOne({ 'googleID' : profile.id }, function(err, user) {
                   if (err)
                       return done(err);
 
