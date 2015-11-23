@@ -139,6 +139,7 @@ router.post('/availability/submit', function(req, res) {
                   jsonEvent.forEach(function(a){
                     timeRanges.push([new Date(a.start),new Date(a.end)]);
                   });
+                  console.log('in user route time ranges ', timeRanges);
                   availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar',function(e,allIds){
                     availability.save(function(){
                       meeting.recordMemberResponse(userId, function(err, found_meeting) {
@@ -146,7 +147,8 @@ router.post('/availability/submit', function(req, res) {
                         if (found_meeting.isClosed()){
                           Availability.findByMeetingId(meetingId, function(err, availabilities) {
                             Availability.getTimeBlocksListsForAvailabilities(availabilities, function(err, blocksLists) {
-                              var optimal_in = optimeet.getIn(availabilities, mtg_startDate, duration);
+
+                              var optimal_in = optimeet.getIn(blocksLists, mtg_startDate, duration);
                               meeting.recordIn(optimal_in.startDate, optimal_in.endDate, function(err) {
                                 // meeting.getInviteeEmailList(function(err, invitee_emails) {
                                   var invitee_emails = meeting.invitedMembers;

@@ -92,7 +92,7 @@ AvailabilitySchema.methods =
   */
   setBlockAtTimeColorAndCreationType: function(time,newColor,newCreationType,cb){
     if (time - this.startDate < 0 || time - this.endDate > 0){ //if the time is outside the availibility
-      cb({msg: "time is outside of availability range"});
+      return cb({msg: "time is outside of availability range"});
     }
     var blockId = this.getIdForBlockAtTime(time);
     TimeBlock.setTimeBlockColorAndCreationType(blockId,newColor,newCreationType,cb);
