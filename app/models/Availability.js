@@ -106,7 +106,6 @@ AvailabilitySchema.methods =
   @param cb will be given args 1) error and 2) list of time block ids for availability
   */
   setBlocksInTimeRangeColorAndCreationType: function(startDate, endDate, newColor, newCreationType, cb){
-    // console.log("start date: ",startDate," end date: ",endDate);
     if (startDate>=endDate){
       return cb(null,this.timeBlocks);
     }
@@ -127,7 +126,6 @@ AvailabilitySchema.methods =
   */
   },
   setBlocksInTimeRangesColorAndCreationType: function(timeRanges, newColor, newCreationType, cb){
-    // console.log("start date: ",startDate," end date: ",endDate);
     if (timeRanges.length==0){
       return cb(null,this.timeBlocks);
     }

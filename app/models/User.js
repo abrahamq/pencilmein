@@ -38,10 +38,7 @@ UserSchema.methods =
   {
     var userObj = this;
     var newMeeting = new Meeting();
-    console.log('in user object user email ', this.googleEmail);
-    console.log('invited memebrs arg ', invitedMembers);
     var invitedMembersAndCreator = invitedMembers.concat([this.googleEmail]);
-    console.log('in user object invited members ', invitedMembersAndCreator );
     newMeeting.creator = this.user
     newMeeting.title = title; 
     newMeeting.location = location;
@@ -52,7 +49,6 @@ UserSchema.methods =
     newMeeting.invitedMembers = invitedMembersAndCreator;
 
     this.meetings.push(newMeeting._id);
-    console.log('New meetings id is ', newMeeting._id);
     newMeeting.save(function()
       {
         cb(newMeeting._id)

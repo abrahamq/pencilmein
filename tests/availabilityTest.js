@@ -170,8 +170,6 @@ describe('check block id lookup based on time', function() {
       it('should find correct id', function(done) {
         av.save(function(){
           av.initializeTimeBlocks(start,end,function(error,foundBlockList){
-            // console.log("time is ",time, " start is ",start);
-            // console.log(foundBlockList);
             assert.equal(error,null);
             assert.equal(foundBlockList.length,3);
             var firstId = foundBlockList[0];
@@ -287,8 +285,6 @@ describe('Editing SINGLE RANGE of time blocks', function() {
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
               av.getTimeBlocks(function(e,allBlocks){
-                // console.log(foundBlockList);
-                // console.log(allBlocks);
                 assert.equal(e,null);
                 assert.equal(allBlocks.length,3);
                 assert.equal(allBlocks[0].color,'yellow');
@@ -316,7 +312,6 @@ describe('Editing SINGLE RANGE of time blocks', function() {
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
               av.getTimeBlocks(function(e,allBlocks){
-                //console.log(allBlocks);
                 assert.equal(e,null);
                 assert.equal(allBlocks.length,48);
                 assert.equal(allBlocks[0].color,'green');
@@ -348,7 +343,6 @@ describe('Editing MULTIPLE RANGES of time blocks', function() {
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd]], 'yellow','manual',function(err,allIds){
               av.getTimeBlocks(function(e,allBlocks){
-                // console.log(foundBlockList);
                 assert.equal(e,null);
                 assert.equal(allBlocks.length,3);
                 assert.equal(allBlocks[0].color,'green');
@@ -378,8 +372,6 @@ describe('Editing MULTIPLE RANGES of time blocks', function() {
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
             av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'yellow','manual',function(err,allIds){
               av.getTimeBlocks(function(e,allBlocks){
-                // console.log(foundBlockList);
-                //console.log(allBlocks);
                 assert.equal(e,null);
                 assert.equal(allBlocks.length,48);
                 assert.equal(allBlocks[0].color,'green'); //4-4.30
