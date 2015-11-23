@@ -17,6 +17,8 @@ var OAuth2 = google.auth.OAuth2;
 var calendar = google.calendar('v3');
 
 var isLoggedIn = require('./authMiddleware');
+var logger = require('../../config/log'); 
+
 
 router.get('/', isLoggedIn, function(req, res) {
   User.getUser(req.user.googleEmail, function(err, user_orig) {
@@ -66,6 +68,7 @@ router.get('/availability', function(req, res) {
       }]
   }; 
   console.log("Making request with access token ", req.user.googleAccessToken);
+  logger.info("Making request with access token ", req.user.googleAccessToken); 
   oAuth2Client.setCredentials({
     access_token : req.user.googleAccessToken,
     refresh_token : req.user.googleRefreshToken

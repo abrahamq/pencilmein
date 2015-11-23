@@ -2,6 +2,7 @@
 var passport = require('passport');
 var configAuth = require('./auth');
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
+var logger = require('./log.js'); 
 
 var User = require('../app/models/User.js');
 
@@ -31,6 +32,7 @@ module.exports = function(passport)
 	  		  // and add to database
           // User.findOne won't fire until we have all our data back from Google
           process.nextTick(function() {
+            logger.info("Authenthicating new profile: " + profile + "token: " + token); 
               // try to find the user based on their google id
               User.findOne({ 'googleID' : profile.id }, function(err, user) {
                   if (err)
