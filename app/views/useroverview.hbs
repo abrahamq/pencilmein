@@ -12,11 +12,9 @@
 {{#if meetings.length}}
 <ul class="list-group" class="dropdown-header">
   {{#each meetings}}
-    <li class="list-group-item">{{this.title}} in {{this.location}}</li>
+    <li class="list-group-item"><a href='/user/calendar/{{this.id}}' id={{this._id}} >{{this.title}} in {{this.location}}</a></li>
   {{/each}}
 </ul>
 {{else}}
   <p>You have no meetings. </p>
 {{/if}}
-
-
