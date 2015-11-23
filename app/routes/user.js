@@ -14,7 +14,6 @@ var optimeet = require('../javascripts/optimeet');
 var auth = require('../../config/auth');
 var google = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
-var oAuth2Client = new OAuth2();
 var calendar = google.calendar('v3');
 
 var isLoggedIn = require('./authMiddleware');
@@ -50,6 +49,7 @@ router.get('/calendar/:meetingId', function(req, res){
 
 //Gives you all events in user's google calendar 
 router.get('/availability', function(req, res) {
+  var oAuth2Client = new OAuth2();
   var test = { "events": [ {
         title: 'All Day Event',
         start: '2014-11-01'
@@ -65,6 +65,7 @@ router.get('/availability', function(req, res) {
         start: '2014-11-09T16:00:00'
       }]
   }; 
+  console.log("Making request with access token ", req.user.googleAccessToken);
   oAuth2Client.setCredentials({
     access_token : req.user.googleAccessToken,
     refresh_token : req.user.googleRefreshToken
@@ -103,6 +104,7 @@ router.get('/availability/:meetingID', function(req, res) {
     - events [startDate, endDate]
 */
 router.post('/availability/submit', function(req, res) {
+  var oAuth2Client = new OAuth2();
   var userId = req.user.googleID;
   var userEvents = req.body.events;
   var meetingId = req.body.meetingId;
