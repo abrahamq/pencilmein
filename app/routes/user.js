@@ -171,6 +171,13 @@ router.post('/availability/submit', function(req, res) {
                   jsonEvent.forEach(function(a){
                     timeRanges.push([new Date(a.start),new Date(a.end)]);
                   });
+                  var lastRange = timeRanges[timeRanges.length - 1];
+                  if (lastRange[1] > mtg_endDate){ //
+                    lastRange[1] = new Date( mtg_endDate );
+                  }
+                  console.log("Overall meeting start:", mtg_startDate); 
+                  console.log("Overall meeting end:", mtg_endDate); 
+                  console.log("Overall timeRanges:", timeRanges); 
                   availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar',function(e,allIds){
                     availability.save(function(){
                       meeting.recordMemberResponse(userId, function(err, found_meeting) {

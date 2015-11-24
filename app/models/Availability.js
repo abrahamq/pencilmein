@@ -80,6 +80,13 @@ AvailabilitySchema.methods =
       return "time outside of range";
     }
     var blockNum = Math.floor((time-this.startDate)/1800000);
+
+    console.log(this.timeBlocks.length); //48
+    console.log("blockNum " + blockNum); //48
+    console.log("time " + time);
+    console.log("start date " + this.startDate);
+    console.log("end date " + this.endDate);
+    
     return  this.timeBlocks[blockNum];
   },
   /*
@@ -106,7 +113,9 @@ AvailabilitySchema.methods =
   @param cb will be given args 1) error and 2) list of time block ids for availability
   */
   setBlocksInTimeRangeColorAndCreationType: function(startDate, endDate, newColor, newCreationType, cb){
+    console.log("setBlocksInTim... startDate: " + startDate + " end: " + endDate); 
     if (startDate>=endDate){
+      console.log("is returning" ); 
       return cb(null,this.timeBlocks);
     }
     var availability = this; 
@@ -126,6 +135,7 @@ AvailabilitySchema.methods =
   */
   },
   setBlocksInTimeRangesColorAndCreationType: function(timeRanges, newColor, newCreationType, cb){
+    console.log("timeRanges: " , timeRanges); 
     if (timeRanges.length==0){
       return cb(null,this.timeBlocks);
     }
