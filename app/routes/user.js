@@ -79,9 +79,7 @@ router.get('/availability', function(req, res) {
   {
     refresh.requestNewAccessToken('google', user.googleRefreshToken, function(err, accessToken, refreshToken) {
       logger.info("Acquiring new access token " , accessToken); 
-      console.log("Old access token is ", user.googleAccessToken);
       user.googleAccessToken = accessToken;
-      console.log("New access token is ", accessToken);
       oAuth2Client.setCredentials({
         access_token : user.googleAccessToken,
         refresh_token : user.googleRefreshToken

@@ -27,8 +27,6 @@ router.get('/auth/google/callback',
            {
             User.getUser(req.user.googleEmail, function(err, user)
             {
-              console.log("Directly after auth, access token on session is ", req.user.googleAccessToken);
-              console.log("Directly after auth, access token on user object is ", user.googleAccessToken);
               if (req.session.redirect_to){
                 res.redirect(req.session.redirect_to);
               }
