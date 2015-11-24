@@ -25,7 +25,6 @@ router.get('/', isLoggedIn, function(req, res) {
       utils.sendErrResponse(res, 400, 'User meetings do not exist');
     }
     else {
-      console.log("At the useroverview page, our access token is ", user.googleAccessToken);
       utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
     }
    });
@@ -66,7 +65,6 @@ router.get('/availability', function(req, res) {
         start: '2014-11-09T16:00:00'
       }]
   }; 
-  console.log("Making request with access token ", req.user.googleAccessToken);
   User.getUser(req.user.googleEmail, function(err, user)
   {
     oAuth2Client.setCredentials({
@@ -117,8 +115,6 @@ router.post('/availability/submit', function(req, res) {
     if (err) {
       utils.sendErrResponse(res, 400, "no user found");
     } else {
-        console.log("About to auth with user " , user);
-        console.log("About to authenticate with credentials " + user.googleAccessToken);
         oAuth2Client.setCredentials({
           access_token : user.googleAccessToken,
           refresh_token : user.googleRefreshToken
@@ -145,7 +141,6 @@ router.post('/availability/submit', function(req, res) {
                   jsonEvent.forEach(function(a){
                     timeRanges.push([new Date(a.start),new Date(a.end)]);
                   });
-                  console.log('in user route time ranges ', timeRanges);
                   availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar',function(e,allIds){
                     availability.save(function(){
                       meeting.recordMemberResponse(userId, function(err, found_meeting) {
