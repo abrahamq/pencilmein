@@ -24,12 +24,12 @@ app.use(function(req, res){
   return;
 }); 
 
-// 500 handler
-app.use(function(error, req, res, next){
-  logger.info("Got 500 error: on route: " + req.originalUrl + "err:" +error.stack + "req" +req + "res" + res + "next" + next); 
-  utils.renderTemplate(res, '404Page');  //are we not supposed to call next? 
-  return;
-}); 
+//// 500 handler
+//app.use(function(error, req, res, next){
+//  logger.info("Got 500 error: on route: " + req.originalUrl + "err:" +error.stack + "req" +req + "res" + res + "next" + next); 
+//  utils.renderTemplate(res, '404Page');  //are we not supposed to call next? 
+//  return;
+//}); 
 
 
 // Start web server
