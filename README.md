@@ -1,4 +1,4 @@
-#PencilMeIn
+#PencilMeIn (Email  us for any clarifications)
 
 * First do: 
     ```

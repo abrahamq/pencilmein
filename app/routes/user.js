@@ -20,8 +20,8 @@ var refresh = require('passport-oauth2-refresh');
 var isLoggedIn = require('./authMiddleware');
 var logger = require('../../config/log'); 
 
-
 router.get('/', isLoggedIn, function(req, res) {
+  //Get the user from the current session and look up user object 
   User.getUser(req.user.googleEmail, function(err, user_orig) {
     user_orig.populate('meetings', function(err, user) {
     if (err) {
@@ -29,6 +29,7 @@ router.get('/', isLoggedIn, function(req, res) {
       return;
     }
     else {
+      //Render user overview page 
       console.log("At the useroverview page, our access token is ", user.googleAccessToken);
       utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
       return;
@@ -37,14 +38,16 @@ router.get('/', isLoggedIn, function(req, res) {
  });
 });
 
-
+//Load the calendar view for a particular meeting
 router.get('/calendar/:meetingId', function(req, res, next){
+  //Since unauthorized user's will be entering the application through this point, authenticate
   if (!req.user){
     req.session.redirect_to = '/user/calendar/' + req.params.meetingId; 
     res.redirect('/auth/google'); 
     res.end(); 
     return; 
   }
+  //Look up meeting object and render calendar on front end 
   Meeting.findById(req.params.meetingId, function(err, result){
     if(err){
       logger.error("Could not find meeting id: " + req.params.meetingId + "error: " + err); 
@@ -77,6 +80,7 @@ router.get('/availability', function(req, res) {
   }; 
   User.getUser(req.user.googleEmail, function(err, user)
   {
+    //Get a new access token from passport 
     refresh.requestNewAccessToken('google', user.googleRefreshToken, function(err, accessToken, refreshToken) {
       logger.info("Acquiring new access token " , accessToken); 
       user.googleAccessToken = accessToken;
@@ -86,6 +90,8 @@ router.get('/availability', function(req, res) {
       });
       var mtg_startDate = (new Date());
       var mtg_endDate = new Date('2015-12-25T10:00:00-05:00');//TODO: make this reasonable 
+      
+      //List the upcoming events from the given time interval {mtg_StartDate} to {mtg_endDate}
       gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
         if (events) {
           var stringEvents = JSON.stringify(events); 
@@ -206,6 +212,7 @@ router.post('/availability/submit', function(req, res) {
     }
   });
 });
+
 /*
 Records the finalized In for a meeting and adds the In to the google calendars of the invited members
 @param Meeting meeting: meeting that the In is being scheduled for
