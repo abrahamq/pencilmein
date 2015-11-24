@@ -31,7 +31,6 @@ module.exports = function(passport)
           //find user with profile.id. if doesn't exist then create new user 
 	  		  // and add to database
           // User.findOne won't fire until we have all our data back from Google
-          console.log("Initially assigned access token " + token);
           process.nextTick(function() {
             logger.info("Authenthicating new profile: " + profile + "token: " + token); 
               // try to find the user based on their google id
