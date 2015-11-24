@@ -1,3 +1,4 @@
+var logger = require('../../config/log.js'); 
 var gcalAvailability = (function() {
   
   var _gcalAvailability = {};
