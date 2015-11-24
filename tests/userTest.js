@@ -52,7 +52,7 @@ describe('Meeting tests', function() {
       });
     });
   });
-    describe('making a meeting and testing responding', function() {
+  describe('making a meeting and testing responding', function() {
     //setup database state 
     var user = new User();
     user.googleId = "12345";
@@ -96,7 +96,7 @@ describe('Meeting tests', function() {
         });
       });
     });
-    it('testing 2 separate responses', function(done) {
+    it('testing 2 separate responses, both should be recorded', function(done) {
       user.save(function(err,savedUser){
         user2.save(function(err,newUser2){
           user.createMeeting("newMeeting","stud",30,earliestStartDate,latestEndDate,[user2.googleEmail],function(mtgId){
@@ -108,6 +108,32 @@ describe('Meeting tests', function() {
                   done();
                 });
               });
+            });
+          });
+        });
+      });
+    });
+  });
+  describe('making a meeting and testing responding', function() {
+    //setup database state 
+    var user = new User();
+    user.googleId = "12345";
+    user.googleEmail = "person@gmail.com";
+    user.fullname = "John Person";
+    var earliestStartDate = new Date(2015,10,3,4,00);
+    var latestEndDate= new Date(2015,10,3,5,30);
+    var user2 = new User();
+    user2.googleId = "69";
+    user2.googleEmail = "user2@gmail.com";
+    user2.fullName = "user 2";
+    it('testing 2 separate responses, both should be recorded', function(done) {
+      user.save(function(err,savedUser){
+        user2.save(function(err,newUser2){
+          user.createMeeting("newMeeting","stud",30,earliestStartDate,latestEndDate,[user2.googleEmail],function(mtgId){
+            Meeting.findById(mtgId,function(err,meeting){
+              meeting.invitedMembers[0]=="user2@gmail.com";
+              meeting.invitedMembers[1]=="person@gmail.com";
+              done();
             });
           });
         });
