@@ -42,8 +42,10 @@ MeetingSchema.methods=
     @param {cb} callback upon completion 
 	*/
 	recordMemberResponse: function(googleID, cb){
-		this.respondedMembers.push(googleID);
-    this.save(cb);
+		if (this.respondedMembers.indexOf(googleID)==-1){
+			this.respondedMembers.push(googleID);
+		}
+		this.save(cb);
 	},
 
 	/*
@@ -62,7 +64,7 @@ MeetingSchema.methods=
   	var invitedMembers = this.invitedMembers;
   	User.find({'_id' : { $in: invitedMembers}}, 'googleEmail', function(err,email) {
   		cb(err, email);
-  	})
+  	});
   },
 
   /*

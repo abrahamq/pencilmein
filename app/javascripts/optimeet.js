@@ -25,7 +25,6 @@ var optimeet = (function() {
 
   var findAllTimeIndex = function(availabilities, mtg_startDate, mtg_duration, allow_squeeze) {
     var num_slots = availabilities[0].length;
-    console.log('availabilities ', availabilities);
     var time_blocks = [];
     var if_need_be = [];
     
@@ -46,7 +45,6 @@ var optimeet = (function() {
           if_need_be[i].count = Infinity;
         }
       }
-      console.log('timeblocks : ', time_blocks);
     })
 
     var all_available = find_in(time_blocks, mtg_duration);
