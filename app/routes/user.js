@@ -156,7 +156,6 @@ router.post('/availability/submit', function(req, res) {
 
                               var optimal_in = optimeet.getIn(blocksLists, mtg_startDate, duration);
                               meeting.recordIn(optimal_in.startDate, optimal_in.endDate, function(err) {
-                                consle.log("in start: ",optimal_in.startDate," in end: ",optimeal_in.endDate);
                                 // meeting.getInviteeEmailList(function(err, invitee_emails) {
                                   var invitee_emails = meeting.invitedMembers;
                                   gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, title, location, optimal_in.startDate, optimal_in.endDate, function(err) {
