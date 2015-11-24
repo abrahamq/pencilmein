@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Meeting = require('./Meeting.js')
+var logger = require('../../config/log.js');
 
 var UserSchema = mongoose.Schema
 ({
@@ -39,7 +40,7 @@ UserSchema.methods =
     var userObj = this;
     var newMeeting = new Meeting();
     var invitedMembersAndCreator = invitedMembers.concat([this.googleEmail]);
-    newMeeting.creator = this.user
+    newMeeting.creator = this.user;
     newMeeting.title = title; 
     newMeeting.location = location;
     newMeeting.duration = duration;
@@ -49,8 +50,12 @@ UserSchema.methods =
     newMeeting.invitedMembers = invitedMembersAndCreator;
 
     this.meetings.push(newMeeting._id);
-    newMeeting.save(function()
+    newMeeting.save(function(err)
       {
+        if (err)
+        {
+          logger.info('Error saving new meeting ' + err);
+        }
         cb(newMeeting._id)
       });
   },

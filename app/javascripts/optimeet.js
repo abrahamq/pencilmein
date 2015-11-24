@@ -1,6 +1,6 @@
 var optimeet = (function() {
 
-  var _optimeet = {}
+  var _optimeet = {};
 
   var NUM_MILISECONDS_IN_MINUTE = 60000;
   var TIME_BLOCK_MINUTE_DURATION = 30;
@@ -12,20 +12,19 @@ var optimeet = (function() {
     var in_startDate = block_num_to_time(in_index, mtg_startDate);
     var duration_block = duration_to_blocks(duration);
     var in_endDate = get_end_time(in_startDate, duration);
-    return {startDate : in_startDate, endDate : in_endDate}
-  }
+    return {startDate : in_startDate, endDate : in_endDate}; 
+  };
 
   var validate_duration = function(duration) {
     return Math.ceil(duration/30) * 30;
-  }
+  };
 
   var findBestIn = function(index_list) {
     return index_list[0];
-  }
+  };
 
   var findAllTimeIndex = function(availabilities, mtg_startDate, mtg_duration, allow_squeeze) {
     var num_slots = availabilities[0].length;
-    console.log('availabilities ', availabilities);
     var time_blocks = [];
     var if_need_be = [];
     
@@ -46,8 +45,7 @@ var optimeet = (function() {
           if_need_be[i].count = Infinity;
         }
       }
-      console.log('timeblocks : ', time_blocks);
-    })
+    });
 
     var all_available = find_in(time_blocks, mtg_duration);
     if (all_available.length > 0) {
@@ -56,7 +54,7 @@ var optimeet = (function() {
     else {
       return [];
     }
-  }
+  };
 
 
   var find_in = function(blocks, duration) {
@@ -76,15 +74,15 @@ var optimeet = (function() {
       }
     }
     return possible_in;
-  }
+  };
 
   var check_window = function(current_window) {
-    if (current_window.reduce(function(a,b){return a+b}) == current_window.length) {
+    if (current_window.reduce(function(a,b){return a+b;}) == current_window.length) {
       return true;
     } else {
       return false;
     }
-  }
+  };
 
   var find_squeeze = function(blocks, duration) {
     var window_size = duration_to_blocks(duration);
@@ -101,16 +99,16 @@ var optimeet = (function() {
       possible_squeeze.push({startIndex: window_start, cost: squeeze_heuristic(current_window)});
     }
     var sorted_possible_squeeze = sort_squeeze(possible_squeeze);
-    var squeeze_index = sorted_possible_squeeze.map(function(squeeze) {return squeeze.startIndex})
-    return sorted_possible_squeeze
-  }
+    var squeeze_index = sorted_possible_squeeze.map(function(squeeze) {return squeeze.startIndex;});
+    return sorted_possible_squeeze;
+  };
 
   var sort_squeeze = function(squeeze_list) {
     var sorted_squeeze_list = squeeze_list.sort(function(window1, window2) {
       return window1.cost - window2.cost;
-    })
+    });
     return sorted_squeeze_list;
-  }
+  };
 
   var squeeze_heuristic = function(squeeze_blocks) {
     var heuristic = 0;
@@ -118,26 +116,26 @@ var optimeet = (function() {
       heuristic += block.count;
     });
     return heuristic;
-  }
+  };
  
   var duration_to_blocks = function(duration) {
     return Math.ceil(duration/TIME_BLOCK_MINUTE_DURATION);
-  }
+  };
 
   var get_end_time = function(startDate, mtg_duration) {
     var duration_blocks = duration_to_blocks(mtg_duration);
     return new Date(startDate.getTime() + duration_blocks*NUM_MILISECONDS_IN_MINUTE*TIME_BLOCK_MINUTE_DURATION);
-  }
+  };
 
   var time_to_block_index = function(start_time, time) {
     var time_diff = time.getTime() - start_time.getTime();
     var minutes = time_diff/NUM_MILISECONDS_IN_MINUTE;
     return Math.ceil(minutes/TIME_BLOCK_MINUTE_DURATION);
-  }
+  };
 
   var block_num_to_time = function(block_num, startDate) {
     return new Date(startDate.getTime() + block_num*NUM_MILISECONDS_IN_MINUTE*TIME_BLOCK_MINUTE_DURATION);
-  }
+  };
 
 
   Object.freeze(_optimeet);

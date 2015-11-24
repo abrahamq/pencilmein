@@ -28,6 +28,7 @@
     "passport-google-oauth2": "^0.1.6",
     "path": "^0.12.7",
     "serve-favicon": "^2.3.0",
-    "sshpk": "^1.6.2"
+    "sshpk": "^1.6.2",
+    "winston": "^2.1.1"
   }
 }

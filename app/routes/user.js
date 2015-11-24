@@ -4,7 +4,7 @@ var passport = require('passport');
 
 var User = require('../models/User');
 
-var Availability = require('../models/Availability')
+var Availability = require('../models/Availability');
 var Meeting = require('../models/Meeting');
 
 var utils = require('../../utils/utils');
@@ -17,32 +17,40 @@ var OAuth2 = google.auth.OAuth2;
 var calendar = google.calendar('v3');
 
 var isLoggedIn = require('./authMiddleware');
+var logger = require('../../config/log'); 
+
 
 router.get('/', isLoggedIn, function(req, res) {
   User.getUser(req.user.googleEmail, function(err, user_orig) {
     user_orig.populate('meetings', function(err, user) {
     if (err) {
       utils.sendErrResponse(res, 400, 'User meetings do not exist');
+      return;
     }
     else {
       console.log("At the useroverview page, our access token is ", user.googleAccessToken);
       utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
+      return;
     }
    });
  });
 });
 
 
-router.get('/calendar/:meetingId', function(req, res){
+router.get('/calendar/:meetingId', function(req, res, next){
   if (!req.user){
     req.session.redirect_to = '/user/calendar/' + req.params.meetingId; 
     res.redirect('/auth/google'); 
+    res.end(); 
+    return; 
   }
   Meeting.findById(req.params.meetingId, function(err, result){
     if(err){
+      logger.error("Could not find meeting id: " + req.params.meetingId + "error: " + err); 
       //let it 404 
       next();
     }else{
+      logger.info("rendering calendar view page"); 
       utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId, meetingTitle:result.title, _csrf: req.csrfToken()}); 
     }
   }); 
@@ -66,9 +74,9 @@ router.get('/availability', function(req, res) {
         start: '2014-11-09T16:00:00'
       }]
   }; 
-  console.log("Making request with access token ", req.user.googleAccessToken);
   User.getUser(req.user.googleEmail, function(err, user)
   {
+    logger.info("Making request with access token ", req.user.googleAccessToken); 
     oAuth2Client.setCredentials({
       access_token : user.googleAccessToken,
       refresh_token : user.googleRefreshToken
@@ -82,6 +90,7 @@ router.get('/availability', function(req, res) {
         var jsonEvent = JSON.parse(withTitleInsteadOfSubmit); 
         //
         utils.sendSuccessResponse(res, {events: jsonEvent}); 
+        return; 
       }
     });
   });
@@ -94,8 +103,10 @@ router.get('/availability/:meetingID', function(req, res) {
   Availability.findByGoogleIdAndMeetingId(req.user.googleID, req.params.meetingID, function(err, availability) {
     if (err) {
       utils.sendErrResponse(res, 400, 'no availability found');
+      return;
     } else {
       utils.sendSuccessResponse(res, {availability: availability, userName: req.user.fullname});
+      return;
     }
   });
 });
@@ -116,6 +127,7 @@ router.post('/availability/submit', function(req, res) {
   User.getUser(curEmail, function(err, user) {
     if (err) {
       utils.sendErrResponse(res, 400, "no user found");
+      return;
     } else {
         console.log("About to auth with user " , user);
         console.log("About to authenticate with credentials " + user.googleAccessToken);
@@ -145,7 +157,6 @@ router.post('/availability/submit', function(req, res) {
                   jsonEvent.forEach(function(a){
                     timeRanges.push([new Date(a.start),new Date(a.end)]);
                   });
-                  console.log('in user route time ranges ', timeRanges);
                   availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar',function(e,allIds){
                     availability.save(function(){
                       meeting.recordMemberResponse(userId, function(err, found_meeting) {
@@ -156,7 +167,7 @@ router.post('/availability/submit', function(req, res) {
 
                               var optimal_in = optimeet.getIn(blocksLists, mtg_startDate, duration);
                               meeting.recordIn(optimal_in.startDate, optimal_in.endDate, function(err) {
-                                consle.log("in start: ",optimal_in.startDate," in end: ",optimeal_in.endDate);
+                                // console.log("in start: ",optimal_in.startDate," in end: ",optimal_in.endDate);
                                 // meeting.getInviteeEmailList(function(err, invitee_emails) {
                                   var invitee_emails = meeting.invitedMembers;
                                   gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, title, location, optimal_in.startDate, optimal_in.endDate, function(err) {
@@ -164,6 +175,7 @@ router.post('/availability/submit', function(req, res) {
                                       // utils.sendErrResponse(res, 400, "cannot create google calendar event");
                                     } else {
                                       utils.sendSuccessResponse(res, {redirect: '/user'}); 
+                                      return;
                                     }
                                   });  
                               });  
@@ -172,6 +184,7 @@ router.post('/availability/submit', function(req, res) {
                           });
                         } else {
                           utils.sendSuccessResponse(res, {redirect: '/user'}); 
+                          return;
                         }
                       });
 
