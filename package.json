@@ -26,6 +26,7 @@
     "morgan": "^1.2.3",
     "passport": "^0.3.2",
     "passport-google-oauth2": "^0.1.6",
+    "passport-oauth2-refresh": "^0.4.0",
     "path": "^0.12.7",
     "serve-favicon": "^2.3.0",
     "sshpk": "^1.6.2",

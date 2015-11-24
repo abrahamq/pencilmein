@@ -15,6 +15,7 @@ var auth = require('../../config/auth');
 var google = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
 var calendar = google.calendar('v3');
+var refresh = require('passport-oauth2-refresh');
 
 var isLoggedIn = require('./authMiddleware');
 var logger = require('../../config/log'); 
@@ -76,22 +77,31 @@ router.get('/availability', function(req, res) {
   }; 
   User.getUser(req.user.googleEmail, function(err, user)
   {
-    logger.info("Making request with access token ", req.user.googleAccessToken); 
-    oAuth2Client.setCredentials({
-      access_token : user.googleAccessToken,
-      refresh_token : user.googleRefreshToken
-    });
-    var mtg_startDate = (new Date());
-    var mtg_endDate = new Date('2015-12-25T10:00:00-05:00');//TODO: make this reasonable 
-    gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
-      if (events) {
-        var stringEvents = JSON.stringify(events); 
-        var withTitleInsteadOfSubmit = stringEvents.replace(/summary/g, 'title'); 
-        var jsonEvent = JSON.parse(withTitleInsteadOfSubmit); 
-        //
-        utils.sendSuccessResponse(res, {events: jsonEvent}); 
-        return; 
-      }
+    refresh.requestNewAccessToken('google', user.googleRefreshToken, function(err, accessToken, refreshToken) {
+      logger.info("Acquiring new access token " , accessToken); 
+      console.log("Old access token is ", user.googleAccessToken);
+      user.googleAccessToken = accessToken;
+      console.log("New access token is ", accessToken);
+      oAuth2Client.setCredentials({
+        access_token : user.googleAccessToken,
+        refresh_token : user.googleRefreshToken
+      });
+      var mtg_startDate = (new Date());
+      var mtg_endDate = new Date('2015-12-25T10:00:00-05:00');//TODO: make this reasonable 
+      gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
+        if (events) {
+          var stringEvents = JSON.stringify(events); 
+          var withTitleInsteadOfSubmit = stringEvents.replace(/summary/g, 'title'); 
+          var jsonEvent = JSON.parse(withTitleInsteadOfSubmit); 
+          //
+          user.save(function(err)
+          {
+            if (err) throw err; 
+            utils.sendSuccessResponse(res, {events: jsonEvent}); 
+            return; 
+          });
+        }
+      });
     });
   });
 });
