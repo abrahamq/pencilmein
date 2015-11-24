@@ -18,8 +18,8 @@ require('./config/bootup')(app);
 require('./config/routes')(app);
 
 // 404 handler 
-app.use(function(req, res){
-  logger.info("Got 404 error: on orignal url: " + req.originalUrl + "err:" +error + "req" +req + "res" + res + "next" + next); 
+app.use(function(err, req, res, next) {
+  logger.info("Got 404 error: on orignal url: " + req.originalUrl + "err:" + err + "req" +req + "res" + res + "next" + next); 
   utils.renderTemplate(res, '404Page');  
   return;
 }); 
