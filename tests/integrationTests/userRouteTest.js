@@ -4,6 +4,15 @@ var assert = require('assert');
 var agent = request.agent('http://localhost:3000');
 var request = request('http://localhost:3000'); 
 
+var mongoose = require('mongoose'); 
+
+mongoose.connect('mongodb://localhost/pmidb'); 
+mongoose.connection.on('open', function(err){
+  mongoose.connection.db.dropCollection('meetings', function(err, result){
+
+  }); 
+});
+
 
 describe('GET /', function(){
   it('respond with 200', function(done){
@@ -29,9 +38,12 @@ describe('GET /user after auth', function(){
 
   it('get authentication', function(done){
     //agent is the code that persist the cookie- must use agent from now on 
-    agent.get('/test').expect(200).end(function(err, res){
-      agent.get('/user').expect(200).expect('redirect', false).end(function(err, res){
-        agent.get('/meeting').expect(200).expect('redirect', false).end(function(err, res){
+    agent.get('/test').end(function(err, res){
+      assert.equal(res.status, 200); //make sure we can get the route 
+      agent.get('/user').end(function(err, res){
+        assert.equal(res.status, 200); 
+        agent.get('/meeting').expect('redirect', false).end(function(err, res){
+          assert.equal(res.status, 200); 
           data = {}; 
           data.title = "PleaseWork"; 
           data.location = "no really";
@@ -41,9 +53,12 @@ describe('GET /user after auth', function(){
           data.duration = "30"; 
           data.invitees = ['pmi.test.email2@gmail.com'];
           agent.post('/meeting/create').send(data).end(function(err, res){
-            console.log(res); 
             assert.equal(res.status, 200); 
-            done(); 
+            agent.get('/user').end(function(err, res){ //make sure that the user page has the meeting
+              assert.equal(res.status, 200); 
+              assert.equal(res.text.indexOf(data.title) > -1, true); 
+              done(); 
+            }); 
           }); 
         });
 
