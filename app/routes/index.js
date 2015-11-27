@@ -32,7 +32,7 @@ router.get('/auth/google/callback',
               }
               else 
               {
-                res.redirect('/user');
+                res.redirect('/users');
               }
             });
 });

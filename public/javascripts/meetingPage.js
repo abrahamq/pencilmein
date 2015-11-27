@@ -37,7 +37,7 @@ $(document).ready(function()
     data._csrf = $('#_csrf').data('_csrf'); 
 
     //Send data to server 
-    $.post("/meeting/create", data, function(resp){
+    $.post("/meetings", data, function(resp){
         window.location.replace(resp.content.redirect);
     });
   

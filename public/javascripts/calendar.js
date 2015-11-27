@@ -6,12 +6,12 @@ $(function() { // document ready
   setupBlankCalendar(); 
 
   //set up the calendar with the user's google calendar events  
-  $.getJSON("/user/availability", function(data){
+  $.getJSON("/users/availabilities", function(data){
     $('#calendar').fullCalendar('addEventSource', data.content.events);
   }); 
 
   //now add the available slots in green 
-  $.getJSON("/user/availability/" + meetingId, function(data){
+  $.getJSON("/users/availabilities/" + meetingId, function(data){
     $('#calendar').fullCalendar('addEventSource', { 
       events: data.content.events, 
       color: 'green'
@@ -20,7 +20,7 @@ $(function() { // document ready
   
   //send post request when user clicks button 
   $('#calendar-submit').click( function(){
-    $.post('/user/availability/submit', {meetingId: meetingId, _csrf: _csrf}, function(res){
+    $.post('/users/availabilities', {meetingId: meetingId, _csrf: _csrf}, function(res){
       window.location.replace(res.content.redirect); 
     });
   }); 

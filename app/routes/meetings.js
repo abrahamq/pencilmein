@@ -6,12 +6,12 @@ var isLoggedIn = require('./authMiddleware');
 var User = require('../models/User');
 var Meeting = require('../models/Meeting');
 
-router.get('/', isLoggedIn, function(req, res) 
+router.get('/new', isLoggedIn, function(req, res) 
 {
   res.render('meetingcreation', {_csrf: req.csrfToken()}); 
 });
 
-router.post('/create', isLoggedIn, function(req, res)
+router.post('/', isLoggedIn, function(req, res)
 {
   //Meeting components 
   var title = req.body.title;
@@ -32,7 +32,7 @@ router.post('/create', isLoggedIn, function(req, res)
           //save meeting creator 
           meetingCreator.save(function()
           {
-              utils.sendSuccessResponse(res, {redirect : '/user'});
+              utils.sendSuccessResponse(res, {redirect : '/users/calendars/' + meetingId});
               return;
           });
         });
