@@ -27,25 +27,27 @@ var UserSchema = mongoose.Schema
 UserSchema.methods = 
 {
   /*
-    Create a new meeting and populate meeting information 
-    @param{title} title of the meeting
-    @param{location} meeting locale
-    @param{duration} duration of the meeting
-    @param{earliestStart} earliest time the meeting can take place 
-    @param{latestEndDate} latest time the meeting can happen 
-    @param{cb} callback upon completion 
-  */
-  createMeeting : function(title, location, duration, earliestStartDate, latestEndDate, invitedMembers, cb)
+    Create a new meeting and populate meeting information
+    @param {meetingInfo} object that contains the following  
+      {title} title of the meeting
+      {location} meeting locale
+      {duration} duration of the meeting
+      {earliestStart} earliest time the meeting can take place
+      {latestEndDate} latest time the meeting can happen
+      {invitees} a list of google mail addresses invited to the meeting
+      {cb} callback upon completion 
+*/
+  createMeeting : function(meetingInfo, cb)
   {
     var userObj = this;
     var newMeeting = new Meeting();
-    var invitedMembersAndCreator = invitedMembers.concat([this.googleEmail]);
+    var invitedMembersAndCreator = meetingInfo.invitees.concat([this.googleEmail]);
     newMeeting.creator = this.user;
-    newMeeting.title = title; 
-    newMeeting.location = location;
-    newMeeting.duration = duration;
-    newMeeting.earliestStartDate = earliestStartDate;
-    newMeeting.latestEndDate = latestEndDate;
+    newMeeting.title = meetingInfo.title; 
+    newMeeting.location = meetingInfo.location;
+    newMeeting.duration = meetingInfo.duration;
+    newMeeting.earliestStartDate = meetingInfo.earliestStartDate;
+    newMeeting.latestEndDate = meetingInfo.latestEndDate;
     newMeeting.invitedMembers = invitedMembersAndCreator;
 
     this.meetings.push(newMeeting._id);
@@ -53,7 +55,7 @@ UserSchema.methods =
       {
         if (err)
         {
-          logger.info('Error saving new meeting ' + err);
+          logger.error('Error saving new meeting ' + err);
         }
         cb(newMeeting._id)
       });

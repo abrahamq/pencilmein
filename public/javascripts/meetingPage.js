@@ -12,12 +12,14 @@ $(document).ready(function()
   $('#createMeeting').on('success.form.bv', function(e)
   {
     e.preventDefault();
+    var args = {};
     var data = {};
+
     //Grab meeting components 
     data.title = $(this).find('input[id="title"]').val();
     data.location = $(this).find('input[id="location"]').val();
-    data.earliestStartTime = $(this).find('input[id="startTime"]').val();
-    data.latestEndTime = $(this).find('input[id="endTime"]').val();
+    data.earliestStartDate = $(this).find('input[id="startTime"]').val();
+    data.latestEndDate = $(this).find('input[id="endTime"]').val();
     data.duration = $(this).find('input[id="duration"]').val();
 
     var invitees = [];
@@ -34,10 +36,11 @@ $(document).ready(function()
     data.invitees = invitees;
 
     //grab csrf token before posting
-    data._csrf = $('#_csrf').data('_csrf'); 
+    args.meetingInfo  = data;
+    args._csrf = $('#_csrf').data('_csrf');
 
     //Send data to server 
-    $.post("/meeting/create", data, function(resp){
+    $.post("/meetings", args, function(resp){
         window.location.replace(resp.content.redirect);
     });
   
