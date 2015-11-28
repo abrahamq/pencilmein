@@ -27,7 +27,8 @@ describe('TimeBlock', function() {
             });
           });
       });
-      it('should find timeblock with only updated red color', function(done) {
+      //calendar updates calendar
+      it('calendar updates calednar: should find timeblock with only updated red color', function(done) {
         TimeBlock.setTimeBlockColorAndCreationType(block._id,'red','calendar',function(err,foundBlock){
           assert.equal(err,null);
           assert.equal(foundBlock.color,"red");
@@ -35,7 +36,17 @@ describe('TimeBlock', function() {
           done();
         });
       });
-      it('should find timeblock with updated red color and manual creation type', function(done) {
+      //general updates calendar
+      it('general updates calendar: should find timeblock with updated red color and general creation type', function(done) {
+        TimeBlock.setTimeBlockColorAndCreationType(block._id,'yellow','general',function(err,foundBlock){
+          assert.equal(err,null);
+          assert.equal(foundBlock.color,"yellow");
+          assert.equal(foundBlock.creationType,"general");
+          done();
+        });
+      });
+      //manual updates calendar
+      it('manual updates calendar: should find timeblock with updated red color and manual creation type', function(done) {
         TimeBlock.setTimeBlockColorAndCreationType(block._id,'red','manual',function(err,foundBlock){
           assert.equal(err,null);
           assert.equal(foundBlock.color,"red");
@@ -43,18 +54,90 @@ describe('TimeBlock', function() {
           done();
         });
       });
-      //calendar updates calendar
       //calendar doesn't update general
-      //calendar doesn't update manual
-
-      //general updates calendar
+      it('calendar wont update general: should find timeblock with updated red color and manual creation type', function(done) {
+        var block2 = new TimeBlock();
+        block2.save(function(err,savedBlock){
+          TimeBlock.setTimeBlockColorAndCreationType(block2._id,'yellow','general',function(err,foundBlock2a){
+            TimeBlock.setTimeBlockColorAndCreationType(block2._id,'red','calendar',function(err,foundBlock2b){
+              assert.equal(err,null);
+              assert.equal(foundBlock2b.color,"yellow");
+              assert.equal(foundBlock2b.creationType,"general");
+              done();
+            });
+          }); 
+        });
+      });
       //general updates general
-      //general doesn't update manual
-
-      //manual updates calendar
+      it('general updates general: should find timeblock with updated red color and manual creation type', function(done) {
+        var block2 = new TimeBlock();
+        block2.save(function(err,savedBlock){
+          TimeBlock.setTimeBlockColorAndCreationType(block2._id,'yellow','general',function(err,foundBlock2a){
+            TimeBlock.setTimeBlockColorAndCreationType(block2._id,'red','general',function(err,foundBlock2b){
+              assert.equal(err,null);
+              assert.equal(foundBlock2b.color,"red");
+              assert.equal(foundBlock2b.creationType,"general");
+              done();
+            });
+          }); 
+        });
+      });
       //manual updates general
+      it('manual updates general: should find timeblock with updated red color and manual creation type', function(done) {
+        var block2 = new TimeBlock();
+        block2.save(function(err,savedBlock){
+          TimeBlock.setTimeBlockColorAndCreationType(block2._id,'yellow','general',function(err,foundBlock2a){
+            TimeBlock.setTimeBlockColorAndCreationType(block2._id,'red','manual',function(err,foundBlock2b){
+              assert.equal(err,null);
+              assert.equal(foundBlock2b.color,"red");
+              assert.equal(foundBlock2b.creationType,"manual");
+              done();
+            });
+          }); 
+        });
+      });
+      //calendar doesn't update manual
+      it('calendar wont update manual: should find timeblock with updated red color and manual creation type', function(done) {
+        var block2 = new TimeBlock();
+        block2.save(function(err,savedBlock){
+          TimeBlock.setTimeBlockColorAndCreationType(block2._id,'yellow','manual',function(err,foundBlock2a){
+            TimeBlock.setTimeBlockColorAndCreationType(block2._id,'red','calendar',function(err,foundBlock2b){
+              assert.equal(err,null);
+              assert.equal(foundBlock2b.color,"yellow");
+              assert.equal(foundBlock2b.creationType,"manual");
+              done();
+            });
+          }); 
+        });
+      });
+      //general doesn't update manual
+      it('general wont update manual: should find timeblock with updated red color and manual creation type', function(done) {
+        var block2 = new TimeBlock();
+        block2.save(function(err,savedBlock){
+          TimeBlock.setTimeBlockColorAndCreationType(block2._id,'yellow','manual',function(err,foundBlock2a){
+            TimeBlock.setTimeBlockColorAndCreationType(block2._id,'red','general',function(err,foundBlock2b){
+              assert.equal(err,null);
+              assert.equal(foundBlock2b.color,"yellow");
+              assert.equal(foundBlock2b.creationType,"manual");
+              done();
+            });
+          }); 
+        });
+      });
       //manual updates manual
-
+      it('manual updates manual: should find timeblock with updated red color and manual creation type', function(done) {
+        var block2 = new TimeBlock();
+        block2.save(function(err,savedBlock){
+          TimeBlock.setTimeBlockColorAndCreationType(block2._id,'yellow','manual',function(err,foundBlock2a){
+            TimeBlock.setTimeBlockColorAndCreationType(block2._id,'red','manual',function(err,foundBlock2b){
+              assert.equal(err,null);
+              assert.equal(foundBlock2b.color,"red");
+              assert.equal(foundBlock2b.creationType,"manual");
+              done();
+            });
+          }); 
+        });
+      });
   });
 });
 

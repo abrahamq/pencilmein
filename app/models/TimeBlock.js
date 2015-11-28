@@ -44,10 +44,11 @@ TimeBlockSchema.statics =
     */
     setTimeBlockColorAndCreationType: function(timeBlockId,newColor,newCreationType,cb){
         this.model('TimeBlock').getTimeBlock(timeBlockId, function(err,foundBlock){
-            console.log("new creation type: ", newCreationType);
-            console.log("old creation type: ", foundBlock.creationType);
-            if (newCreationType == 'calendar' || newCreationType == 'general' || newCreationType == 'manual'){
-                console.log("~~~~~~~~~updating");
+            var metric = {'calendar':1, 'general':2, 'manual':3}
+            // console.log("new creation type: ", newCreationType, "with metric: ",metric[newCreationType]);
+            // console.log("old creation type: ", foundBlock.creationType, "with metric: ",metric[foundBlock.creationType]);
+            var shouldUpdate = metric[newCreationType] >= metric[foundBlock.creationType];
+            if (shouldUpdate && (newCreationType == 'calendar' || newCreationType == 'general' || newCreationType == 'manual')){
                 if (newColor && (newColor == 'green' || newColor == 'yellow' || newColor == 'red')){ 
                     foundBlock.color = newColor; 
                 }
