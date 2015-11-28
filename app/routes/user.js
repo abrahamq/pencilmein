@@ -29,8 +29,6 @@ router.get('/', isLoggedIn, function(req, res) {
       return;
     }
     else {
-      //Render user overview page 
-      console.log("At the useroverview page, our access token is ", user.googleAccessToken);
       utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
       return;
     }
@@ -143,8 +141,6 @@ router.post('/availability/submit', function(req, res) {
       utils.sendErrResponse(res, 400, "no user found");
       return;
     } else {
-        console.log("About to auth with user " , user);
-        console.log("About to authenticate with credentials " + user.googleAccessToken);
         oAuth2Client.setCredentials({
           access_token : user.googleAccessToken,
           refresh_token : user.googleRefreshToken
@@ -171,6 +167,7 @@ router.post('/availability/submit', function(req, res) {
                   jsonEvent.forEach(function(a){
                     timeRanges.push([new Date(a.start),new Date(a.end)]);
                   });
+
                   if (timeRanges.length !== 0){
                     var lastRange = timeRanges[timeRanges.length - 1];
                     if (lastRange[1] > mtg_endDate){ //
@@ -190,8 +187,6 @@ router.post('/availability/submit', function(req, res) {
 
                               var optimal_in = optimeet.getIn(blocksLists, mtg_startDate, duration);
                               meeting.recordIn(optimal_in.startDate, optimal_in.endDate, function(err) {
-                                // console.log("in start: ",optimal_in.startDate," in end: ",optimal_in.endDate);
-                                // meeting.getInviteeEmailList(function(err, invitee_emails) {
                                   var invitee_emails = meeting.invitedMembers;
                                   gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, title, location, optimal_in.startDate, optimal_in.endDate, function(err) {
                                     if (err) {
@@ -201,8 +196,7 @@ router.post('/availability/submit', function(req, res) {
                                       return;
                                     }
                                   });  
-                              });  
-                              // recordInAndAddEvents(meeting, optimal_in.startDate, optimal_in.endDate);                          
+                              });                         
                             });
                           });
                         } else {
