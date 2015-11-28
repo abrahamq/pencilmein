@@ -128,7 +128,6 @@ router.get('/availabilities/:meetingID', function(req, res) {
   });
 });
 
-
 /*
   POST /availability/submit
   Request body:
