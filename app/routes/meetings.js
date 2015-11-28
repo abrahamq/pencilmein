@@ -48,7 +48,7 @@ router.post('/', isLoggedIn, function(req, res)
 var emailInvitees = function(invitees, meetingId)
 {
   //link to calendar page
-  var linkPrefix = process.env.PRODUCTION ? 'http://www.pencilmein.xyz/users/calendars/' : 'http://localhost:3000/users/calendars/'
+  var linkPrefix = process.env.PRODUCTION ? 'http://www.pencilmein.xyz/users/calendars/' : 'http://localhost:3000/users/calendars/';
 
   //Mail configuration 
   var mailOptions = {

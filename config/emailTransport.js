@@ -11,6 +11,6 @@ var transporter = nodemailer.createTransport({
 {
     // default values for sendMail method
     from: 'PencilMeIn <donotreply.pmi@google.com>',
-    subject: 'You have a new meeting invite!', // Subject line
+    subject: 'You have a new meeting invite!' // Subject line
 });
 module.exports = transporter;
