@@ -17,8 +17,19 @@ router.get('/logout', function(req, res) {
     res.redirect('/');
 });
 
+//only do this in development 
+//adds a route so our test user can easily authenticate 
+if (!process.env.PRODUCTION){
+  router.get('/test', function(req, res){
+    User.findOne({'googleEmail':'pmi.test.email@gmail.com'}, function(err, user){
+      req.session.passport = {user: user.id};
+      res.send(200); 
+    }); 
+  }); 
+}
+
 //Google Authentication 
-router.get('/auth/google', passport.authenticate('google', { scope : ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/userinfo.profile','profile','email'], accessType: 'offline', approvalPrompt: 'force' }));
+router.get('/auth/google', passport.authenticate('google', { scope : ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/userinfo.profile','profile','email'], accessType: 'offline', approvalPrompt: 'auto' }));
 
 // the callback after google has authenticated the user
 router.get('/auth/google/callback',
@@ -33,6 +44,7 @@ router.get('/auth/google/callback',
               else 
               {
                 res.redirect('/user');
+                console.log(req.session); 
               }
             });
 });
