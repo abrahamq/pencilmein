@@ -48,7 +48,6 @@ UserSchema.methods =
     newMeeting.duration = meetingInfo.duration;
     newMeeting.earliestStartDate = meetingInfo.earliestStartDate;
     newMeeting.latestEndDate = meetingInfo.latestEndDate;
-
     newMeeting.invitedMembers = invitedMembersAndCreator;
 
     this.meetings.push(newMeeting._id);

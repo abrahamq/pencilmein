@@ -172,6 +172,7 @@ router.post('/availabilities', function(req, res) {
                   jsonEvent.forEach(function(a){
                     timeRanges.push([new Date(a.start),new Date(a.end)]);
                   });
+
                   if (timeRanges.length !== 0){
                     var lastRange = timeRanges[timeRanges.length - 1];
                     if (lastRange[1] > mtg_endDate){ //
@@ -191,8 +192,6 @@ router.post('/availabilities', function(req, res) {
 
                               var optimal_in = optimeet.getIn(blocksLists, mtg_startDate, duration);
                               meeting.recordIn(optimal_in.startDate, optimal_in.endDate, function(err) {
-                                // console.log("in start: ",optimal_in.startDate," in end: ",optimal_in.endDate);
-                                // meeting.getInviteeEmailList(function(err, invitee_emails) {
                                   var invitee_emails = meeting.invitedMembers;
                                   gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, title, location, optimal_in.startDate, optimal_in.endDate, function(err) {
                                     if (err) {
