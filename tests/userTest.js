@@ -41,7 +41,16 @@ describe('Meeting tests', function() {
         user2.googleEmail = "user2@gmail.com";
         user2.fullName = "user 2";
         user2.save(function(err,newUser2){
-          user.createMeeting("newMeeting","stud",30,earliestStartDate,latestEndDate,[user2],function(err,mtg){
+          meetingObject = {
+            title: "newMeeting", 
+            location: "stud", 
+            duration: 30,
+            earliestStartDate: earliestStartDate,
+            latestEndDate: latestEndDate, 
+            invitees: [user2]
+          };
+          user.createMeeting(meetingObject,function(err,mtg){
+            done();
 
           });
         });
