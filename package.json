@@ -32,5 +32,8 @@
     "serve-favicon": "^2.3.0",
     "sshpk": "^1.6.2",
     "winston": "^2.1.1"
+  },
+  "devDependencies": {
+    "supertest": "^1.1.0"
   }
 }

@@ -27,13 +27,14 @@ var UserSchema = mongoose.Schema
 UserSchema.methods = 
 {
   /*
-    Create a new meeting and populate meeting information 
-    @param {meetingInfo} object that contains the following   
+    Create a new meeting and populate meeting information
+    @param {meetingInfo} object that contains the following  
       {title} title of the meeting
       {location} meeting locale
       {duration} duration of the meeting
-      {earliestStart} earliest time the meeting can take place 
-      {latestEndDate} latest time the meeting can happen 
+      {earliestStart} earliest time the meeting can take place
+      {latestEndDate} latest time the meeting can happen
+      {invitees} a list of google mail addresses invited to the meeting
       {cb} callback upon completion 
 */
   createMeeting : function(meetingInfo, cb)
@@ -47,7 +48,6 @@ UserSchema.methods =
     newMeeting.duration = meetingInfo.duration;
     newMeeting.earliestStartDate = meetingInfo.earliestStartDate;
     newMeeting.latestEndDate = meetingInfo.latestEndDate;
-
     newMeeting.invitedMembers = invitedMembersAndCreator;
 
     this.meetings.push(newMeeting._id);
