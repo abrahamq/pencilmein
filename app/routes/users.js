@@ -54,7 +54,7 @@ router.get('/calendars/:meetingId', function(req, res, next){
       next();
     }else{
       logger.info("rendering calendar view page");
-      var token = req.csrfToken()
+      var token = req.csrfToken();
       utils.renderTemplate(res, 'calendar', {meetingId: req.params.meetingId, meetingTitle:result.title, _csrf: token});
     }
   });
