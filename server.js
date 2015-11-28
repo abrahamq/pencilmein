@@ -35,7 +35,6 @@ app.use(function(err, req, res, next) {
 // Start web server
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
-  logger.log("Express server listening on port " + app.get('port'));
 });
 
 /*

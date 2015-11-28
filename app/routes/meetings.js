@@ -5,6 +5,7 @@ var utils = require('../../utils/utils');
 var isLoggedIn = require('./authMiddleware');
 var User = require('../models/User');
 var Meeting = require('../models/Meeting');
+var logger = require('../../config/log.js')
 
 router.get('/new', isLoggedIn, function(req, res) 
 {
@@ -14,16 +15,10 @@ router.get('/new', isLoggedIn, function(req, res)
 router.post('/', isLoggedIn, function(req, res)
 {
   //Meeting components 
-  var title = req.body.title;
-  var location = req.body.location;
-  var duration = req.body.duration;
-  var earliestStartTime = req.body.earliestStartTime;
-  var latestEndTime = req.body.latestEndTime;
-  var invitees = req.body.invitees;
-
+  var meetingInfo = req.body.meetingInfo;
   //create meeting 
   User.getUser(req.user.googleEmail, function(err, meetingCreator) {
-    meetingCreator.createMeeting(title, location, duration, earliestStartTime, latestEndTime, invitees, 
+    meetingCreator.createMeeting(meetingInfo, 
       function(meetingId)
       {
       //update session 
