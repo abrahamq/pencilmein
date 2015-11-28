@@ -1,17 +1,4 @@
-#PencilMeIn
-
-November 23rd TA Meeting Agenda:
-
-1. Modified MVP specifications
-
-2. clarification of "Demo to mentors" in final project schedule
-
-3. MVP walk through and feedback
-
-4. Debugging advice
-
-5. What does "almost final" demo mean
-
+#PencilMeIn (Email  us for any clarifications)
 
 * First do: 
     ```
@@ -33,12 +20,22 @@ November 23rd TA Meeting Agenda:
     npm start 
     ```
 
-Now the server should be listing on 
+Now the server should be listening on 
 http://localhost:3000
 
+MVP Workflow
+______________
 Sign in with your google account and you will be able 
 to create meetings and invite others. 
 
+After creating a new meeting, you will be redirected to the user overview page, containing a list of all created meetings by the current user. 
+
+Follow the hyperlink to view the calendar for that meeting. 
+Copy the URL from your address bar and forward it to your invitees.
+
+The Submit button will submit your availability for the meeting.
+
+After all members have submit, an In is created.
 
 When an in is created, it creates a google calendar event 
 in the calendar of the user to submit and then sends 

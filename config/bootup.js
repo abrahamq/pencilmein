@@ -7,8 +7,12 @@ var config = require('./config'),
 	bodyParser = require('body-parser'),
 	session = require('express-session'),
 	favicon = require('serve-favicon'),
-	path = require('path');
+	path = require('path'),
   csurf = require('csurf'); 
+
+
+  
+  
 
 // Do express configuration and middleware
 module.exports = function(app) 

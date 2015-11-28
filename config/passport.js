@@ -2,10 +2,11 @@
 var passport = require('passport');
 var configAuth = require('./auth');
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
-
+var logger = require('./log.js'); 
+var refresh = require('passport-oauth2-refresh');
 var User = require('../app/models/User.js');
 
-module.exports = function(passport) 
+module.exports = function(passport, refresh) 
 {
   // used to serialize the user for the session
   passport.serializeUser(function(user, done) {
@@ -19,7 +20,7 @@ module.exports = function(passport)
        });
   });
 
-	passport.use(new GoogleStrategy({
+	var strategy = new GoogleStrategy({
 
 	        clientID        : configAuth.googleAuth.clientID,
 	        clientSecret    : configAuth.googleAuth.clientSecret,
@@ -30,8 +31,8 @@ module.exports = function(passport)
           //find user with profile.id. if doesn't exist then create new user 
 	  		  // and add to database
           // User.findOne won't fire until we have all our data back from Google
-          console.log("Initially assigned access token " + token);
           process.nextTick(function() {
+            logger.info("Authenthicating new profile: " + profile + "token: " + token); 
               // try to find the user based on their google id
               User.findOne({ 'googleID' : profile.id }, function(err, user) {
                   if (err)
@@ -63,8 +64,9 @@ module.exports = function(passport)
                   }
               });
           });
-
-      }));
-}(passport);
+      });
+  passport.use(strategy);
+  refresh.use(strategy);
+}(passport, refresh);
 
 

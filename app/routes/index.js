@@ -35,6 +35,6 @@ router.get('/auth/google/callback',
                 res.redirect('/user');
               }
             });
-           });
+});
 
 module.exports = router; 

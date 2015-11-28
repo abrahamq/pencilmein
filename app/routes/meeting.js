@@ -33,6 +33,7 @@ router.post('/create', isLoggedIn, function(req, res)
           meetingCreator.save(function()
           {
               utils.sendSuccessResponse(res, {redirect : '/user'});
+              return;
           });
         });
       });
