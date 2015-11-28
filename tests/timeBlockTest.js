@@ -28,7 +28,7 @@ describe('TimeBlock', function() {
           });
       });
       it('should find timeblock with only updated red color', function(done) {
-        TimeBlock.setTimeBlockColorAndCreationType(block._id,'red',null,function(err,foundBlock){
+        TimeBlock.setTimeBlockColorAndCreationType(block._id,'red','calendar',function(err,foundBlock){
           assert.equal(err,null);
           assert.equal(foundBlock.color,"red");
           assert.equal(foundBlock.creationType,"calendar");
@@ -43,6 +43,17 @@ describe('TimeBlock', function() {
           done();
         });
       });
+      //calendar updates calendar
+      //calendar doesn't update general
+      //calendar doesn't update manual
+
+      //general updates calendar
+      //general updates general
+      //general doesn't update manual
+
+      //manual updates calendar
+      //manual updates general
+      //manual updates manual
 
   });
 });
