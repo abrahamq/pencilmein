@@ -43,8 +43,7 @@ router.get('/auth/google/callback',
               }
               else 
               {
-                res.redirect('/user');
-                console.log(req.session); 
+                res.redirect('/users');
               }
             });
 });

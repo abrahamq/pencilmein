@@ -3,10 +3,10 @@ module.exports = function(app) {
 
 	var index = require('../app/routes/index');
   var about = require('../app/routes/about'); 
-	var user = require('../app/routes/user');
-  var meeting = require('../app/routes/meeting');
+	var users = require('../app/routes/users');
+  var meetings = require('../app/routes/meetings');
   app.use('/', index);
 	app.use('/about', about);
-  app.use('/user', user);
-  app.use('/meeting', meeting);
+  app.use('/users', users);
+  app.use('/meetings', meetings);
 }
