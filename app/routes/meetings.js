@@ -7,8 +7,8 @@ var isLoggedIn = require('./authMiddleware');
 var User = require('../models/User');
 var Meeting = require('../models/Meeting');
 var logger = require('../../config/log.js');
-var placeholders = require('../../config/placeholders.js');
 var emailTransporter = require('../../config/emailTransport.js');
+var CONSTANTS = require('../../config/CONSTANTS.js');
 
 router.get('/new', isLoggedIn, function(req, res) 
 {
@@ -52,7 +52,7 @@ var emailInvitees = function(invitees, meetingId)
 
   //Mail configuration 
   var mailOptions = {
-    text : placeholders.EMAIL_BODY + linkPrefix + meetingId + placeholders.EMAIL_CONCLUSION,
+    text : CONSTANTS.EMAIL_BODY + linkPrefix + meetingId + CONSTANTS.EMAIL_CONCLUSION,
     bcc: invitees
   };
 

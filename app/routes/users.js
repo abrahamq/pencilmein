@@ -82,7 +82,7 @@ router.get('/availabilities', function(req, res) {
   {
     //Get a new access token from passport 
     refresh.requestNewAccessToken('google', user.googleRefreshToken, function(err, accessToken, refreshToken) {
-      logger.info("Acquiring new access token " , accessToken);
+      logger.info("Acquiring new access token " + accessToken + " using refresh token " + user.googleRefreshToken);
       user.googleAccessToken = accessToken;
       oAuth2Client.setCredentials({
         access_token : user.googleAccessToken,
