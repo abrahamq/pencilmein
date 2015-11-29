@@ -78,27 +78,6 @@ var optimeet = (function () {
     }
   };
 
-
-  var find_in = function (blocks, duration) {
-    var window_size = duration_to_blocks(duration);
-    console.log('optimeet find in blocks ', blocks);
-    var current_window = blocks.slice(0, window_size); 
-    var window_start = 0;
-    var possible_in = [];
-    if (check_window(current_window)){
-      possible_in.push(window_start);
-    }
-    for (var i = window_size; i < blocks.length; i++) {
-      window_start += 1;
-      current_window.push(blocks[i]);
-      current_window.splice(0,1);
-      if (check_window(current_window)) {
-        possible_in.push(window_start);
-      }
-    }
-    return possible_in;
-  };
-
   var check_window = function (current_window) {
     console.log('checking windoww: ', current_window);
     if (current_window.reduce(function(a,b){return a+b;}) == current_window.length) {
