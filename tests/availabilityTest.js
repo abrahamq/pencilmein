@@ -477,8 +477,21 @@ describe('Testing General Pref Helper Functions', function() {
       av.save(function(){
         av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
           var ranges = av.getTimeRangesForDayPreference(0,1,30,11,30);
-          console.log("finding ranges: ",ranges);
           assert.equal(ranges.length, 5);
+          assert.equal(ranges[0][0].getTime(), startDate.getTime());
+          assert.equal(ranges[0][1].getHours(), 11);
+          assert.equal(ranges[0][1].getMinutes(), 30);
+
+          for (var i = 1 ; i < 4 ; i++){
+            assert.equal(ranges[i][0].getHours(), 1);
+            assert.equal(ranges[i][0].getMinutes(), 30);
+            assert.equal(ranges[i][1].getHours(), 11);
+            assert.equal(ranges[i][1].getMinutes(), 30);
+          }
+
+          assert.equal(ranges[4][0].getHours(), 1);
+          assert.equal(ranges[4][0].getMinutes(), 30);
+          assert.equal(ranges[4][1].getTime(),endDate.getTime());
           done();
         });
       });

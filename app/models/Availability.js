@@ -154,7 +154,14 @@ AvailabilitySchema.methods =
 
   },
   /*
-  Given a day preference, gets all the specific date ranges that fall on this day of the week
+  Given a general day-of-week preference, returns all the specific date ranges that fall in this pref range on this day of the week
+  @param int day (MUST BE 0-6) day: day of the week of the given general prefernece
+  @param int startHour (MUST BE 0-23): start hour of the general preference
+  @param int startMinute (MUST BE 0-59): start minute in the start hour of the general preference
+  @param int endHour (MUST BE 0-23): end hour of the general preference
+  @param int endMinute (MUST BE 0-59): end minute in the end hour of the general preference
+  @result [[Date startDate, Date endDate]] a lits of time ranges that this day preference will apply to in this availabiltiy
+  */
   */
   getTimeRangesForDayPreference: function(day, startHour, startMinute, endHour, endMinute){
     var ranges =[];
