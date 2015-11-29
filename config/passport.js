@@ -48,7 +48,7 @@ module.exports = function(passport, refresh)
                       // set all of the relevant information
                       newUser.googleID    = profile.id;
                       newUser.googleAccessToken = token;
-
+   
                       newUser.googleRefreshToken = refreshToken;
                       
 

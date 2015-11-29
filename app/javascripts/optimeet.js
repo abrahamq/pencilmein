@@ -1,14 +1,10 @@
 var optimeet = (function () {
 
-// HANDLE NO IN FOUND
-
   "use strict";
   var _optimeet = {};
 
   var NUM_MILISECONDS_IN_MINUTE = 60000, 
       TIME_BLOCK_MINUTE_DURATION = 30;
-
-  var test1 = [{index: 0, count: 2}, {index: 1, count: 1}, {index: 2, count: 1}, {index: 3, count: 3},{index: 4, count: 1}];
 
   _optimeet.getIn = function (availabilities, mtg_startDate, mtg_duration) {
     var duration = validate_duration(mtg_duration);
@@ -24,18 +20,16 @@ var optimeet = (function () {
     } else {
       return null;
     }
-    
-  };
-
-  var validate_duration = function (duration) {
-    return Math.ceil(duration / 30) * 30;
   };
 
   var findBestIn = function(index_list) {
     if (index_list.length === 0) {
       return null;
+    } 
+    else if (index_list[0].cost == Number.POSITIVE_INFINITY) {
+      return null;
     } else {
-      return index_list[0].startIndex;  
+     return index_list[0].startIndex;  
     }
   };
 
@@ -44,7 +38,7 @@ var optimeet = (function () {
     var time_blocks = [];
     var if_need_be = [];
     
-    console.log('find all time index availabilities : ', availabilities);
+    // console.log('find all time index availabilities : ', availabilities);
 
     for (var i = 0; i < num_slots; i++) {
       time_blocks.push(1);
@@ -78,35 +72,37 @@ var optimeet = (function () {
     }
   };
 
-  var check_window = function (current_window) {
-    console.log('checking windoww: ', current_window);
-    if (current_window.reduce(function(a,b){return a+b;}) == current_window.length) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
   var find_squeeze = function (blocks, duration) {
-    console.log('in find squeeze blocks ', blocks);
+    // console.log('in find squeeze blocks ', blocks);
     var window_size = duration_to_blocks(duration);
     var current_window = blocks.slice(0,window_size);
     var window_start = 0;
     var possible_squeeze = []; 
-    console.log('in find squeeze current window ', current_window);
+    // console.log('in find squeeze current window ', current_window);
     var prevCost = squeeze_heuristic(current_window);
-
     possible_squeeze.push({startIndex: window_start, cost: prevCost});
 
     for (var i = window_size; i < blocks.length; i++) {
       window_start += 1;
       var newBlock = blocks[i];
-      var newCost = prevCost - current_window[0].count + newBlock.count;
+
       current_window.push(newBlock);
+      var removed_block = current_window[0];
       current_window.splice(0,1);
-      possible_squeeze.push({startIndex: window_start, cost: newCost});
+
+      var newCost;
+      if (prevCost === Number.POSITIVE_INFINITY) {
+        newCost = squeeze_heuristic(current_window);
+      } else {
+        newCost = prevCost - removed_block.count + newBlock.count;  
+      }
+
+      var newSqueeze = {startIndex: window_start, cost: newCost};
+      console.log('in find squeeze current window ', current_window);
+      console.log('in find squeeze newSqueeze ', newSqueeze);
+      possible_squeeze.push(newSqueeze);
       prevCost = newCost;
-      console.log('in find squeeze possible squeeze ', possible_squeeze);
+      // console.log('in find squeeze possible squeeze ', possible_squeeze);
     }
 
     var sorted_possible_squeeze = sort_squeeze(possible_squeeze);
@@ -128,6 +124,11 @@ var optimeet = (function () {
     });
     return heuristic;
   };
+
+  var validate_duration = function (duration) {
+    return Math.ceil(duration / 30) * 30;
+  };
+
  
   var duration_to_blocks = function (duration) {
     return Math.ceil(duration/TIME_BLOCK_MINUTE_DURATION);
@@ -136,12 +137,6 @@ var optimeet = (function () {
   var get_end_time = function (startDate, mtg_duration) {
     var duration_blocks = duration_to_blocks(mtg_duration);
     return new Date(startDate.getTime() + duration_blocks*NUM_MILISECONDS_IN_MINUTE*TIME_BLOCK_MINUTE_DURATION);
-  };
-
-  var time_to_block_index = function (start_time, time) {
-    var time_diff = time.getTime() - start_time.getTime();
-    var minutes = time_diff/NUM_MILISECONDS_IN_MINUTE;
-    return Math.ceil(minutes/TIME_BLOCK_MINUTE_DURATION);
   };
 
   var block_num_to_time = function (block_num, startDate) {
