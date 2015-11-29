@@ -42,10 +42,10 @@ MeetingSchema.methods=
     @param {cb} callback upon completion 
 	*/
 	recordMemberResponse: function(googleID, cb){
-		if (this.respondedMembers.indexOf(googleID) == -1){
+    if (this.respondedMembers.indexOf(googleID) == -1){
       this.respondedMembers.push(googleID);
-		}
-		this.save(cb);
+    }
+    this.save(cb);
 	},
 
 	/*
