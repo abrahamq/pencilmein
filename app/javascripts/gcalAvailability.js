@@ -1,6 +1,9 @@
-var logger = require('../../config/log.js'); 
-var gcalAvailability = (function() {
-  
+
+
+var logger = require('../../config/log.js');
+var gcalAvailability = (function () {
+  "use strict";
+
   var _gcalAvailability = {};
 
   /*
@@ -11,7 +14,7 @@ var gcalAvailability = (function() {
     @param {mtg_endDate} end of time window to look events up from 
     @param {cb} callback upon completion 
   */
-  _gcalAvailability.listUpcomingEvents = function(calendar, oAuth2Client, mtg_startDate, mtg_endDate, cb) {
+  _gcalAvailability.listUpcomingEvents = function (calendar, oAuth2Client, mtg_startDate, mtg_endDate, cb) {
     calendar.events.list({
       'calendarId': 'primary',
       'timeMin': mtg_startDate.toISOString(),
@@ -42,7 +45,7 @@ var gcalAvailability = (function() {
     @param {endDate} end of event
     @param {cb} callback upon completion 
   */
-  _gcalAvailability.addEventToCalendar = function(calendar, oAuth2Client, invitee_emails, title, location, startDate, endDate, cb) {
+  _gcalAvailability.addEventToCalendar = function (calendar, oAuth2Client, invitee_emails, title, location, startDate, endDate, cb) {
     var attendees = [];
     //Set up invitee emails as json
     invitee_emails.forEach(function(invitee) {
@@ -82,7 +85,7 @@ var gcalAvailability = (function() {
   /*
     Helper to construct an event to send to google calendar
   */
-  var processEvents = function(resp) {
+  var processEvents = function (resp) {
     var events = resp.items;
     var eventsList = [];
 
@@ -110,7 +113,7 @@ var gcalAvailability = (function() {
     All start dates should be at 30 minute intervals
     @param {datestring} date supplied, (possibly not a multiple of 30)
   */
-  var roundStartDate = function(datestring){
+  var roundStartDate = function (datestring){
     var date = new Date(datestring);
     var minutes = date.getMinutes();
     if (minutes < 30) {
@@ -126,7 +129,7 @@ var gcalAvailability = (function() {
     All end dates should be at 30 minute intervals
     @param {datestring} date supplied, (possibly not a multiple of 30)
   */
-  var roundEndDate = function(datestring){
+  var roundEndDate = function (datestring){
     var date = new Date(datestring);
     var minutes = date.getMinutes();
 
