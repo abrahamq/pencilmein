@@ -508,7 +508,6 @@ describe('Testing General Pref Helper Functions', function() {
       av.save(function(){
         av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
           var ranges = av.getTimeRangesForDayPreference(0,1,30,11,30);
-          console.log("RANGES: ",ranges);
           assert.equal(ranges.length, 5);
           assert.equal(ranges[0][0].getTime(), startDate.getTime());
           assert.equal(ranges[0][1].getHours(), 11);
