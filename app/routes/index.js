@@ -29,7 +29,7 @@ if (!process.env.PRODUCTION){
 }
 
 //Google Authentication 
-router.get('/auth/google', passport.authenticate('google', { scope : ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/userinfo.profile','profile','email'], accessType: 'offline', approvalPrompt: 'auto' }));
+router.get('/auth/google', passport.authenticate('google', { scope : ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/userinfo.profile','profile','email'], accessType: 'offline', approvalPrompt: 'force' }));
 
 // the callback after google has authenticated the user
 router.get('/auth/google/callback',
