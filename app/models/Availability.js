@@ -144,14 +144,17 @@ AvailabilitySchema.methods =
   ex: 
   ~~~Given: thisAvailability from Nov. 1, 12am - Nov. 30th 12am + "Never Available Sun 12am - 11am" --> 
   ~~~updates blocks in ranges: [[Nov. 1, 12am, Nov. 1, 11am],[Nov. 8, 12am, Nov. 8, 11am],...,[Nov. 29, 12am, Nov. 29, 11am]] to red
-  @param int (0-6) day: day of the week of the given prefernece
-  @param Date startTime: start of this day's preference
-  @param Date endTime: end of this day's preference
-  @param String color: ('red','yellow' or 'green') type of availability4
+  @param int day (MUST BE 0-6) day: day of the week of the given general prefernece
+  @param int startHour (MUST BE 0-23): start hour of the general preference
+  @param int startMinute (MUST BE 0-59): start minute in the start hour of the general preference
+  @param int endHour (MUST BE 0-23): end hour of the general preference
+  @param int endMinute (MUST BE 0-59): end minute in the end hour of the general preference
+  @param cb: will be given arg1) error, arg2) list of time block ids in the availability
   @result [[startDate, endDate]] a lits of time ranges that this day preference will apply to in this availabiltiy
   */
-  updateAllBlocksForDayPreference: function(day,startTime,endTime,color){
-
+  updateBlocksForDayPreference: function(day, startHour, startMinute, endHour, endMinute, color, cb){
+    var ranges = this.getTimeRangesForDayPreference(day, startHour, startMinute, endHour, endMinute);
+    this.setBlocksInTimeRangesColorAndCreationType(ranges,color,'general',cb);
   },
   /*
   Given a general day-of-week preference, returns all the specific date ranges that fall in this pref range on this day of the week
@@ -162,11 +165,13 @@ AvailabilitySchema.methods =
   @param int endMinute (MUST BE 0-59): end minute in the end hour of the general preference
   @result [[Date startDate, Date endDate]] a lits of time ranges that this day preference will apply to in this availabiltiy
   */
-  */
   getTimeRangesForDayPreference: function(day, startHour, startMinute, endHour, endMinute){
     var ranges =[];
     var currentDayStartDate = new Date(this.startDate.getFullYear(), this.startDate.getMonth(), this.startDate.getDate());
-    while (currentDayStartDate < this.endDate){
+    var rangeStartDate = new Date(currentDayStartDate);
+    rangeStartDate.setHours(startHour);
+    rangeStartDate.setMinutes(startMinute);
+    while (rangeStartDate < this.endDate && currentDayStartDate < this.endDate){
       if (currentDayStartDate.getDay() == day){
         var rangeStartDate = new Date(currentDayStartDate);
         rangeStartDate.setHours(startHour);

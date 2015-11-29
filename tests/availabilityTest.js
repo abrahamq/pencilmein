@@ -469,7 +469,38 @@ describe('Checking creation type power', function() {
 });
 
 describe('Testing General Pref Helper Functions', function() {
-  describe('Testing getting time ranges given single day preference', function() {
+  describe('Testing getting found time ranges given single day preference, part of single day availabilty', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 1, 11);
+    it('should clip for start date and end date', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var ranges = av.getTimeRangesForDayPreference(0,1,30,11,30);
+          assert.equal(ranges.length, 1);
+          assert.equal(ranges[0][0].getTime(), startDate.getTime());
+          assert.equal(ranges[0][1].getTime(), endDate.getTime());
+          done();
+        });
+      });
+    });
+  });
+  describe('Testing getting found time ranges given single day preference, availabilty our of range of general pref', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 1, 11);
+    it('should clip for start date and end date', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var ranges = av.getTimeRangesForDayPreference(0,12,30,21,30);
+          console.log("RANGES: ",ranges);
+          assert.equal(ranges.length, 0);
+          done();
+        });
+      });
+    });
+  });
+  describe('Testing getting found time ranges given single day preference, multiple day availabilty', function() {
     var av = new Availability();
     var startDate = new Date(2015, 10, 1, 4);
     var endDate = new Date(2015, 10, 29, 11);
@@ -477,6 +508,7 @@ describe('Testing General Pref Helper Functions', function() {
       av.save(function(){
         av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
           var ranges = av.getTimeRangesForDayPreference(0,1,30,11,30);
+          console.log("RANGES: ",ranges);
           assert.equal(ranges.length, 5);
           assert.equal(ranges[0][0].getTime(), startDate.getTime());
           assert.equal(ranges[0][1].getHours(), 11);
