@@ -87,6 +87,7 @@ describe('Initialize availabilities time blocks', function() {
           assert.equal(error,null);
           assert.equal(foundBlockList.length,3);
           assert.equal(av.startDate.getTime(),startDate.getTime());
+          assert.equal(av.endDate.getTime(),endDate.getTime());
           done();
         });
       });
@@ -190,83 +191,80 @@ describe('check block id lookup based on time', function() {
       });
   });
   describe('test static lookup of blocks from list of availabilites w just one av.', function() {
-      //setup database state 
-      var start = new Date(2015,10,3,4,00);
-      var end = new Date(2015,10,3,5,30);
-      var time = new Date(start);
-      var av = new Availability();
-      var Av = Availability;
-      av.meetingId = "newmeet";
-      av.googleId = "kwefah";
-      it('should find correct id', function(done) {
-        av.initializeTimeBlocks(start,end,function(error,foundBlockList){
-          av.save(function(){
-            Availability.getTimeBlocksListsForAvailabilities([av],function(err,blocksLists){
-              assert.equal(err,null);
-              assert.equal(blocksLists.length,1);
-              assert.equal(blocksLists[0].length,3);
-              assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
-              done();
-            });
+    //setup database state 
+    var start = new Date(2015,10,3,4,00);
+    var end = new Date(2015,10,3,5,30);
+    var time = new Date(start);
+    var av = new Availability();
+    var Av = Availability;
+    av.meetingId = "newmeet";
+    av.googleId = "kwefah";
+    it('should find correct id', function(done) {
+      av.initializeTimeBlocks(start,end,function(error,foundBlockList){
+        av.save(function(){
+          Availability.getTimeBlocksListsForAvailabilities([av],function(err,blocksLists){
+            assert.equal(err,null);
+            assert.equal(blocksLists.length,1);
+            assert.equal(blocksLists[0].length,3);
+            assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
+            done();
           });
         });
-
       });
+    });
   });
   describe('test static lookup of blocks from list of availabilites with 2 avs', function() {
-      //setup database state
-      var start = new Date(2015,10,3,4,00);
-      var end = new Date(2015,10,3,5,30);
-      var time = new Date(start);
-      var av = new Availability();
-      var av2 = new Availability();
-      av.meetingId = "newmeet";
-      av.googleId = "kwefah";
-      av2.meetingId = "newmeet2";
-      av2.googleId = "kwefah";
-      it('should find correct id', function(done) {
-        av.initializeTimeBlocks(start,end,function(error,foundBlockList){
-          av.save(function(){
-            av2.initializeTimeBlocks(start,end,function(error2, founcBlockList2){
-              av2.save(function(){
-                Availability.getTimeBlocksListsForAvailabilities([av,av2],function(err,blocksLists){
-                  assert.equal(err,null);
-                  assert.equal(blocksLists.length,2);
-                  assert.equal(blocksLists[0].length,3);
-                  assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
-                  assert.equal(blocksLists[1].length,3);
-                  assert.equal(blocksLists[1][0].startDate.getTime(),start.getTime());
-                  done();
-                }); 
-              });
-            })
-          });
+    //setup database state
+    var start = new Date(2015,10,3,4,00);
+    var end = new Date(2015,10,3,5,30);
+    var time = new Date(start);
+    var av = new Availability();
+    var av2 = new Availability();
+    av.meetingId = "newmeet";
+    av.googleId = "kwefah";
+    av2.meetingId = "newmeet2";
+    av2.googleId = "kwefah";
+    it('should find correct id', function(done) {
+      av.initializeTimeBlocks(start,end,function(error,foundBlockList){
+        av.save(function(){
+          av2.initializeTimeBlocks(start,end,function(error2, founcBlockList2){
+            av2.save(function(){
+              Availability.getTimeBlocksListsForAvailabilities([av,av2],function(err,blocksLists){
+                assert.equal(err,null);
+                assert.equal(blocksLists.length,2);
+                assert.equal(blocksLists[0].length,3);
+                assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
+                assert.equal(blocksLists[1].length,3);
+                assert.equal(blocksLists[1][0].startDate.getTime(),start.getTime());
+                done();
+              }); 
+            });
+          })
         });
-
       });
+    });
   });
-
 });
 describe('Editing SINGLE time block', function() {
   describe('editing first of 3 time blocks', function() {
-      //setup database state 
-      var startDate = new Date(2015,10,3,4,00);
-      var newTime = new Date(startDate);
-      var endDate = new Date(2015,10,3,5,30);
-      var avv = new Availability();
-      avv.meetingId="newmeet";
-      it('should return block with new yellow color', function(done) {
-        avv.save(function(){
-          avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            avv.setBlockAtTimeColorAndCreationType(newTime,'yellow','manual',function(err,finalBlock){
-              assert.equal(err,null);
-              assert.equal(finalBlock.color,'yellow');
-              assert.equal(finalBlock.creationType,'manual');
-              done();
-            });
+    //setup database state 
+    var startDate = new Date(2015,10,3,4,00);
+    var newTime = new Date(startDate);
+    var endDate = new Date(2015,10,3,5,30);
+    var avv = new Availability();
+    avv.meetingId="newmeet";
+    it('should return block with new yellow color', function(done) {
+      avv.save(function(){
+        avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+          avv.setBlockAtTimeColorAndCreationType(newTime,'yellow','manual',function(err,finalBlock){
+            assert.equal(err,null);
+            assert.equal(finalBlock.color,'yellow');
+            assert.equal(finalBlock.creationType,'manual');
+            done();
           });
         });
       });
+    });
   });
 });
 describe('Editing SINGLE RANGE of time blocks', function() {
@@ -298,7 +296,7 @@ describe('Editing SINGLE RANGE of time blocks', function() {
         });
       });
     });
-    describe('Finding blocks in range from 48 blocks', function() {
+  describe('Finding blocks in range from 48 blocks', function() {
     //setup database state 
     var startDate = new Date(2015,10,3,4,00);
     var endDate = new Date(2015,10,4,4,00);
@@ -310,21 +308,21 @@ describe('Editing SINGLE RANGE of time blocks', function() {
     it('Changing 48 blocks in all', function(done) {
       av.save(function(){
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
-              av.getTimeBlocks(function(e,allBlocks){
-                assert.equal(e,null);
-                assert.equal(allBlocks.length,48);
-                assert.equal(allBlocks[0].color,'green');
-                assert.equal(allBlocks[1].color,'yellow');
-                assert.equal(allBlocks[2].color,'yellow');
-                assert.equal(allBlocks[3].color,'green');
-                done();
-              })
+          av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
+            av.getTimeBlocks(function(e,allBlocks){
+              assert.equal(e,null);
+              assert.equal(allBlocks.length,48);
+              assert.equal(allBlocks[0].color,'green');
+              assert.equal(allBlocks[1].color,'yellow');
+              assert.equal(allBlocks[2].color,'yellow');
+              assert.equal(allBlocks[3].color,'green');
+              done();
             });
           });
         });
       });
     });
+  });
 });
 
 describe('Editing MULTIPLE RANGES of time blocks', function() {
@@ -390,5 +388,102 @@ describe('Editing MULTIPLE RANGES of time blocks', function() {
         });
       });
     });
-
 });
+
+describe('Checking creation type power', function() {
+    //setup database state 
+  var startDate = new Date(2015,10,3,4,00);
+  var endDate = new Date(2015,10,3,5,30);
+  //makes blocks [4-4:30],[4:30-5],[5-5:30]
+  var rangeStart = new Date(2015,10,3,4,30);
+  var rangeEnd = new Date(2015,10,3,5,30);
+
+  var av = new Availability();
+  av.meetingId="newmeet";
+  //setup database state 
+  var startDate = new Date(2015,10,3,4,00);
+  var endDate = new Date(2015,10,4,4,00);
+
+  var rangeStart = new Date(2015,10,3,4,30);
+  var rangeEnd = new Date(2015,10,3,5,30);
+
+  var range2Start = new Date(2015,10,3,6,30);
+  var range2End = new Date(2015,10,3,8,00);
+  describe('Shouldnt be able to alter blocks with stronger creation type', function() {
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('Calendar won"t overrite manual', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+          av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'yellow','general',function(err,allIds){
+            av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'red','calendar',function(err,allIds){
+
+              av.getTimeBlocks(function(e,allBlocks){
+                assert.equal(e,null);
+                assert.equal(allBlocks.length,48);
+                assert.equal(allBlocks[0].color,'green'); //4-4.30
+                assert.equal(allBlocks[1].color,'yellow');//4.30-5
+                assert.equal(allBlocks[2].color,'yellow');//5-5:30
+                assert.equal(allBlocks[3].color,'green'); //5:30-6
+                assert.equal(allBlocks[4].color,'green');//6-6:30
+                assert.equal(allBlocks[5].color,'yellow');//6:30-7
+                assert.equal(allBlocks[6].color,'yellow');//7-7:30
+                assert.equal(allBlocks[7].color,'yellow');//7:30-8
+                assert.equal(allBlocks[8].color,'green');//8-8:30
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+  describe('Should be able to alter blocks with weaker creation type', function() {
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('Calendar won"t overrite manual', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+          av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'yellow','general',function(err,allIds){
+            av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'red','manual',function(err,allIds){
+              av.getTimeBlocks(function(e,allBlocks){
+                assert.equal(e,null);
+                assert.equal(allBlocks.length,48);
+                assert.equal(allBlocks[0].color,'green'); //4-4.30
+                assert.equal(allBlocks[1].color,'red');//4.30-5
+                assert.equal(allBlocks[2].color,'red');//5-5:30
+                assert.equal(allBlocks[3].color,'green'); //5:30-6
+                assert.equal(allBlocks[4].color,'green');//6-6:30
+                assert.equal(allBlocks[5].color,'red');//6:30-7
+                assert.equal(allBlocks[6].color,'red');//7-7:30
+                assert.equal(allBlocks[7].color,'red');//7:30-8
+                assert.equal(allBlocks[8].color,'green');//8-8:30
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+});
+
+describe('Testing General Pref Helper Functions', function() {
+  describe('Testing getting time ranges given single day preference', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 29, 11);
+    it('should clip for start date and end date', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var ranges = av.getTimeRangesForDayPreference(0,1,30,11,30);
+          console.log("finding ranges: ",ranges);
+          assert.equal(ranges.length, 5);
+          done();
+        });
+      });
+    });
+  });
+});
+    
+

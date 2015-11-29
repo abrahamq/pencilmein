@@ -4,6 +4,8 @@ var TimeBlock = require('./TimeBlock');
 var AvailabilitySchema = mongoose.Schema({
 	meetingId : String,
   googleId: String,
+  startDate: Date,
+  endDate: Date,
 	timeBlocks : [{
         type: mongoose.Schema.ObjectId,
         ref: 'TimeBlock' 
@@ -80,13 +82,6 @@ AvailabilitySchema.methods =
       return "time outside of range";
     }
     var blockNum = Math.floor((time-this.startDate)/1800000);
-
-    console.log(this.timeBlocks.length); //48
-    console.log("blockNum " + blockNum); //48
-    console.log("time " + time);
-    console.log("start date " + this.startDate);
-    console.log("end date " + this.endDate);
-    
     return  this.timeBlocks[blockNum];
   },
   /*
@@ -113,9 +108,7 @@ AvailabilitySchema.methods =
   @param cb will be given args 1) error and 2) list of time block ids for availability
   */
   setBlocksInTimeRangeColorAndCreationType: function(startDate, endDate, newColor, newCreationType, cb){
-    console.log("setBlocksInTim... startDate: " + startDate + " end: " + endDate); 
     if (startDate>=endDate){
-      console.log("is returning" ); 
       return cb(null,this.timeBlocks);
     }
     var availability = this; 
@@ -135,7 +128,6 @@ AvailabilitySchema.methods =
   */
   },
   setBlocksInTimeRangesColorAndCreationType: function(timeRanges, newColor, newCreationType, cb){
-    console.log("timeRanges: " , timeRanges); 
     if (timeRanges.length==0){
       return cb(null,this.timeBlocks);
     }
@@ -145,6 +137,42 @@ AvailabilitySchema.methods =
     this.setBlocksInTimeRangeColorAndCreationType(currentRange[0],currentRange[1],newColor,newCreationType,function(err,allIds){
       availability.setBlocksInTimeRangesColorAndCreationType(nextRanges, newColor, newCreationType, cb);
     });
+  },
+  /*
+  Given a general day preference (day of week, start time, end time), updates all blocks in this availability that will fall
+  on that day of the week in that time range
+  ex: 
+  ~~~Given: thisAvailability from Nov. 1, 12am - Nov. 30th 12am + "Never Available Sun 12am - 11am" --> 
+  ~~~updates blocks in ranges: [[Nov. 1, 12am, Nov. 1, 11am],[Nov. 8, 12am, Nov. 8, 11am],...,[Nov. 29, 12am, Nov. 29, 11am]] to red
+  @param int (0-6) day: day of the week of the given prefernece
+  @param Date startTime: start of this day's preference
+  @param Date endTime: end of this day's preference
+  @param String color: ('red','yellow' or 'green') type of availability4
+  @result [[startDate, endDate]] a lits of time ranges that this day preference will apply to in this availabiltiy
+  */
+  updateAllBlocksForDayPreference: function(day,startTime,endTime,color){
+
+  },
+  /*
+  Given a day preference, gets all the specific date ranges that fall on this day of the week
+  */
+  getTimeRangesForDayPreference: function(day, startHour, startMinute, endHour, endMinute){
+    var ranges =[];
+    var currentDayStartDate = new Date(this.startDate.getFullYear(), this.startDate.getMonth(), this.startDate.getDate());
+    while (currentDayStartDate < this.endDate){
+      if (currentDayStartDate.getDay() == day){
+        var rangeStartDate = new Date(currentDayStartDate);
+        rangeStartDate.setHours(startHour);
+        rangeStartDate.setMinutes(startMinute);
+        var rangeEndDate = new Date(currentDayStartDate);
+        rangeEndDate.setHours(endHour);
+        rangeEndDate.setMinutes(endMinute);
+
+        ranges.push([new Date(Math.max(this.startDate, rangeStartDate)), new Date(Math.min(this.endDate, rangeEndDate))]);
+      }
+      currentDayStartDate = new Date(currentDayStartDate.getFullYear(), currentDayStartDate.getMonth(), currentDayStartDate.getDate()+1);
+    }
+    return ranges;
   }
 };
 
