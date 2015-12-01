@@ -28,7 +28,7 @@ var gcalAvailability = (function () {
         logger.error("Error in listUpcomingEvents " + err); 
         cb(err); 
       } else {
-        eventsList = processEvents(response);
+        var eventsList = processEvents(response);
         cb(null,eventsList);
       } 
     });
