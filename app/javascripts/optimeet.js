@@ -6,141 +6,150 @@ var optimeet = (function () {
   var NUM_MILISECONDS_IN_MINUTE = 60000, 
       TIME_BLOCK_MINUTE_DURATION = 30;
 
-  _optimeet.getIn = function (availabilities, mtg_startDate, mtg_duration) {
-    var duration = validate_duration(mtg_duration);
-    var possible_index = findAllTimeIndex(availabilities, mtg_startDate, duration);
-    var bestInIndex = findBestIn(possible_index);
-    console.log('get in best in index ', bestInIndex);
-    if (findBestIn(possible_index) !== null) {
-      var in_index = findBestIn(possible_index);
-      var in_startDate = block_num_to_time(in_index, mtg_startDate);
-      var duration_block = duration_to_blocks(duration);
-      var in_endDate = get_end_time(in_startDate, duration);
-      return {startDate : in_startDate, endDate : in_endDate}; 
+  /*
+    Returns the start and end dates of the optimal meeting time
+    @param {availabilities} array the availabilities of all meeting participants for pre-specified time range
+    @param {earliestStartDate} earliest potential time for the meeting
+    @param {mtgDuration} length of the meeting in minutes
+  */
+  _optimeet.getIn = function (availabilities, earliestStartDate, mtgDuration) {
+    var durationBlocks = durationToBlocks(validateDuration(mtgDuration));
+    var timeBlockToCount = getCounts(availabilities, earliestStartDate);
+    var timeRangeCosts = getTimerangeCosts(timeBlockToCount, durationBlocks);
+    var bestIn = findBestIn(timeRangeCosts);
+    if (bestIn !== null) {
+      var inStartDate = blockIndexToTime(bestIn.startIndex, earliestStartDate);
+      var inEndDate = blockIndexToTime(bestIn.endIndex, earliestStartDate);
+      return {startDate: inStartDate, endDate: inEndDate};
     } else {
       return null;
     }
   };
 
-  var findBestIn = function(index_list) {
-    if (index_list.length === 0) {
-      return null;
-    } 
-    else if (index_list[0].cost == Number.POSITIVE_INFINITY) {
-      return null;
-    } else {
-     return index_list[0].startIndex;  
-    }
-  };
+  /*
+    Assigns each time block with a count representing the cost of the time block
+    @param {availabilities} array the availabilities of all meeting participants for pre-specified time range
+    @param {earliestStartDate} earliest potential time for the meeting
+  */
+  var getCounts = function (availabilities, earliestStartDate) {
+    var numSlots = availabilities[0].length;
+    var timeBlockToCount = [];
 
-  var findAllTimeIndex = function (availabilities, mtg_startDate, mtg_duration, allow_squeeze) {
-    var num_slots = availabilities[0].length;
-    var time_blocks = [];
-    var if_need_be = [];
-    
-    // console.log('find all time index availabilities : ', availabilities);
-
-    for (var i = 0; i < num_slots; i++) {
-      time_blocks.push(1);
-      if_need_be.push({index: i, count: 0});
+    for (var i = 0; i < numSlots; i++) {
+      timeBlockToCount.push({index: i, count: 0});
     }
-    availabilities.forEach(function (user_avail) {
-      for (var i = 0; i < user_avail.length; i++) {
-        var cur_block = user_avail[i];
-        // console.log(' in find all blocks cur block ', cur_block.color == 'yellow');
-        if (cur_block.color != 'green') {
-          time_blocks[i] = 0;
-        } 
-        if (cur_block.color == 'yellow') {          
-          if_need_be[i].count += 1;
+    availabilities.forEach(function (userAvail) {
+      for (var i = 0; i < userAvail.length; i++) {
+        var curBlock = userAvail[i];
+        if (curBlock.color == 'yellow') {          
+          timeBlockToCount[i].count += 1;
         }
-        else if (cur_block.color == 'red') {
-          if_need_be[i].count = Infinity;
+        else if (curBlock.color == 'red') {
+          timeBlockToCount[i].count = Infinity;
         }
       }
     });
-    console.log('find all time if_need_be : ', if_need_be);
-    // var all_available = find_in(time_blocks, mtg_duration);
-    var all_available = find_squeeze(if_need_be, mtg_duration);
-    console.log('optimeet all available ', all_available);
-    if (all_available.length > 0) {
-      return all_available;
-    }
-    else {
-      sqeeze_list = find_squeeze(time_blocks, mtg_duration);
-      return [];
-    }
+    return timeBlockToCount;
   };
 
-  var find_squeeze = function (blocks, duration) {
-    // console.log('in find squeeze blocks ', blocks);
-    var window_size = duration_to_blocks(duration);
-    var current_window = blocks.slice(0,window_size);
-    var window_start = 0;
-    var possible_squeeze = []; 
-    // console.log('in find squeeze current window ', current_window);
-    var prevCost = squeeze_heuristic(current_window);
-    possible_squeeze.push({startIndex: window_start, cost: prevCost});
+  /*
+    Assigns each possible time range with its corresponding cost
+    @param {blocks} array of time blocks and corresponding costs
+    @param {durationBlocks} length of meeting in number of blocks
+  */
+  var getTimerangeCosts = function (blocks, durationBlocks) {
+    var currentWindow = blocks.slice(0,durationBlocks);
+    var windowStart = 0;
+    var windowEnd = windowStart+durationBlocks;
 
-    for (var i = window_size; i < blocks.length; i++) {
-      window_start += 1;
+    var timeRangeCost = []; 
+    var prevCost = timeRangeHeuristic(currentWindow);
+    timeRangeCost.push({startIndex: windowStart, endIndex : durationBlocks, cost: prevCost});
+
+    for (var i = durationBlocks; i < blocks.length; i++) {
+      windowStart += 1;
       var newBlock = blocks[i];
 
-      current_window.push(newBlock);
-      var removed_block = current_window[0];
-      current_window.splice(0,1);
+      currentWindow.push(newBlock);
+      var removedBlock = currentWindow[0];
+      currentWindow.splice(0,1);
 
       var newCost;
       if (prevCost === Number.POSITIVE_INFINITY) {
-        newCost = squeeze_heuristic(current_window);
+        newCost = timeRangeHeuristic(currentWindow);
       } else {
-        newCost = prevCost - removed_block.count + newBlock.count;  
+        newCost = prevCost - removedBlock.count + newBlock.count;  
       }
-
-      var newSqueeze = {startIndex: window_start, cost: newCost};
-      console.log('in find squeeze current window ', current_window);
-      console.log('in find squeeze newSqueeze ', newSqueeze);
-      possible_squeeze.push(newSqueeze);
+      var newTimeRange = {startIndex: windowStart, endIndex: i+1, cost: newCost};
+      timeRangeCost.push(newTimeRange);
       prevCost = newCost;
-      // console.log('in find squeeze possible squeeze ', possible_squeeze);
     }
-
-    var sorted_possible_squeeze = sort_squeeze(possible_squeeze);
-    var squeeze_index = sorted_possible_squeeze.map(function(squeeze) {return squeeze.startIndex;});
-    return sorted_possible_squeeze;
+    return timeRangeCost;
   };
 
-  var sort_squeeze = function (squeeze_list) {
-    var sorted_squeeze_list = squeeze_list.sort(function(window1, window2) {
+  /*
+    Finds optimal meeting time
+    @param {timeRangeCosts} array of time ranges and corresponding costs
+  */
+  var findBestIn = function (timeRangeCosts) {
+    var sortedPossibleIn = sortTimeRanges(timeRangeCosts);
+    if (sortedPossibleIn.length === 0) {
+      return null;
+    } 
+    else if (sortedPossibleIn[0].cost == Number.POSITIVE_INFINITY) {
+      return null;
+    } else {
+     return sortedPossibleIn[0];  
+    }
+  };
+
+  /*
+    Sorts time ranges in ascending order based on costs
+    @param {timeRangeCosts} array of time ranges and corresponding costs
+  */
+  var sortTimeRanges = function (timeRangeCosts) {
+    var sorted_timeRangeCosts = timeRangeCosts.sort(function(window1, window2) {
       return window1.cost - window2.cost;
     });
-    return sorted_squeeze_list;
+    return sorted_timeRangeCosts;
   };
 
-  var squeeze_heuristic = function (squeeze_blocks) {
+  /*
+    Calculates total cost of a time range
+    @param {blockCounts} array of time blocks and corresponding costs
+  */
+  var timeRangeHeuristic = function (blockCounts) {
     var heuristic = 0;
-    squeeze_blocks.forEach(function(block) {
+    blockCounts.forEach(function(block) {
       heuristic += block.count;
     });
     return heuristic;
   };
 
-  var validate_duration = function (duration) {
+  /*
+    check whether the duration is in 30 minute increments and modify the duration if necessary
+    @param {duration} duration of meeting (in minutes)
+  */
+  var validateDuration = function (duration) {
     return Math.ceil(duration / 30) * 30;
   };
-
  
-  var duration_to_blocks = function (duration) {
+
+  /*
+    converts duration in minutes to block number
+    @param {duration} duration of meeting (in minutes)
+  */
+  var durationToBlocks = function (duration) {
     return Math.ceil(duration/TIME_BLOCK_MINUTE_DURATION);
   };
 
-  var get_end_time = function (startDate, mtg_duration) {
-    var duration_blocks = duration_to_blocks(mtg_duration);
-    return new Date(startDate.getTime() + duration_blocks*NUM_MILISECONDS_IN_MINUTE*TIME_BLOCK_MINUTE_DURATION);
-  };
-
-  var block_num_to_time = function (block_num, startDate) {
-    return new Date(startDate.getTime() + block_num*NUM_MILISECONDS_IN_MINUTE*TIME_BLOCK_MINUTE_DURATION);
+  /*
+    converts time block number to a date object
+    @param {blockNum} block index number
+    @param {startDate} earliest potential time for the meeting
+  */
+  var blockIndexToTime = function (blockNum, startDate) {
+    return new Date(startDate.getTime() + blockNum*NUM_MILISECONDS_IN_MINUTE*TIME_BLOCK_MINUTE_DURATION);
   };
 
   Object.freeze(_optimeet);
