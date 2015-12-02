@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var Meeting = require('./Meeting.js')
+var Meeting = require('./Meeting.js');
 var logger = require('../../config/log.js');
 
 var UserSchema = mongoose.Schema
@@ -21,7 +21,12 @@ var UserSchema = mongoose.Schema
     { 
         type: mongoose.Schema.ObjectId,
         ref: 'Availability' 
-    }]
+    }],
+
+  preferences : { Monday : [String], Tuesday : [String], 
+                  Wednesday : [String],  Thursday : [String], 
+                  Friday : [String], Saturday : [String], 
+                  Sunday : [String] }
 });
 
 UserSchema.methods = 
@@ -57,7 +62,7 @@ UserSchema.methods =
         {
           logger.error('Error saving new meeting ' + err);
         }
-        cb(newMeeting._id)
+        cb(newMeeting._id);
       });
   },
 
@@ -96,25 +101,25 @@ UserSchema.methods =
   },
 
   /*
-    Sets a users availability for a meeting
-    @param {meetingID} ID of meeting to set availability for 
-    @param {startTime} start of user availability 
-    @param {endTime} end of availabilit
+    Update a user's general preferences
+    @param {preferences} user's general preference object
+        Day of week => [earliestStartTime,  latestEndTime]
+        Ex.  Monday => ["8:00 AM", "11:00 PM"]
+    @param {cb} callback upon completion
   */
-  setAvailablity : function(meetingID, startTime, endTime)
+  updatePreferences : function(preferences, cb)
   {
-
-  },
-
-  /*
-    Gets a user's availability for a meeting 
-    @param {meetingID} ID of meeting to get availability from  
-  */
-  getAvailability : function(meetingID)
-  {
-
+    this.preferences = preferences;
+    this.save(function(err) {
+      if (err)
+      {
+        throw err;
+        logger.error(err);
+      }
+      cb();
+    });
   }
-} 
+}; 
 
 UserSchema.statics = 
 {
@@ -135,6 +140,7 @@ UserSchema.statics =
   getAllUsers : function(cb)
   {
     return this.model('User').find({}, cb);
-  }}
+  }
+};
 
 module.exports = mongoose.model('User', UserSchema);

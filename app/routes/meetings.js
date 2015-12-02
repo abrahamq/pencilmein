@@ -63,8 +63,7 @@ var emailInvitees = function(invitees, meetingId)
     }
     logger.info('Message sent: ' + info.response);
   });
-
-}
+};
 
 
 
