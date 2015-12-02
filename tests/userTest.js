@@ -42,7 +42,7 @@ describe('Meeting tests', function() {
         user2.fullName = "user 2";
         user2.save(function(err,newUser2){
           user.createMeeting("newMeeting","stud",30,earliestStartDate,latestEndDate,[user2],function(err,mtg){
-
+          done();
           });
         });
       });
