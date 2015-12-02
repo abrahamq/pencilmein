@@ -68,11 +68,9 @@ $(function () {
       //grab csrf token before posting
       args.preferences  = data;
       args._csrf = $('#_csrf').data('_csrf');
-      console.log("SUBMITTING these args");
       console.log(args);
-
       //Send data to server 
-      $.post("/preferences", args, function(resp){
+      $.post("/users/preferences", args, function(resp){
           window.location.replace(resp.content.redirect);
       });
 
