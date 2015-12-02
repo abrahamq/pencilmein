@@ -239,7 +239,7 @@ var recordInAndAddEvents = function(meeting, inStartDate, inEndDate, calendar, o
       }
     });
   });
-}
+};
 
 
 module.exports = router;

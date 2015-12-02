@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var Meeting = require('./Meeting.js')
+var Meeting = require('./Meeting.js');
 var logger = require('../../config/log.js');
 
 var UserSchema = mongoose.Schema
@@ -57,7 +57,7 @@ UserSchema.methods =
         {
           logger.error('Error saving new meeting ' + err);
         }
-        cb(newMeeting._id)
+        cb(newMeeting._id);
       });
   },
 
@@ -114,7 +114,7 @@ UserSchema.methods =
   {
 
   }
-} 
+}; 
 
 UserSchema.statics = 
 {
@@ -135,6 +135,6 @@ UserSchema.statics =
   getAllUsers : function(cb)
   {
     return this.model('User').find({}, cb);
-  }}
+  }};
 
 module.exports = mongoose.model('User', UserSchema);

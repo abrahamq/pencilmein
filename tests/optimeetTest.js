@@ -172,7 +172,7 @@ describe('Optimeet', function() {
                     av2.getTimeBlocks(function(e2, allBlocks2) {
                       assert.equal(e,null);
                       assert.equal(allBlocks.length,8);
-                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], meeting);;
+                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], meeting);
                       assert.equal(optimal_in, null);
                       done();
                     });
