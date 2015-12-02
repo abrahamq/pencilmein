@@ -41,7 +41,8 @@
       <ul class="nav navbar-nav">
         <li><a href="/about">About</a></li>
         {{#unless showLoginButton}}
-        <li><a href="/user">My Meetings</a></li>
+        <li><a href="/users">My Meetings</a></li>
+        <li><a href="/users/preferences/new">Edit Scheduling Preferences</a><li>
         {{/unless}}
       </ul>
       {{#if showLoginButton}}
@@ -49,7 +50,6 @@
       {{else}} 
         <a href="/logout" class="btn navbar-btn navbar-right btn-google-plus sign-in-text btn-primary">Logout</a>
       {{/if}}
-
   </div>
 </div>
 </nav>

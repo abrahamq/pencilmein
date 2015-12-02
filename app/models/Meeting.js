@@ -36,22 +36,24 @@ MeetingSchema.methods=
     this.save(cb);
 	},
 
-	/*
-		Saves user responses to database
-		@param {googleID} String - GoogleID of the user whos response is recorded 
+  /*
+  Saves user responses to database
+    @param {googleID} String - GoogleID of the user whos response is recorded 
     @param {cb} callback upon completion 
-	*/
-	recordMemberResponse: function(googleID, cb){
-		this.respondedMembers.push(googleID);
+  */
+  recordMemberResponse: function(googleID, cb){
+    if (this.respondedMembers.indexOf(googleID) == -1){
+      this.respondedMembers.push(googleID);
+    }
     this.save(cb);
-	},
-
+  },
+   
 	/*
 		Determines whether a user is invited
 		@param {username} String - GoogleID of user 
 	*/
 	isUserInvited: function(googleID){
-	   return this.invitedMembers.indexOf(googleID) !== -1;
+	  return this.invitedMembers.indexOf(googleID) !== -1;
   },
 
   /*
@@ -62,7 +64,7 @@ MeetingSchema.methods=
   	var invitedMembers = this.invitedMembers;
   	User.find({'_id' : { $in: invitedMembers}}, 'googleEmail', function(err,email) {
   		cb(err, email);
-  	})
+  	});
   },
 
   /*
@@ -73,8 +75,8 @@ MeetingSchema.methods=
   recordIn : function(startDate, endDate, cb) {
   	this.InStartDate = startDate;
   	this.InEndDate = endDate;
-  	this.save(cb)
+  	this.save(cb);
   }
 };
 
-module.exports = mongoose.model('Meeting', MeetingSchema)
+module.exports = mongoose.model('Meeting', MeetingSchema);

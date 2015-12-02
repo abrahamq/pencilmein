@@ -20,8 +20,13 @@ describe('Meeting tests', function() {
       meet.duration = 30;
       meet.earliestStartDate = new Date(2015,10,3,4,00);
       meet.latestEndDate= new Date(2015,10,3,5,30);
-      meet.inviteMember("123",function(err,meeting){
-        
+      it('testing 2 separate responses, both should be recorded', function(done) {
+        meet.inviteMember("123",function(err,meeting){
+          assert.equal(err,null);
+          assert.equal(meeting.invitedMembers.length,1);
+          assert.equal(meeting.respondedMembers.length,0);
+          done();  
+        });
       });
   });
 });
