@@ -178,9 +178,6 @@ router.post('/availabilities', function(req, res) {
                       lastRange[1] = new Date( mtg_endDate );
                     }
                   }
-                  console.log("Overall meeting start:", mtg_startDate);
-                  console.log("Overall meeting end:", mtg_endDate);
-                  console.log("Overall timeRanges:", timeRanges);
                   availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar',function(e,allIds){
                     availability.save(function(){
                       meeting.recordMemberResponse(userId, function(err, found_meeting) {
@@ -189,19 +186,19 @@ router.post('/availabilities', function(req, res) {
                           Availability.findByMeetingId(meetingId, function(err, availabilities) {
                             Availability.getTimeBlocksListsForAvailabilities(availabilities, function(err, blocksLists) {
 
-                              var optimal_in = optimeet.getIn(blocksLists, mtg_startDate, duration);
+                              var optimal_in = optimeet.getIn(blocksLists, meeting);
+
                               meeting.recordIn(optimal_in.startDate, optimal_in.endDate, function(err) {
                                   var invitee_emails = meeting.invitedMembers;
                                   gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, title, location, optimal_in.startDate, optimal_in.endDate, function(err) {
                                     if (err) {
-                                      // utils.sendErrResponse(res, 400, "cannot create google calendar event");
+                                      utils.sendErrResponse(res, 400, "cannot create google calendar event");
                                     } else {
                                       utils.sendSuccessResponse(res, {redirect: '/users'}); 
                                       return;
                                     }
                                   });
                               });
-                              // recordInAndAddEvents(meeting, optimal_in.startDate, optimal_in.endDate);                 
                             });
                           });
                         } else {
@@ -236,13 +233,13 @@ var recordInAndAddEvents = function(meeting, inStartDate, inEndDate, calendar, o
     var invitee_emails = meeting.invitedMembers;
     gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, meeting.title, meeting.location, inStartDate, inEndDate, function(err){
       if (err) {
-        // utils.sendErrResponse(res, 400, "cannot create google calendar event");
+        utils.sendErrResponse(res, 400, "cannot create google calendar event");
       } else {
         utils.sendSuccessResponse(res, {redirect: '/users'});
       }
     });
   });
-}
+};
 
 
 module.exports = router;

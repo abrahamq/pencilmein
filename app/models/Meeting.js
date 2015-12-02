@@ -75,8 +75,8 @@ MeetingSchema.methods=
   recordIn : function(startDate, endDate, cb) {
   	this.InStartDate = startDate;
   	this.InEndDate = endDate;
-  	this.save(cb)
+  	this.save(cb);
   }
 };
 
-module.exports = mongoose.model('Meeting', MeetingSchema)
+module.exports = mongoose.model('Meeting', MeetingSchema);
