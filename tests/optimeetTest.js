@@ -4,6 +4,7 @@ var mongoose = require("mongoose");
 var TimeBlock = require("../app/models/TimeBlock.js");
 var Availability = require("../app/models/Availability.js");
 var Optimeet = require("../app/javascripts/optimeet.js");
+var Meeting = require("../app/models/Meeting.js");
 
 mongoose.connect('mongodb://localhost/testAvaDb');
 mongoose.connection.on("open", function(err) {
@@ -25,6 +26,8 @@ describe('Optimeet', function() {
         var av = new Availability();
         var av2 = new Availability();
 
+        var meeting = new Meeting({earliestStartDate: startDate, duration : 30});
+
         av.meetingId="newmeet";
         av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
@@ -43,8 +46,7 @@ describe('Optimeet', function() {
                       assert.equal(allBlocks2[5].color,'yellow');//6:30-7
                       assert.equal(allBlocks2[6].color,'yellow');//7-7:30
                       assert.equal(allBlocks2[7].color,'yellow');//7:30-8
-                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], startDate, 30);
-                      console.log('in test optimal in : ', optimal_in);
+                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], meeting);
                       var expectedStartDate = new Date(2015,10,3,4,00);
                       var expectedEndDate = new Date(2015,10,3,4,30);
                       assert.equal(expectedStartDate.getTime(), optimal_in.startDate.getTime());
@@ -71,6 +73,8 @@ describe('Optimeet', function() {
         var av = new Availability();
         var av2 = new Availability();
 
+        var meeting = new Meeting({earliestStartDate: startDate, duration : 60});
+
         av.meetingId="newmeet";
         av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
@@ -89,8 +93,7 @@ describe('Optimeet', function() {
                       assert.equal(allBlocks2[5].color,'yellow'); //6:30-7
                       assert.equal(allBlocks2[6].color,'yellow'); //7-7:30
                       assert.equal(allBlocks2[7].color,'yellow'); //7:30-8
-                      console.log(Optimeet.getIn([allBlocks,allBlocks2], startDate, 60));
-                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], startDate, 60);
+                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], meeting);
                       var expectedStartDate = new Date(2015,10,3,4,00);
                       var expectedEndDate = new Date(2015,10,3,5,00);                      
                       assert.equal(expectedStartDate.getTime(), optimal_in.startDate.getTime());
@@ -117,6 +120,8 @@ describe('Optimeet', function() {
         var av = new Availability();
         var av2 = new Availability();
 
+        var meeting = new Meeting({earliestStartDate: startDate, duration : 60});
+
         av.meetingId="newmeet";
         av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
@@ -127,8 +132,7 @@ describe('Optimeet', function() {
                     av2.getTimeBlocks(function(e2, allBlocks2) {
                       assert.equal(e,null);
                       assert.equal(allBlocks.length,8);
-                      console.log(Optimeet.getIn([allBlocks,allBlocks2], startDate, 60));
-                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], startDate, 60);
+                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], meeting);
                       var expectedStartDate = new Date(2015,10,3,5,00);
                       var expectedEndDate = new Date(2015,10,3,6,00);                      
                       assert.equal(expectedStartDate.getTime(), optimal_in.startDate.getTime());
@@ -155,6 +159,9 @@ describe('Optimeet', function() {
         var av = new Availability();
         var av2 = new Availability();
 
+        var meeting = new Meeting({earliestStartDate: startDate, duration : 60});
+
+
         av.meetingId="newmeet";
         av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
@@ -165,8 +172,7 @@ describe('Optimeet', function() {
                     av2.getTimeBlocks(function(e2, allBlocks2) {
                       assert.equal(e,null);
                       assert.equal(allBlocks.length,8);
-                      console.log(Optimeet.getIn([allBlocks,allBlocks2], startDate, 60));
-                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], startDate, 60);
+                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], meeting);;
                       assert.equal(optimal_in, null);
                       done();
                     });
@@ -190,6 +196,8 @@ describe('Optimeet', function() {
         var av = new Availability();
         var av2 = new Availability();
 
+        var meeting = new Meeting({earliestStartDate: startDate, duration : 60});
+
         av.meetingId="newmeet";
         av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
@@ -200,8 +208,7 @@ describe('Optimeet', function() {
                     av2.getTimeBlocks(function(e2, allBlocks2) {
                       assert.equal(e,null);
                       assert.equal(allBlocks.length,8);
-                      console.log(Optimeet.getIn([allBlocks,allBlocks2], startDate, 60));
-                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], startDate, 60);
+                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], meeting);
                       var expectedStartDate = new Date(2015,10,3,5,00);
                       var expectedEndDate = new Date(2015,10,3,6,00);                      
                       assert.equal(expectedStartDate.getTime(), optimal_in.startDate.getTime());
@@ -232,6 +239,9 @@ describe('Optimeet', function() {
         var av = new Availability();
         var av2 = new Availability();
 
+        var meeting = new Meeting({earliestStartDate: startDate, duration : 60});
+
+
         av.meetingId="newmeet";
         av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
@@ -242,8 +252,7 @@ describe('Optimeet', function() {
                     av2.getTimeBlocks(function(e2, allBlocks2) {
                       assert.equal(e,null);
                       assert.equal(allBlocks.length,8);
-                      console.log(Optimeet.getIn([allBlocks,allBlocks2], startDate, 60));
-                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], startDate, 60);
+                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], meeting);
                       var expectedStartDate = new Date(2015,10,3,5,00);
                       var expectedEndDate = new Date(2015,10,3,6,00);                      
                       assert.equal(expectedStartDate.getTime(), optimal_in.startDate.getTime());
@@ -275,6 +284,9 @@ describe('Optimeet', function() {
         var av = new Availability();
         var av2 = new Availability();
 
+        var meeting = new Meeting({earliestStartDate: startDate, duration : 60});
+
+
         av.meetingId="newmeet";
         av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
@@ -285,8 +297,7 @@ describe('Optimeet', function() {
                     av2.getTimeBlocks(function(e2, allBlocks2) {
                       assert.equal(e,null);
                       assert.equal(allBlocks.length,8);
-                      console.log(Optimeet.getIn([allBlocks,allBlocks2], startDate, 60));
-                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], startDate, 60);
+                      var optimal_in = Optimeet.getIn([allBlocks,allBlocks2], meeting);
                       var expectedStartDate = new Date(2015,10,3,7,00);
                       var expectedEndDate = new Date(2015,10,3,8,00);                      
                       assert.equal(expectedStartDate.getTime(), optimal_in.startDate.getTime());

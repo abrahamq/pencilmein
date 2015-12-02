@@ -12,9 +12,13 @@ var optimeet = (function () {
     @param {earliestStartDate} earliest potential time for the meeting
     @param {mtgDuration} length of the meeting in minutes
   */
-  _optimeet.getIn = function (availabilities, earliestStartDate, mtgDuration) {
+  _optimeet.getIn = function (availabilities, meeting) {
+
+    var earliestStartDate = meeting.earliestStartDate;
+    var mtgDuration = meeting.duration;
+
     var durationBlocks = durationToBlocks(validateDuration(mtgDuration));
-    var timeBlockToCount = getCounts(availabilities, earliestStartDate);
+    var timeBlockToCount = assignCost(availabilities, earliestStartDate);
     var timeRangeCosts = getTimerangeCosts(timeBlockToCount, durationBlocks);
     var bestIn = findBestIn(timeRangeCosts);
     if (bestIn !== null) {
@@ -31,7 +35,7 @@ var optimeet = (function () {
     @param {availabilities} array the availabilities of all meeting participants for pre-specified time range
     @param {earliestStartDate} earliest potential time for the meeting
   */
-  var getCounts = function (availabilities, earliestStartDate) {
+  var assignCost = function (availabilities, earliestStartDate) {
     var numSlots = availabilities[0].length;
     var timeBlockToCount = [];
 
@@ -131,7 +135,7 @@ var optimeet = (function () {
     @param {duration} duration of meeting (in minutes)
   */
   var validateDuration = function (duration) {
-    return Math.ceil(duration / 30) * 30;
+    return Math.ceil(duration / TIME_BLOCK_MINUTE_DURATION) * TIME_BLOCK_MINUTE_DURATION;
   };
  
 
