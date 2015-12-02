@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="/javascripts/preferencePage.js"></script>
+<link rel="stylesheet" href="/css/preferences.css"/>
+<link href="/css/bootstrap-timepicker.min.css" rel="stylesheet">
+<script src="/javascripts/bootstrap-timepicker.min.js"></script>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"/>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"> </script>
+
+
+<div class='jumbotron'>
+<h2>Kwame's General Preferences</h2> 
+<p> For each day of the week below, enter the earliest time as well as the latest time that you could potentially meet. </p>
+<p> Feel free to leave a field blank if you have no specific preferences for that day </p>
+</div>
+<style>
+.container{
+    float : left;
+}
+</style>
+
+<div id='_csrf' data-_csrf={{_csrf}}> </div> 
+<div class="container">
+   <form id="editPreferences" class="form-horizontal">
+      <!-- BEGIN form-group line-1 -->
+      <div class="form-group">
+         <label class="col-xs-4 control-label"></label>
+         <div class="col-xs-4">
+            <div class="input-group">
+                <label class="control-label">Earliest Start Times</label>
+               <input type="hidden">
+            </div>
+         </div>
+         <div class="col-xs-4">
+            <div class="input-group">
+               <label class="control-label">Latest End Times</label>
+               <input type="hidden">
+            </div>
+         </div>
+         <!-- /.col-sm-8 -->
+      </div>
+
+      <div class="form-group">
+         <label class="col-xs-4 control-label">Mondays</label>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerMondayStart" name="Monday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <div class="col-xs-4">
+           <div class="input-group bootstrap-timepicker timepicker">
+              <input id="timepickerMondayEnd" name="Monday" type="text" class="form-control input-small">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+           </div>
+         </div>
+         <!-- /.col-sm-8 -->
+      </div>
+     
+      <div class="form-group">
+         <label class="col-xs-4 control-label">Tuesdays</label>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerTuesdayStart" name="Tuesday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerTuesdayEnd" name="Tuesday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <!-- /.col-sm-8 -->
+      </div>
+     
+         <div class="form-group">
+         <label class="col-xs-4 control-label">Wednesdays</label>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerWednesdayStart" name="Wednesday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerWednesdayEnd" name="Wednesday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <!-- /.col-sm-8 -->
+      </div>
+     
+      <div class="form-group">
+         <label class="col-xs-4 control-label">Thursdays</label>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerThursdayStart" name="Thursday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerThursdayEnd" name="Thursday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <!-- /.col-sm-8 -->
+      </div>
+     
+      <div class="form-group">
+         <label class="col-xs-4 control-label">Fridays</label>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerFridayStart" name="Friday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerFridayEnd" name="Friday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <!-- /.col-sm-8 -->
+      </div>
+     
+      <div class="form-group">
+         <label class="col-xs-4 control-label">Saturdays</label>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerSaturdayStart" name="Saturday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerSaturdayEnd" name="Saturday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <!-- /.col-sm-8 -->
+      </div>
+     
+      <div class="form-group">
+         <label class="col-xs-4 control-label">Sundays</label>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerSundayStart" name="Sunday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <div class="col-xs-4">
+         <div class="input-group bootstrap-timepicker timepicker">
+            <input id="timepickerSundayEnd" name="Sunday" type="text" class="form-control input-small">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         </div>
+         </div>
+         <!-- /.col-sm-8 -->
+      </div>
+    <div class="form-group"> 
+      <div class="col-xs-offset-4 col-xs-10">
+        <button type="submit" id="submission" class="btn btn-default">Update Your Preferences</button>
+      </div>
+    </div>
+   </form>
+</div> <!-- /.container -->
