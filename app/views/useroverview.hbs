@@ -7,7 +7,7 @@
 <a class="btn btn-lg btn-primary" id="schedule" href="#" role="button">Schedule a New Meeting</a>
 </div>
 
-
+<!--
 <h1>Your Meetings:</h1>
 {{#if meetings.length}}
 <ul class="list-group" class="dropdown-header">
@@ -18,3 +18,55 @@
 {{else}}
   <p>You have no meetings. </p>
 {{/if}}
+-->
+<style>
+  .text-center {
+    text-align : center;
+  }
+  .fieldheader {
+    font-size : 16px;
+  }
+  a { 
+    color: inherit; 
+  } 
+</style>
+<div class="row container">
+   <div class="col-xs-6">
+      <h2 class"text-center">Pending Meetings</h2>
+        {{#if meetings.length}}
+        <ul class="list-group" class="dropdown-header">
+          {{#each meetings}}
+          {{#unless this.InStartDate}}
+                <a href='/users/calendars/{{this.id}}' id={{this._id}}>
+            <li class="list-group-item"><b class="fieldheader">Title</b>: {{this.title}} | <b class="fieldheader">Where</b>: {{this.location}}
+
+              <br><b class="fieldheader">EarliestStart</b>: {{this.earliestStartDate}} <br>
+                  <b class="fieldheader">LatestEnd</b>: {{this.latestEndDate}}
+                  <br>
+                  <span class="glyphicon glyphicon-calendar"></span>
+                      </a>
+            </li>
+            {{/unless}}
+          {{/each}}
+        </ul>
+        {{else}}
+          <p>You have no meetings. </p>
+        {{/if}}
+   </div>
+   <div class="col-xs-6">
+      <h2 class="text-centder">Scheduled Meetings</h2>
+      {{#if meetings.length}}
+        <ul class="list-group" class="dropdown-header">
+           {{#each meetings}}
+             {{#if this.InStartDate}}
+                <li class="list-group-item"><b class="fieldheader">Title</b>: {{this.title}} | <b class="fieldheader">Where</b>: {{this.location}}
+                <br><b class="fieldheader">Start</b>: {{this.InStartDate}}<br>
+                <b class="fieldheader">End</b>: {{this.InEndDate}}
+             {{/if}}
+           {{/each}}
+        </ul>
+      {{else}}
+        <p> You have no scheduled meetings.</p>
+      {{/if}}
+   </div>
+</div>

@@ -162,6 +162,14 @@ $(document).ready(function()
                   notEmpty : {
                       message : 'Must enter a valid email address'
                   },
+                  callback : {
+                    message : 'You can\'t invite yourself!',
+                    callback : function (value, validator, $field)
+                    {
+                      var creatorEmail = $('#creatorGmail').attr('data-_gmail');
+                      return value !== creatorEmail;
+                    }
+                  },
                   regexp: {
                       regexp: '^[^@\\s]+@([^@\\s]+\\.)+[^@\\s]+$',
                       message: 'This is not a valid email address'
