@@ -141,33 +141,31 @@ router.post('/availabilities', function(req, res) {
   var userEvents = req.body.events;
   var meetingId = req.body.meetingId;
 
-  User.getUser(curEmail, function(err, user) {
-    if (err) {
-      utils.sendErrResponse(res, 400, "no user found");
-      return;
-    } else {
-      oAuth2Client.setCredentials({
-        access_token : user.googleAccessToken,
-        refresh_token : user.googleRefreshToken
-      });
-      Meeting.findById(meetingId,function(err,meeting){
+  oAuth2Client.setCredentials({
+    access_token : req.user.googleAccessToken,
+    refresh_token : req.user.googleRefreshToken
+  });
 
-        var mtg_Date = {start : meeting.earliestStartDate, end : meeting.latestEndDate};
-        Availability.initialize(mtg_Date, userId, meetingId, function(err, availability)
-        {
-          gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
-              var timeRanges = schedulingUtils.convertEventsToTimeRanges(events);
-              availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar',function (e,allIds){
-                availability.save(function(err)
-                {
-                  if (err) throw err;
-                  recordAndSchedule(res, meeting, userId, calendar, oAuth2Client);
-                });
-              });
-           });            
-        });
-      });
+  Meeting.findById(meetingId,function(err, meeting){
+    if (!meeting.isEligibleToSubmit(curEmail))
+    {
+      utils.sendSuccessResponse(res, {redirect: '/'});
+      return;
     }
+    var mtg_Date = {start : meeting.earliestStartDate, end : meeting.latestEndDate};
+    Availability.initialize(mtg_Date, userId, meetingId, function(err, availability)
+    {
+      gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
+          var timeRanges = schedulingUtils.convertEventsToTimeRanges(events);
+          availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar', function (e,allIds){
+            availability.save(function(err)
+            {
+              if (err) throw err;
+              recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
+            });
+          });
+       });            
+    });
   });
 });
 /*
@@ -175,13 +173,13 @@ router.post('/availabilities', function(req, res) {
   otherwise redirects to the user overview page without further option
   @param {res} http response
   @param {meeting} Meeting to record member response in 
-  @param {userId} Id of the user responding
+  @param {userEmail} Gmail of the user responding
   @param {calendar} the google calendar instance
   @param {oauth2client} auth client 
 */
 
-var recordAndSchedule = function(res, meeting, userId, calendar, oAuth2Client) {
-  meeting.recordMemberResponse(userId, function (err, found_meeting) {
+var recordAndSchedule = function(res, meeting, userEmail, calendar, oAuth2Client) {
+  meeting.recordMemberResponse(userEmail, function (err, found_meeting) {
 
   if (found_meeting.isClosed()) {
     // Record and calculate a new In
