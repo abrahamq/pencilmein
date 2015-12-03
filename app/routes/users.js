@@ -33,12 +33,24 @@ router.get('/', isLoggedIn, function(req, res) {
       }
       else {
         //Render user overview page
-        utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
+        //maintain pending and scheduled meetings
+        var scheduledMeetings = [];
+        var pendingMeetings = user.meetings.filter(function (meeting) {
+          var scheduled = meeting.InStartDate !== undefined;
+          if (scheduled)
+          {
+            scheduledMeetings.push(meeting);
+          }
+          return !scheduled;
+        });
+        utils.renderTemplate(res, 'useroverview', {pendingMtgs : pendingMeetings, scheduledMtgs : scheduledMeetings, userName: req.user.fullname});
         return;
       }
    });
  });
 });
+
+
 
 //Load the calendar view for a particular meeting
 router.get('/calendars/:meetingId', function(req, res, next){
