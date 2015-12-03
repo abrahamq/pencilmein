@@ -186,7 +186,7 @@ AvailabilitySchema.methods =
       var latestEndHour = endHoursAndMins[0];
       var latestEndMinute = endHoursAndMins[1];
       if (latestEndHour!=="" && latestEndMinute!==""){
-        var latestEndPref = {'day':dayNum, 'startHour':latestEndHour, 'startMinute':latestEndMinute, 'endHour':23,'endMinute':59};
+        var latestEndPref = {'day':dayNum, 'startHour':latestEndHour, 'startMinute':latestEndMinute, 'endHour':24,'endMinute':0};
         preferences.push(latestEndPref);
       }
     }

@@ -143,19 +143,23 @@ describe('Initialize availabilities time blocks', function() {
         });
       });
   });
-  describe('initializing time blocks for entire day', function() {
+  describe('testing initializing time blocks for a single entire day (12am - 12am)', function() {
       //setup database state 
-      var startDate = new Date(2015,10,3,4,00);
-      var endDate = new Date(2015,10,4,4,00);
+      var startDate = new Date(2015,10,3,0,00);
+      var endDate = new Date(2015,10,4,0,00);
       var av = new Availability();
       av.meetingId="newmeet";
       it('should return block list for entire day and avail. keeps good start time', function(done) {
         av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            assert.equal(error,null);
-            assert.equal(foundBlockList.length,48);
-            assert.equal(av.startDate.getTime(),startDate.getTime());
-            done();
+            av.getTimeBlocks(function(e,allBlocks){
+              assert.equal(e,null);
+              assert.equal(allBlocks.length,48);
+              console.log(allBlocks[47].startDate.getHours());
+              assert.equal(allBlocks[47].startDate.getHours(),23);
+              assert.equal(allBlocks[47].startDate.getMinutes(),30);
+              done();
+            });
           });
         });
       });
@@ -191,6 +195,29 @@ describe('check block id lookup based on time', function() {
       });
   });
   describe('test static lookup of blocks from list of availabilites w just one av.', function() {
+    //setup database state 
+    var start = new Date(2015,10,3,4,00);
+    var end = new Date(2015,10,3,5,30);
+    var time = new Date(start);
+    var av = new Availability();
+    var Av = Availability;
+    av.meetingId = "newmeet";
+    av.googleId = "kwefah";
+    it('should find correct id', function(done) {
+      av.initializeTimeBlocks(start,end,function(error,foundBlockList){
+        av.save(function(){
+          Availability.getTimeBlocksListsForAvailabilities([av],function(err,blocksLists){
+            assert.equal(err,null);
+            assert.equal(blocksLists.length,1);
+            assert.equal(blocksLists[0].length,3);
+            assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
+            done();
+          });
+        });
+      });
+    });
+  });
+  describe('create entire day with 48 time blocks', function() {
     //setup database state 
     var start = new Date(2015,10,3,4,00);
     var end = new Date(2015,10,3,5,30);
