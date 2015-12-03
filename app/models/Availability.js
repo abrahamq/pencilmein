@@ -138,10 +138,13 @@ AvailabilitySchema.methods =
       availability.setBlocksInTimeRangesColorAndCreationType(nextRanges, newColor, newCreationType, cb);
     });
   },
-
+  //////// The rest of the instance methods deal with general preferences //////////
   /*
   [OUTERMOST FUNCTION] CALL FOR GENERAL PREFERENCES FROM END OUTPUT
   Updates all time blocks on specific dates that correspond to the general preferences day-of-week earliestStart/latestEnd times
+    ex: 
+  ~~~Given: thisAvailability from Nov. 1, 12am - Nov. 30th 12am + "Never Available Sun 12am - 11am" --> 
+  ~~~updates blocks in ranges: [[Nov. 1, 12am, Nov. 1, 11am],[Nov. 8, 12am, Nov. 8, 11am],...,[Nov. 29, 12am, Nov. 29, 11am]] to red
   @param genPrefDict: Dictionary mapping String days of the week to a list containing 1) String earliest start time 2) String latest end time
   eg. {"Monday": ["8:00 AM", "11:00 PM"],...}
   @param cb will be given args 1) error and 2) list of time block ids for availability
@@ -190,6 +193,7 @@ AvailabilitySchema.methods =
     return this.getTimeRangesForDayPreferences(preferences);
   },
   /*
+  [Helper Function]
   Given a general day-of-week preferences, returns all the specific date ranges that fall in this pref range on this day of the week
   @param dayPreferences is a list of objects, each object contains the following keys: values
     -@param  'day': int (MUST BE 0-6) day of the week of the given general prefernece
@@ -224,86 +228,6 @@ AvailabilitySchema.methods =
         }
         currentDayStartDate = new Date(currentDayStartDate.getFullYear(), currentDayStartDate.getMonth(), currentDayStartDate.getDate()+1);
       }
-    }
-    return ranges;
-  },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /*
-  Given a general day preference (day of week, start time, end time), updates all blocks in this availability that will fall
-  on that day of the week in that time range
-  ex: 
-  ~~~Given: thisAvailability from Nov. 1, 12am - Nov. 30th 12am + "Never Available Sun 12am - 11am" --> 
-  ~~~updates blocks in ranges: [[Nov. 1, 12am, Nov. 1, 11am],[Nov. 8, 12am, Nov. 8, 11am],...,[Nov. 29, 12am, Nov. 29, 11am]] to red
-  @param int day (MUST BE 0-6) day: day of the week of the given general prefernece
-  @param int startHour (MUST BE 0-23): start hour of the general preference
-  @param int startMinute (MUST BE 0 or 30): start minute in the start hour of the general preference
-  @param int endHour (MUST BE 0-23): end hour of the general preference
-  @param int endMinute (MUST BE 0 or 30): end minute in the end hour of the general preference
-  @param cb: will be given arg1) error, arg2) list of time block ids in the availability
-  @result [[startDate, endDate]] a lits of time ranges that this day preference will apply to in this availabiltiy
-  */
-  updateBlocksForDayPreference: function(day, startHour, startMinute, endHour, endMinute, color, cb){
-    var ranges = this.getTimeRangesForDayPreference(day, startHour, startMinute, endHour, endMinute);
-    this.setBlocksInTimeRangesColorAndCreationType(ranges,color,'general',cb);
-  },
-  /*
-  Given a general day preference (day of week, start time, end time), updates all blocks in this availability that will fall
-  on that day of the week in that time range
-  ex: 
-  ~~~Given: thisAvailability from Nov. 1, 12am - Nov. 30th 12am + "Never Available Sun 12am - 11am" --> 
-  ~~~updates blocks in ranges: [[Nov. 1, 12am, Nov. 1, 11am],[Nov. 8, 12am, Nov. 8, 11am],...,[Nov. 29, 12am, Nov. 29, 11am]] to red
-  @param int day (MUST BE 0-6) day: day of the week of the given general prefernece
-  @param int startHour (MUST BE 0-23): start hour of the general preference
-  @param int startMinute (MUST BE 0 or 30): start minute in the start hour of the general preference
-  @param int endHour (MUST BE 0-23): end hour of the general preference
-  @param int endMinute (MUST BE 0 or 30): end minute in the end hour of the general preference
-  @param cb: will be given arg1) error, arg2) list of time block ids in the availability
-  @result [[startDate, endDate]] a lits of time ranges that this day preference will apply to in this availabiltiy
-  */
-  updateBlocksForDayPreferences: function(dayPreferences, cb){
-    var ranges = this.getTimeRangesForDayPreferences(dayPreferences);
-    this.setBlocksInTimeRangesColorAndCreationType(ranges,'red','general',cb);
-  },
-  /*
-  Just used for testing
-  Given a general day-of-week preference, returns all the specific date ranges that fall in this pref range on this day of the week
-  @param int day (MUST BE 0-6) day: day of the week of the given general prefernece
-  @param int startHour (MUST BE 0-23): start hour of the general preference
-  @param int startMinute (MUST BE 0 or 30): start minute in the start hour of the general preference
-  @param int endHour (MUST BE 0-23): end hour of the general preference
-  @param int endMinute (MUST BE 0 or 30): end minute in the end hour of the general preference
-  @result [[Date startDate, Date endDate]] a lits of time ranges that this day preference will apply to in this availabiltiy
-  */
-  getTimeRangesForDayPreference: function(day, startHour, startMinute, endHour, endMinute){
-    var ranges =[];
-    var currentDayStartDate = new Date(this.startDate.getFullYear(), this.startDate.getMonth(), this.startDate.getDate());
-    var rangeStartDate = new Date(currentDayStartDate);
-    rangeStartDate.setHours(startHour);
-    rangeStartDate.setMinutes(startMinute);
-    while (rangeStartDate < this.endDate && currentDayStartDate < this.endDate){
-      if (currentDayStartDate.getDay() == day){
-        var rangeStartDate = new Date(currentDayStartDate);
-        rangeStartDate.setHours(startHour);
-        rangeStartDate.setMinutes(startMinute);
-        var rangeEndDate = new Date(currentDayStartDate);
-        rangeEndDate.setHours(endHour);
-        rangeEndDate.setMinutes(endMinute);
-        ranges.push([new Date(Math.max(this.startDate, rangeStartDate)), new Date(Math.min(this.endDate, rangeEndDate))]);
-      }
-      currentDayStartDate = new Date(currentDayStartDate.getFullYear(), currentDayStartDate.getMonth(), currentDayStartDate.getDate()+1);
     }
     return ranges;
   }

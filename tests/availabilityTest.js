@@ -538,7 +538,6 @@ describe('Testing General Pref Helper Functions', function() {
         av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
           var preferences = [{'day':0, 'startHour':1, 'startMinute':30, 'endHour':11,'endMinute':30}];
           var ranges = av.getTimeRangesForDayPreferences(preferences);
-          console.log("single pref ranges: ",ranges);
           assert.equal(ranges.length, 5);
           assert.equal(ranges[0][0].getTime(), startDate.getTime());
           assert.equal(ranges[0][1].getHours(), 11);
@@ -570,7 +569,6 @@ describe('Testing General Pref Helper Functions', function() {
                             'Wednesday': ["8:00 AM","8:00 PM"], 'Thursday':["8:00 AM","8:00 PM"], 
                             'Friday':["8:00 AM","8:00 PM"], 'Saturday':["8:00 AM","8:00 PM"]};
           var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
-          console.log("ALL GEN PREF DICT RANGES: ",ranges);
           done();
         });
       });
