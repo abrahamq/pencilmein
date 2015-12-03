@@ -71,18 +71,20 @@ UserSchema.methods =
     @param{meetingID} ID of the meeting to join
     @param{cb} callback upon completion  
   */
-  joinMeeting : function(meetingID, cb)
+  joinMeeting : function(meetingId, cb)
   {
-    //Find meeting object
-    Meeting.findById(meetingID, function(err, curMeeting)
+    // Add meeting
+    if (this.meetings.indexOf(meetingId) == -1) {
+      this.meetings.push(meetingId);
+    } 
+    //Handle saving
+    this.save(function(err)
     {
-      //if user was invited to meeting 
-      if (curMeeting.isUserInvited(this.googleID))
-      {
-        curMeeting.respondedMembers.push(this.googleID);
+      if (err) { 
+        logger.error(err);
+        throw err;
       }
-      curMeeting.save(cb);
-
+      cb(err);
     });
   },
 
@@ -113,8 +115,8 @@ UserSchema.methods =
     this.save(function(err) {
       if (err)
       {
-        throw err;
         logger.error(err);
+        throw err;
       }
       cb();
     });

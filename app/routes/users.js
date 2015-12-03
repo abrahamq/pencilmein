@@ -146,35 +146,42 @@ router.post('/availabilities', function(req, res) {
   var meetingId = req.body.meetingId;
   var manualPreferences = req.body.preferences;
 
-  oAuth2Client.setCredentials({
-    access_token : req.user.googleAccessToken,
-    refresh_token : req.user.googleRefreshToken
-  });
+  User.getUser(req.user.googleEmail, function(err, user)
+  {
+    oAuth2Client.setCredentials({
+      access_token : user.googleAccessToken,
+      refresh_token : user.googleRefreshToken
+    });
 
-  Meeting.findById(meetingId,function(err, meeting){
-    if (!meeting.isEligibleToSubmit(curEmail))
-    {
-      utils.sendSuccessResponse(res, {redirect: '/'});
-      return;
-    }
-    var mtg_Date = {start : meeting.earliestStartDate, end : meeting.latestEndDate};
-    Availability.initialize(mtg_Date, userId, meetingId, function(err, availability)
-    {
-      gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
-          var timeRanges = schedulingUtils.convertEventsToTimeRanges(events);
-          availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar', function (e,allIds){
-            availability.updateAvailabilityWithGeneralPreferences(req.user.preferences, function (err, blockIds)
-            {
-            availability.save(function(err)
-              {
-                saveManualPreferences(availability, manualPreferences, function(err, ids) {
-                  if (err) throw err;
-                  recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
+    Meeting.findById(meetingId,function(err, meeting){
+      if (meeting.isEligibleToSubmit(curEmail)) {
+        user.joinMeeting(meeting._id, function (err) {
+        var mtg_Date = {start : meeting.earliestStartDate, end : meeting.latestEndDate};
+
+        Availability.initialize(mtg_Date, userId, meetingId, function(err, availability)
+        {
+          gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
+              var timeRanges = schedulingUtils.convertEventsToTimeRanges(events);
+              availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar', function (e,allIds){
+                availability.updateAvailabilityWithGeneralPreferences(req.user.preferences, function (err, blockIds)
+                {
+                availability.save(function(err)
+                  {
+                    saveManualPreferences(availability, manualPreferences, function(err, ids) {
+                      if (err) throw err;
+                      recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
+                    });
+                  });
                 });
               });
-            });
-          });
-       });            
+           });            
+        });
+       });
+      } else {
+        // User either was not invited to the meeting or already responded
+        utils.sendSuccessResponse(res, {redirect: '/'});
+        return;
+      }
     });
   });
 });
