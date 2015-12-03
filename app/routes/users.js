@@ -24,15 +24,15 @@ router.get('/', isLoggedIn, function(req, res) {
   //Get the user from the current session and look up user object
   User.getUser(req.user.googleEmail, function(err, user_orig) {
     user_orig.populate('meetings', function(err, user) {
-    if (err) {
-      utils.sendErrResponse(res, 400, 'User meetings do not exist');
-      return;
-    }
-    else {
-      //Render user overview page
-      utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
-      return;
-    }
+      if (err) {
+        utils.sendErrResponse(res, 400, 'User meetings do not exist');
+        return;
+      }
+      else {
+        //Render user overview page
+        utils.renderTemplate(res, 'useroverview', {meetings: user.meetings, userName: req.user.fullname});
+        return;
+      }
    });
  });
 });
