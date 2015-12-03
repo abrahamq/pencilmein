@@ -83,14 +83,14 @@ $(function() { // document ready
     }); 
     result = {red: [], green: [], orange: []}; 
     events.forEach( function(elem){
-      startDate = elem.start.toString(); 
-      endDate = elem.end.toString();
+      startDate = elem.start.toDate(); 
+      endDate = elem.end.toDate();
       color = elem.color; 
       result[color].push([startDate, endDate]);
     }); 
     console.log(result); 
     $.post('/users/availabilities', {meetingId: meetingId, _csrf: _csrf, preferences: result}, function(res){
-      //window.location.replace(res.content.redirect); 
+      window.location.replace(res.content.redirect); 
     });
   }); 
 });
