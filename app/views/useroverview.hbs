@@ -34,10 +34,9 @@
   <div class="container-fluid"> 
    <div class="col-xs-6 col-sm-6">
       <h2 class"text-center">Pending Meetings</h2>
-        {{#if meetings.length}}
+        {{#if pendingMtgs.length}}
         <ul class="list-group" class="dropdown-header">
-          {{#each meetings}}
-          {{#unless this.InStartDate}}
+          {{#each pendingMtgs}}
                 <a href='/users/calendars/{{this.id}}' id={{this._id}}>
             <li class="list-group-item"><b class="fieldheader">Title</b>: {{this.title}} | <b class="fieldheader">Where</b>: {{this.location}}
 
@@ -47,23 +46,20 @@
                   <span class="glyphicon glyphicon-calendar"></span>
                       </a>
             </li>
-            {{/unless}}
           {{/each}}
         </ul>
         {{else}}
-          <p>You have no meetings. </p>
+          <p>You have no pending meetings. </p>
         {{/if}}
    </div>
    <div class="col-xs-6 col-sm-6">
       <h2 class="text-centder">Scheduled Meetings</h2>
-      {{#if meetings.length}}
+      {{#if scheduledMtgs.length}}
         <ul class="list-group" class="dropdown-header">
-           {{#each meetings}}
-             {{#if this.InStartDate}}
+           {{#each scheduledMtgs}}
                 <li class="list-group-item"><b class="fieldheader">Title</b>: {{this.title}} | <b class="fieldheader">Where</b>: {{this.location}}
                 <br><b class="fieldheader">Start</b>: {{this.InStartDate}}<br>
                 <b class="fieldheader">End</b>: {{this.InEndDate}}
-             {{/if}}
            {{/each}}
         </ul>
       {{else}}
