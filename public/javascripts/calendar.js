@@ -90,7 +90,7 @@ $(function() { // document ready
       return event.className[0] === "userCreated"; 
     }); 
     result = {red: [], green: [], orange: []}; 
-    result.offset = (events[0].start.toDate()).getTimezoneOffset();
+    result.offset = events[0] ?  (events[0].start.toDate()).getTimezoneOffset() : 0;
     events.forEach( function(elem){
       startDate = elem.start.toString(); 
       endDate = elem.end.toString();
@@ -98,7 +98,7 @@ $(function() { // document ready
       result[color].push([startDate, endDate]);
     }); 
     $.post('/users/availabilities', {meetingId: meetingId, _csrf: _csrf, preferences: result}, function(res){
-      //window.location.replace(res.content.redirect); 
+      window.location.replace(res.content.redirect); 
     });
   }); 
 });
