@@ -7,7 +7,7 @@ var utils = require('../../utils/utils');
 
 //Load the Edit Preferences form
 router.get('/new', isLoggedIn, function (req, res) {
-  res.render('preferences', {_csrf: req.csrfToken()});
+  res.render('preferences', {_csrf: req.csrfToken(), name : req.user.fullname});
 });
 
 router.post('/', isLoggedIn, function (req, res) {
