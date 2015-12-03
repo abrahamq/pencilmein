@@ -88,7 +88,7 @@ $(function() { // document ready
       result.red.push([startDate, endDate]);
     }); 
     $.post('/users/availabilities', {meetingId: meetingId, _csrf: _csrf, preferences: result}, function(res){
-      //window.location.replace(res.content.redirect); 
+      window.location.replace(res.content.redirect); 
     });
   }); 
 });
