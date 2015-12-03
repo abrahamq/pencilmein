@@ -21,6 +21,8 @@ var refresh = require('passport-oauth2-refresh');
 var isLoggedIn = require('./authMiddleware');
 var logger = require('../../config/log');
 
+var MILISECONDS_IN_MINUTES = 60000;
+
 router.get('/', isLoggedIn, function(req, res) {
   //Get the user from the current session and look up user object
   User.getUser(req.user.googleEmail, function(err, user_orig) {
@@ -95,17 +97,19 @@ router.get('/availabilities', function(req, res) {
       //List the upcoming events from the given time interval {mtg_StartDate} to {mtg_endDate}
       gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
         if (events) {
-          var stringEvents = JSON.stringify(events);
-          var withTitleInsteadOfSubmit = stringEvents.replace(/summary/g, 'title');
-          var jsonEvent = JSON.parse(withTitleInsteadOfSubmit);
-          //
+
+          events.forEach( function(evt){
+            evt.title = evt.summary; 
+            evt.start = evt.start.toString();
+            evt.end   = evt.end.toString();
+          }); 
           user.save(function(err)
           {
             if (err)
             {
               throw err;
             }
-            utils.sendSuccessResponse(res, {events: jsonEvent});
+            utils.sendSuccessResponse(res, {events: events});
             return;
           });
         }
@@ -140,6 +144,7 @@ router.post('/availabilities', function(req, res) {
   var curEmail = req.user.googleEmail;
   var userEvents = req.body.events;
   var meetingId = req.body.meetingId;
+  var manualPreferences = req.body.preferences;
 
   oAuth2Client.setCredentials({
     access_token : req.user.googleAccessToken,
@@ -160,14 +165,68 @@ router.post('/availabilities', function(req, res) {
           availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar', function (e,allIds){
             availability.save(function(err)
             {
-              if (err) throw err;
-              recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
+              saveManualPreferences(availability, manualPreferences, function(err, ids) {
+                if (err) throw err;
+                recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
+              })
             });
           });
        });            
     });
   });
 });
+
+
+/*
+Save manual preferences 
+@param {availability} array of user availabilities
+@param {manualPreferences} object mapping color of preferences to start and end times 
+@param {cb} callback function
+*/
+var saveManualPreferences = function(availability, manualPreferences, cb) {
+  var offset = manualPreferences.offset;
+  var redDates = [];
+  var yellowDates = [];
+  var greenDates = [];
+  if (manualPreferences.red) {
+    redDates = dateStringToDate(manualPreferences.red, offset);  
+  }
+  if (manualPreferences.orange) {
+    yellowDates = dateStringToDate(manualPreferences.orange, offset);  
+  }
+  if (manualPreferences.green) {
+    greenDates = dateStringToDate(manualPreferences.green, offset);  
+  }
+
+  availability.setBlocksInTimeRangesColorAndCreationType(redDates, 'red', 'manual', function(err, redIds) {
+    availability.setBlocksInTimeRangesColorAndCreationType(yellowDates, 'yellow', 'manual', function(err, yellowIds) {
+      availability.setBlocksInTimeRangesColorAndCreationType(greenDates, 'green', 'manual', function(err, greenIds) {
+        cb(err, [redIds, yellowIds, greenIds]);
+      });
+    });
+  });
+}
+
+/*
+converts an array of datestrings into date objects with the corresponding offset
+@param {dateStringArray} array of datestrings
+@param {offset} offset in minutes
+*/
+var dateStringToDate = function(dateStringArray, offset) {
+  var hourOffset = parseInt(offset)/60;
+  var dateBlocks = dateStringArray.map(function (blockArray) {
+    var dateArray = [];
+    blockArray.forEach(function(datestring) {
+      var prevDate = new Date(datestring);
+      var newDate = prevDate;
+      newDate.setHours(prevDate.getHours() + hourOffset);
+      dateArray.push(newDate);
+    });
+    return dateArray;
+  });
+  return dateBlocks;
+}
+
 /*
   Records a member's response and schedules an In if the meeting is closed,
   otherwise redirects to the user overview page without further option
