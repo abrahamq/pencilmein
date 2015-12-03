@@ -10,15 +10,16 @@ var gcalAvailability = (function () {
     Requests upcoming events from a user's google calendar
     @param {calendar} google calendar API entry point
     @param {OAuth2Client} Encapsulates refresh and access token 
-    @param {mtg_startDate} start of time window to look events up from
-    @param {mtg_endDate} end of time window to look events up from 
+    @param{mtg_Date}
+        @param {mtg_startDate} start of time window to look events up from
+        @param {mtg_endDate} end of time window to look events up from 
     @param {cb} callback upon completion 
   */
-  _gcalAvailability.listUpcomingEvents = function (calendar, oAuth2Client, mtg_startDate, mtg_endDate, cb) {
+  _gcalAvailability.listUpcomingEvents = function (calendar, oAuth2Client, mtg_Date, cb) {
     calendar.events.list({
       'calendarId': 'primary',
-      'timeMin': mtg_startDate.toISOString(),
-      'timeMax': mtg_endDate.toISOString(),
+      'timeMin': mtg_Date.start.toISOString(),
+      'timeMax': mtg_Date.end.toISOString(),
       'showDeleted': false,
       'singleEvents': true,
       'orderBy': 'startTime',

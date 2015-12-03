@@ -11,7 +11,6 @@ var MeetingSchema = mongoose.Schema({
 	latestEndDate: Date,
 	invitedMembers:[String],
 	respondedMembers: [String],
-	finalizedStart: Date,
 	InStartDate: Date,
 	InEndDate: Date
 });
@@ -36,24 +35,25 @@ MeetingSchema.methods=
     this.save(cb);
 	},
 
+
+  /*
+    Checks to see if a user has already submitted a response to a meeting invitation
+    @param {email}
+  */
+  isEligibleToSubmit : function(gmail) {
+    return this.respondedMembers.indexOf(gmail) == -1 && this.invitedMembers.indexOf(gmail) > -1;
+  },
+
   /*
   Saves user responses to database
-    @param {googleID} String - GoogleID of the user whos response is recorded 
+    @param {googleEmail} String - Google Email of the user whos response is recorded 
     @param {cb} callback upon completion 
   */
-  recordMemberResponse: function(googleID, cb){
-    if (this.respondedMembers.indexOf(googleID) == -1){
-      this.respondedMembers.push(googleID);
+  recordMemberResponse: function(googleEmail, cb) { 
+    if (this.respondedMembers.indexOf(googleEmail) == -1){
+      this.respondedMembers.push(googleEmail);
     }
     this.save(cb);
-  },
-   
-	/*
-		Determines whether a user is invited
-		@param {username} String - GoogleID of user 
-	*/
-	isUserInvited: function(googleID){
-	  return this.invitedMembers.indexOf(googleID) !== -1;
   },
 
   /*

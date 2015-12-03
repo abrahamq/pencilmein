@@ -712,7 +712,6 @@ describe('Testing start to finish update via general pref dict', function() {
                             'Friday':["",""], 'Saturday':["",""]};
           av.updateAvailabilityWithGeneralPreferences(genPrefDict,function(err,blockIds){
             av.getTimeBlocks(function(e,foundBlocks){
-              console.log(foundBlocks);
               assert.equal(foundBlocks.length,9);
               assert.equal(foundBlocks[0].color,'green');
               assert.equal(foundBlocks[0].creationType,'calendar');

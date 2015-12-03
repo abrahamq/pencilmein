@@ -1,6 +1,8 @@
 //Availability 
 var mongoose = require('mongoose');
 var TimeBlock = require('./TimeBlock');
+var Availability = require('./Availability');
+
 var AvailabilitySchema = mongoose.Schema({
 	meetingId : String,
   googleId: String,
@@ -302,6 +304,34 @@ AvailabilitySchema.statics =
     var fakeTime = "01/01/01 "+timeString;
     var fakeDate = new Date(Date.parse(fakeTime));
     return [fakeDate.getHours(), fakeDate.getMinutes()];
+  },
+  /*
+    Creates a new availability and instantiates time blocks between a start and end date
+    @param {MeetingDate}
+         @param {startDate} First time block should start here
+         @param {endDate} Last time blocke ends here 
+    @param {userId} google id of the user who should own this availability
+    @param {meetingId} meeting id of the meeting to associate this availability with
+    @param {cb} callback upon completion
+  */
+  initialize : function(mtg_Date, userId, meetingId, cb) {
+    //Init a new availability
+    var Availability = mongoose.model('Availability', AvailabilitySchema);
+    var availability = new Availability();
+    availability.googleId = userId;
+    availability.meetingId = meetingId;
+
+    //Initialize time blocks between the start date and end date
+    availability.initializeTimeBlocks(mtg_Date.start, mtg_Date.end, function(err, blockIds) {
+      availability.save(function(err)
+      {
+        if (err) { 
+          logger.error(err);
+          throw err;
+        }
+        cb(err, availability);
+      });
+    });
   }
 };
 

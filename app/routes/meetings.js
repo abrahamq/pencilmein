@@ -12,7 +12,7 @@ var CONSTANTS = require('../../config/CONSTANTS.js');
 
 router.get('/new', isLoggedIn, function(req, res) 
 {
-  res.render('meetingcreation', {_csrf: req.csrfToken()}); 
+  res.render('meetingcreation', {_csrf: req.csrfToken(), _gmail : req.user.googleEmail}); 
 });
 
 router.post('/', isLoggedIn, function(req, res)
