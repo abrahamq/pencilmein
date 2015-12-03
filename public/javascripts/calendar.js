@@ -27,6 +27,9 @@ $(function() { // document ready
         }
         return true; 
       }, 
+      eventClick: function(event){ //remove events on click
+        $('#calendar').fullCalendar('removeEvents',event._id);
+      },
       selectable: true, 
       selectHelper: true,
       select: function(start, end) {
@@ -87,7 +90,7 @@ $(function() { // document ready
       return event.className[0] === "userCreated"; 
     }); 
     result = {red: [], green: [], orange: []}; 
-    result.offset = (events[0].start.toDate()).getTimezoneOffset();
+    result.offset = events[0] ?  (events[0].start.toDate()).getTimezoneOffset() : 0;
     events.forEach( function(elem){
       startDate = elem.start.toDate(); 
       endDate = elem.end.toDate();
