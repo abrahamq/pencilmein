@@ -224,10 +224,6 @@ AvailabilitySchema.methods =
           var rangeEndDate = new Date(currentDayStartDate);
           rangeEndDate.setHours(endHour);
           rangeEndDate.setMinutes(endMinute);
-          console.log("startdate: ",this.startDate," rangeStartDate: ",rangeStartDate);
-          console.log("adding: ", new Date(Math.max(this.startDate, rangeStartDate)));
-          console.log("enddate: ",this.endDate," rangeEndDate: ",rangeEndDate);
-          console.log("adding: ", new Date(Math.min(this.endDate, rangeEndDate)));
           if (rangeStartDate < this.endDate){
             ranges.push([new Date(Math.max(this.startDate, rangeStartDate)), new Date(Math.min(this.endDate, rangeEndDate))]);
           }

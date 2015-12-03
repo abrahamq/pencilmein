@@ -155,7 +155,6 @@ describe('Initialize availabilities time blocks', function() {
             av.getTimeBlocks(function(e,allBlocks){
               assert.equal(e,null);
               assert.equal(allBlocks.length,48);
-              console.log(allBlocks[47].startDate.getHours());
               assert.equal(allBlocks[47].startDate.getHours(),23);
               assert.equal(allBlocks[47].startDate.getMinutes(),30);
               done();
@@ -512,21 +511,6 @@ describe('Testing General Pref Helper Functions', function() {
       });
     });
   });
-  describe('Testing getting found time ranges given single day preference, availabilty our of range of general pref', function() {
-    var av = new Availability();
-    var startDate = new Date(2015, 10, 1, 4);
-    var endDate = new Date(2015, 10, 1, 11);
-    it('should clip for start date and end date', function(done) {
-      av.save(function(){
-        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
-          var preferences = [{'day':0, 'startHour':12, 'startMinute':30, 'endHour':21,'endMinute':30}];
-          var ranges = av.getTimeRangesForDayPreferences(preferences);
-          assert.equal(ranges.length, 0);
-          done();
-        });
-      });
-    });
-  });
   describe('Testing getting found time ranges given single day preference, multiple day availabilty', function() {
     var av = new Availability();
     var startDate = new Date(2015, 10, 1, 4);
@@ -585,55 +569,170 @@ describe('Testing General Pref Helper Functions', function() {
       });
     });
   });
-  describe('Testing getting found time ranges given multiple day preferences from, multiple day availabilty', function() {
+  describe('Fining ranges of general preference with only one day filled out', function() {
     var av = new Availability();
     var startDate = new Date(2015, 10, 1, 4);
-    var endDate = new Date(2015, 10, 29, 7);
-    it('should clip for start date and end date', function(done) {
+    var endDate = new Date(2015, 10, 2, 0);
+    it('finding ranges from general pref dict with small av. bounds', function(done) {
       av.save(function(){
         av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
           var genPrefDict = {'Sunday': ["8:00 AM","8:00 PM"], 'Monday': ["",""],'Tuesday': ["",""], 
                             'Wednesday': ["",""], 'Thursday':["",""], 
                             'Friday':["",""], 'Saturday':["",""]};
           var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
-          console.log("ranges are: ",ranges);
-          assert.equal(ranges.length, 9);
+          assert.equal(ranges.length, 2);
+          assert.equal(ranges[0][0].getHours(),4);
+          assert.equal(ranges[0][1].getHours(),8);
+
+          assert.equal(ranges[1][0].getHours(),20);
+          assert.equal(ranges[1][0].getDate(),1);
+          assert.equal(ranges[1][1].getHours(),0);
+          assert.equal(ranges[1][1].getDate(),2);
           done();
         });
       });
     });
   });
-  // describe('Testing getting found time ranges given multiple day preferences from, multiple day availabilty', function() {
-  //   var av = new Availability();
-  //   var startDate = new Date(2015, 10, 1, 4);
-  //   var endDate = new Date(2015, 10, 29, 11);
-  //   it('should clip for start date and end date', function(done) {
-  //     av.save(function(){
-  //       av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
-  //         var genPrefDict = {'Sunday': ["8:00 AM","8:00 PM"], 'Monday': ["8:00 AM","8:00 PM"],'Tuesday': ["8:00 AM","8:00 PM"], 
-  //                           'Wednesday': ["8:00 AM","8:00 PM"], 'Thursday':["8:00 AM","8:00 PM"], 
-  //                           'Friday':["8:00 AM","8:00 PM"], 'Saturday':["8:00 AM","8:00 PM"]};
-  //         var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
-  //         assert.equal(ranges.length, 14);
-  //         done();
-  //       });
-  //     });
-  //   });
-  // });
-  // describe('Testing getting found time ranges given single day preference, multiple day availabilty', function() {
-  //   var av = new Availability();
-  //   var startDate = new Date(2015, 10, 1, 4);
-  //   var endDate = new Date(2015, 10, 29, 11);
-  //   it('should clip for start date and end date', function(done) {
-  //     av.save(function(){
-  //       av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
-  //         av.updateBlocksForDayPreference(0,);
-  //       });
-  //     });
-  //   });
-  // });
-});
+  describe('Fining ranges of general preference with only one day filled out', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 0);
+    var endDate = new Date(2015, 10, 1, 4);
+    it('finding ranges from general pref dict with small av. bounds', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["2:00 AM","8:00 PM"], 'Monday': ["",""],'Tuesday': ["",""], 
+                            'Wednesday': ["",""], 'Thursday':["",""], 
+                            'Friday':["",""], 'Saturday':["",""]};
+          var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
+          assert.equal(ranges.length, 1);
+          assert.equal(ranges[0][0].getHours(),0);
+          assert.equal(ranges[0][1].getHours(),2);
+          done();
+        });
+      });
+    });
+  });
+  describe('Fining ranges of general preference with only one day filled out', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 29, 7);
+    it('should clip for start date and end dates if they overlap av. bounds', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["8:00 AM","8:00 PM"], 'Monday': ["",""],'Tuesday': ["",""], 
+                            'Wednesday': ["",""], 'Thursday':["",""], 
+                            'Friday':["",""], 'Saturday':["",""]};
+          var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
+          assert.equal(ranges.length, 9);
+          assert.equal(ranges[0][0].getHours(),4);
+          assert.equal(ranges[0][1].getHours(),8);
+          assert.equal(ranges[1][0].getHours(),0);
+          assert.equal(ranges[1][1].getHours(),8);
 
+          assert.equal(ranges[4][0].getDate(),29);
+          assert.equal(ranges[4][1].getDate(),29);
+          assert.equal(ranges[4][0].getHours(),0);
+          assert.equal(ranges[4][1].getHours(),7);
+
+          assert.equal(ranges[8][0].getDate(),22);
+          assert.equal(ranges[8][0].getHours(),20);
+          assert.equal(ranges[8][1].getDate(),23);
+          assert.equal(ranges[8][1].getHours(),0);
+
+          done();
+        });
+      });
+    });
+  });
+  describe('Finding ranges of general preference with only one day filled out', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4, 30);
+    var endDate = new Date(2015, 10, 30, 0, 0);
+    it('should clip for start date and end dates if they overlap av. bounds, only start does', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["8:00 AM","8:00 PM"], 'Monday': ["",""],'Tuesday': ["",""], 
+                            'Wednesday': ["",""], 'Thursday':["",""], 
+                            'Friday':["",""], 'Saturday':["",""]};
+          var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
+          assert.equal(ranges.length, 10);
+          assert.equal(ranges[0][0].getHours(),4);
+          assert.equal(ranges[0][0].getMinutes(),30);
+          assert.equal(ranges[0][1].getHours(),8);
+          assert.equal(ranges[1][0].getHours(),0);
+          assert.equal(ranges[1][1].getHours(),8);
+
+          assert.equal(ranges[4][0].getDate(),29);
+          assert.equal(ranges[4][1].getDate(),29);
+          assert.equal(ranges[4][0].getHours(),0);
+          assert.equal(ranges[4][1].getHours(),8);
+
+          assert.equal(ranges[8][0].getDate(),22);
+          assert.equal(ranges[8][0].getHours(),20);
+          assert.equal(ranges[8][1].getDate(),23);
+          assert.equal(ranges[8][1].getHours(),0);
+
+          assert.equal(ranges[9][0].getDate(),29);
+          assert.equal(ranges[9][0].getHours(),20);
+          assert.equal(ranges[9][1].getDate(),30);
+          assert.equal(ranges[9][1].getHours(),0);
+          assert.equal(ranges[9][1].getMinutes(),0);
+          done();
+        });
+      });
+    });
+  });
+  describe('Testing getting found time ranges given multiple day preferences from, multiple day availabilty', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 30, 00);
+    it('should clip for start date and end date', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["8:00 AM","8:00 PM"], 'Monday': ["8:00 AM","8:00 PM"],'Tuesday': ["8:00 AM","8:00 PM"], 
+                            'Wednesday': ["8:00 AM","8:00 PM"], 'Thursday':["8:00 AM","8:00 PM"], 
+                            'Friday':["8:00 AM","8:00 PM"], 'Saturday':["8:00 AM","8:00 PM"]};
+          var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
+          assert.equal(ranges.length, 58);
+          done();
+        });
+      });
+    });
+  });
+});
+describe('Testing start to finish update via general pref dict', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 9, 31, 23,30);
+    var endDate = new Date(2015, 10, 1, 4);
+    it('updating av with small bounds that was tested above for ranges', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["2:00 AM","8:00 PM"], 'Monday': ["2:00 AM","8:00 PM"],'Tuesday': ["",""], 
+                            'Wednesday': ["",""], 'Thursday':["",""], 
+                            'Friday':["",""], 'Saturday':["",""]};
+          av.updateAvailabilityWithGeneralPreferences(genPrefDict,function(err,blockIds){
+            av.getTimeBlocks(function(e,foundBlocks){
+              console.log(foundBlocks);
+              assert.equal(foundBlocks.length,9);
+              assert.equal(foundBlocks[0].color,'green');
+              assert.equal(foundBlocks[0].creationType,'calendar');
+              assert.equal(foundBlocks[1].color,'red');
+              assert.equal(foundBlocks[1].creationType,'general');
+              assert.equal(foundBlocks[2].color,'red');
+              assert.equal(foundBlocks[2].creationType,'general');
+              assert.equal(foundBlocks[3].color,'red');
+              assert.equal(foundBlocks[3].creationType,'general');
+              assert.equal(foundBlocks[4].color,'red');
+              assert.equal(foundBlocks[4].creationType,'general');
+              assert.equal(foundBlocks[5].color,'green');
+              assert.equal(foundBlocks[5].creationType,'calendar');
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
 describe('Testing getting found time ranges given single day preference, multiple day availabilty', function() {
   it('should correctly convert am time strings to hours/mins', function(done) {
     var hourmin = Availability.timeStringToHoursAndMins("8:00 AM");
