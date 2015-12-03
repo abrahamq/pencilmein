@@ -21,6 +21,8 @@
     "fullcalendar": "~2.4.0",
     "eonasdan-bootstrap-datetimepicker": "~4.17.37",
     "jquery-validation": "~1.14.0",
-    "bootstrap-timepicker": "~0.5.1"
+    "bootstrap-timepicker": "~0.5.1",
+    "jquery": "~2.1.4",
+    "jquery-ui": "~1.11.4"
   }
 }
