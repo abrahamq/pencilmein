@@ -179,13 +179,29 @@ router.post('/availabilities', function(req, res) {
 
 var saveManualPreferences = function(availability, manualPreferences, cb) {
   console.log('manual preferences ' , manualPreferences);
-  availability.setBlocksInTimeRangesColorAndCreationType(manualPreferences.red, 'red', 'manual', function(err, redIds) {
-    // availability.setBlocksInTimeRangesColorAndCreationType(manualPreferences.yellow, 'yellow', 'manual', function(err, yellowIds) {
-      // availability.setBlocksInTimeRangesColorAndCreationType(manualPreferences.green, 'green', 'manual', function(err, greenIds) {)
-        cb(err, [redIds]);
-      // });
-    // });
+
+  var redDates = dateStringToDate(manualPreferences.red);
+  var yellowDates = dateStringToDate(manualPreferences.yellow);
+  var greenDates = dateStringToDate(manualPreferences.green);
+
+  availability.setBlocksInTimeRangesColorAndCreationType(redDates, 'red', 'manual', function(err, redIds) {
+    availability.setBlocksInTimeRangesColorAndCreationType(yellowDates, 'yellow', 'manual', function(err, yellowIds) {
+      availability.setBlocksInTimeRangesColorAndCreationType(greenDates, 'green', 'manual', function(err, greenIds) {
+        cb(err, [redIds, yellowIds, greenIds]);
+      });
+    });
   });
+}
+
+var dateStringToDate = function(dateStringArray) {
+  var dateBlocks = dateStringArray.map(function (blockArray) {
+    var dateArray = [];
+    blockArray.forEach(function(datestring) {
+      dateArray.push(new Date(datestring));
+    });
+    return dateArray;
+  });
+  return dateBlocks;
 }
 
 /*
