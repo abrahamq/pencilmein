@@ -322,9 +322,6 @@ describe('Optimeet', function() {
         var range2Start = new Date(2015,10,3,16,00);
         var range2End = new Date(2015,10,3,18,00);
 
-        // var range3Start = new Date(2015,10,3,6,00);
-        // var range3End = new Date(2015,10,3,7,00);
-
         var av = new Availability();
         var av2 = new Availability();
 
@@ -337,7 +334,6 @@ describe('Optimeet', function() {
             av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd]], 'yellow','manual',function(err,allIds){
               av.getTimeBlocks(function(e,allBlocks){
                 av2.initializeTimeBlocks(startDate, endDate, function(error, foundBlockList2) {
-                  // av2.setBlocksInTimeRangesColorAndCreationType([[range2Start, range2End], [range3Start, range3End]], 'yellow', 'manual', function(err, allIds2) {
                   av2.setBlocksInTimeRangesColorAndCreationType([[range2Start, range2End]], 'yellow', 'manual', function(err, allIds2) {  
                     av2.getTimeBlocks(function(e2, allBlocks2) {
                       assert.equal(e,null);

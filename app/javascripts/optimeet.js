@@ -127,11 +127,11 @@ var optimeet = (function () {
       var time = blockIndexToTime(block.startIndex, earliestStartDate);
       var curDist = Math.abs(time.getHours()*60 + time.getMinutes() - bestTime);
       if (curDist < closestToBestHourIndex.dist) {
-        closestToBestHourIndex = {index: i, dist: curDist}
+        closestToBestHourIndex = {index: i, dist: curDist};
       }
     });
     return ties[closestToBestHourIndex.index];
-  }
+  };
 
   /*
     Sorts time ranges in ascending order based on costs
