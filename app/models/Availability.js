@@ -8,7 +8,7 @@ var AvailabilitySchema = mongoose.Schema({
   googleId: String,
   startDate: Date,
   endDate: Date,
-	timeBlocks : [{
+  timeBlocks : [{
     type: mongoose.Schema.ObjectId,
     ref: 'TimeBlock' 
   }]
