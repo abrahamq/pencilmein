@@ -8,6 +8,7 @@ var Availability = require('../models/Availability');
 var Meeting = require('../models/Meeting');
 
 var utils = require('../../utils/utils');
+var schedulingUtils = require('../../utils/schedulingUtils');
 var gcalAvailability = require('../javascripts/gcalAvailability');
 var optimeet = require('../javascripts/optimeet');
 
@@ -90,9 +91,9 @@ router.get('/availabilities', function(req, res) {
       });
       var mtg_startDate = (new Date());
       var mtg_endDate = new Date('2015-12-25T10:00:00-05:00');//TODO: make this reasonable
-      
+      var mtg_Date = {start : mtg_startDate, end : mtg_endDate}
       //List the upcoming events from the given time interval {mtg_StartDate} to {mtg_endDate}
-      gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
+      gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
         if (events) {
           var stringEvents = JSON.stringify(events);
           var withTitleInsteadOfSubmit = stringEvents.replace(/summary/g, 'title');
@@ -145,90 +146,72 @@ router.post('/availabilities', function(req, res) {
       utils.sendErrResponse(res, 400, "no user found");
       return;
     } else {
-        oAuth2Client.setCredentials({
-          access_token : user.googleAccessToken,
-          refresh_token : user.googleRefreshToken
-        });
-        Meeting.findById(meetingId,function(err,meeting){
+      oAuth2Client.setCredentials({
+        access_token : user.googleAccessToken,
+        refresh_token : user.googleRefreshToken
+      });
+      Meeting.findById(meetingId,function(err,meeting){
 
-          var mtg_startDate = meeting.earliestStartDate;
-          var mtg_endDate = meeting.latestEndDate;
-          var duration = meeting.duration;
-          var location = meeting.location;
-          var title = meeting.title;
-          var availability = new Availability();
-
-          availability.googleId = userId;
-          availability.meetingId = meetingId;
-          availability.initializeTimeBlocks(mtg_startDate, mtg_endDate, function(err, blockIds){
-            availability.save(function(){
-              gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
-                if (events) {
-                  var stringEvents = JSON.stringify(events);
-                  var withTitleInsteadOfSubmit = stringEvents.replace(/summary/g, 'title');
-                  var jsonEvent = JSON.parse(withTitleInsteadOfSubmit);
-                  var timeRanges = [];
-                  jsonEvent.forEach(function(a){
-                    timeRanges.push([new Date(a.start),new Date(a.end)]);
-                  });
-
-                  if (timeRanges.length !== 0){
-                    var lastRange = timeRanges[timeRanges.length - 1];
-                    if (lastRange[1] > mtg_endDate){ //
-                      lastRange[1] = new Date( mtg_endDate );
-                    }
-                  }
-                  availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar',function(e,allIds){
-                    availability.save(function(){
-                      meeting.recordMemberResponse(userId, function(err, found_meeting) {
-
-                        if (found_meeting.isClosed()){
-                          Availability.findByMeetingId(meetingId, function(err, availabilities) {
-                            Availability.getTimeBlocksListsForAvailabilities(availabilities, function(err, blocksLists) {
-
-                              var optimal_in = optimeet.getIn(blocksLists, meeting);
-
-                              meeting.recordIn(optimal_in.startDate, optimal_in.endDate, function(err) {
-                                  var invitee_emails = meeting.invitedMembers;
-                                  gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, title, location, optimal_in.startDate, optimal_in.endDate, function(err) {
-                                    if (err) {
-                                      utils.sendErrResponse(res, 400, "cannot create google calendar event");
-                                    } else {
-                                      utils.sendSuccessResponse(res, {redirect: '/users'}); 
-                                      return;
-                                    }
-                                  });
-                              });
-                            });
-                          });
-                        } else {
-                          utils.sendSuccessResponse(res, {redirect: '/users'});
-                          return;
-                        }
-                      });
-
-                    });
-                  });
-                }
+        var mtg_Date = {start : meeting.earliestStartDate, end : meeting.latestEndDate};
+        Availability.initialize(mtg_Date, userId, meetingId, function(err, availability)
+        {
+          gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
+              var timeRanges = schedulingUtils.convertEventsToTimeRanges(events);
+              availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar',function (e,allIds){
+                availability.save(function(err)
+                {
+                  if (err) throw err;
+                  recordAndSchedule(res, meeting, userId, calendar, oAuth2Client);
+                });
               });
-            });
-          });
+           });            
         });
+      });
     }
   });
 });
+/*
+  Records a member's response and schedules an In if the meeting is closed,
+  otherwise redirects to the user overview page without further option
+  @param {res} http response
+  @param {meeting} Meeting to record member response in 
+  @param {userId} Id of the user responding
+  @param {calendar} the google calendar instance
+  @param {oauth2client} auth client 
+*/
+
+var recordAndSchedule = function(res, meeting, userId, calendar, oAuth2Client) {
+  meeting.recordMemberResponse(userId, function (err, found_meeting) {
+
+  if (found_meeting.isClosed()) {
+    // Record and calculate a new In
+    Availability.findByMeetingId(meeting._id, function(err, availabilities) {
+      Availability.getTimeBlocksListsForAvailabilities(availabilities, function (err, blocksLists) {
+        var optimal_in = optimeet.getIn(blocksLists, meeting);
+        recordInAndAddEvents(res, meeting, optimal_in.startDate, optimal_in.endDate, calendar, oAuth2Client);
+      });
+    });
+   } else {
+    //Meeting not closed so redirect
+    utils.sendSuccessResponse(res, {redirect: '/users'});
+    return;
+    }
+  });          
+}
+
 
 /*
 Records the finalized In for a meeting and adds the In to the google calendars of the invited members
+@param res HTTP Response
 @param Meeting meeting: meeting that the In is being scheduled for
 @param Date inStartDate: start date/time of the finalized in
 @param Date inEndDate: end date/time of the finalized in
 @param calendar
 @param oAuth2Client
 @param String title
-@param cb will be given arg1) error
+@param cb will be given arg error
 */
-var recordInAndAddEvents = function(meeting, inStartDate, inEndDate, calendar, oAuth2Client){
+var recordInAndAddEvents = function(res, meeting, inStartDate, inEndDate, calendar, oAuth2Client){
   meeting.recordIn(inStartDate, inEndDate, function(err) {
     var invitee_emails = meeting.invitedMembers;
     gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, meeting.title, meeting.location, inStartDate, inEndDate, function(err){
