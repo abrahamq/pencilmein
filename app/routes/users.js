@@ -153,7 +153,7 @@ router.post('/availabilities', function(req, res) {
       Meeting.findById(meetingId,function(err,meeting){
 
         var mtg_Date = {start : meeting.earliestStartDate, end : meeting.latestEndDate};
-        Availability.initialize(mtg_Date, userId, meetingId, function(availability)
+        Availability.initialize(mtg_Date, userId, meetingId, function(err, availability)
         {
           gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
               var timeRanges = schedulingUtils.convertEventsToTimeRanges(events);

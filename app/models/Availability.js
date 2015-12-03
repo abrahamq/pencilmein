@@ -238,7 +238,7 @@ AvailabilitySchema.statics =
             logger.error(err);
             throw err;
           }
-          cb(availability);
+          cb(err, availability);
         });
       });
     }
