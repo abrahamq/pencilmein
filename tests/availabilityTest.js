@@ -87,6 +87,7 @@ describe('Initialize availabilities time blocks', function() {
           assert.equal(error,null);
           assert.equal(foundBlockList.length,3);
           assert.equal(av.startDate.getTime(),startDate.getTime());
+          assert.equal(av.endDate.getTime(),endDate.getTime());
           done();
         });
       });
@@ -142,19 +143,22 @@ describe('Initialize availabilities time blocks', function() {
         });
       });
   });
-  describe('initializing time blocks for entire day', function() {
+  describe('testing initializing time blocks for a single entire day (12am - 12am)', function() {
       //setup database state 
-      var startDate = new Date(2015,10,3,4,00);
-      var endDate = new Date(2015,10,4,4,00);
+      var startDate = new Date(2015,10,3,0,00);
+      var endDate = new Date(2015,10,4,0,00);
       var av = new Availability();
       av.meetingId="newmeet";
       it('should return block list for entire day and avail. keeps good start time', function(done) {
         av.save(function(){
           av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            assert.equal(error,null);
-            assert.equal(foundBlockList.length,48);
-            assert.equal(av.startDate.getTime(),startDate.getTime());
-            done();
+            av.getTimeBlocks(function(e,allBlocks){
+              assert.equal(e,null);
+              assert.equal(allBlocks.length,48);
+              assert.equal(allBlocks[47].startDate.getHours(),23);
+              assert.equal(allBlocks[47].startDate.getMinutes(),30);
+              done();
+            });
           });
         });
       });
@@ -190,83 +194,103 @@ describe('check block id lookup based on time', function() {
       });
   });
   describe('test static lookup of blocks from list of availabilites w just one av.', function() {
-      //setup database state 
-      var start = new Date(2015,10,3,4,00);
-      var end = new Date(2015,10,3,5,30);
-      var time = new Date(start);
-      var av = new Availability();
-      var Av = Availability;
-      av.meetingId = "newmeet";
-      av.googleId = "kwefah";
-      it('should find correct id', function(done) {
-        av.initializeTimeBlocks(start,end,function(error,foundBlockList){
-          av.save(function(){
-            Availability.getTimeBlocksListsForAvailabilities([av],function(err,blocksLists){
-              assert.equal(err,null);
-              assert.equal(blocksLists.length,1);
-              assert.equal(blocksLists[0].length,3);
-              assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
-              done();
-            });
+    //setup database state 
+    var start = new Date(2015,10,3,4,00);
+    var end = new Date(2015,10,3,5,30);
+    var time = new Date(start);
+    var av = new Availability();
+    var Av = Availability;
+    av.meetingId = "newmeet";
+    av.googleId = "kwefah";
+    it('should find correct id', function(done) {
+      av.initializeTimeBlocks(start,end,function(error,foundBlockList){
+        av.save(function(){
+          Availability.getTimeBlocksListsForAvailabilities([av],function(err,blocksLists){
+            assert.equal(err,null);
+            assert.equal(blocksLists.length,1);
+            assert.equal(blocksLists[0].length,3);
+            assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
+            done();
           });
         });
-
       });
+    });
+  });
+  describe('create entire day with 48 time blocks', function() {
+    //setup database state 
+    var start = new Date(2015,10,3,4,00);
+    var end = new Date(2015,10,3,5,30);
+    var time = new Date(start);
+    var av = new Availability();
+    var Av = Availability;
+    av.meetingId = "newmeet";
+    av.googleId = "kwefah";
+    it('should find correct id', function(done) {
+      av.initializeTimeBlocks(start,end,function(error,foundBlockList){
+        av.save(function(){
+          Availability.getTimeBlocksListsForAvailabilities([av],function(err,blocksLists){
+            assert.equal(err,null);
+            assert.equal(blocksLists.length,1);
+            assert.equal(blocksLists[0].length,3);
+            assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
+            done();
+          });
+        });
+      });
+    });
   });
   describe('test static lookup of blocks from list of availabilites with 2 avs', function() {
-      //setup database state
-      var start = new Date(2015,10,3,4,00);
-      var end = new Date(2015,10,3,5,30);
-      var time = new Date(start);
-      var av = new Availability();
-      var av2 = new Availability();
-      av.meetingId = "newmeet";
-      av.googleId = "kwefah";
-      av2.meetingId = "newmeet2";
-      av2.googleId = "kwefah";
-      it('should find correct id', function(done) {
-        av.initializeTimeBlocks(start,end,function(error,foundBlockList){
-          av.save(function(){
-            av2.initializeTimeBlocks(start,end,function(error2, founcBlockList2){
-              av2.save(function(){
-                Availability.getTimeBlocksListsForAvailabilities([av,av2],function(err,blocksLists){
-                  assert.equal(err,null);
-                  assert.equal(blocksLists.length,2);
-                  assert.equal(blocksLists[0].length,3);
-                  assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
-                  assert.equal(blocksLists[1].length,3);
-                  assert.equal(blocksLists[1][0].startDate.getTime(),start.getTime());
-                  done();
-                }); 
-              });
-            })
-          });
+    //setup database state
+    var start = new Date(2015,10,3,4,00);
+    var end = new Date(2015,10,3,5,30);
+    var time = new Date(start);
+    var av = new Availability();
+    var av2 = new Availability();
+    av.meetingId = "newmeet";
+    av.googleId = "kwefah";
+    av2.meetingId = "newmeet2";
+    av2.googleId = "kwefah";
+    it('should find correct id', function(done) {
+      av.initializeTimeBlocks(start,end,function(error,foundBlockList){
+        av.save(function(){
+          av2.initializeTimeBlocks(start,end,function(error2, founcBlockList2){
+            av2.save(function(){
+              Availability.getTimeBlocksListsForAvailabilities([av,av2],function(err,blocksLists){
+                assert.equal(err,null);
+                assert.equal(blocksLists.length,2);
+                assert.equal(blocksLists[0].length,3);
+                assert.equal(blocksLists[0][0].startDate.getTime(),start.getTime());
+                assert.equal(blocksLists[1].length,3);
+                assert.equal(blocksLists[1][0].startDate.getTime(),start.getTime());
+                done();
+              }); 
+            });
+          })
         });
-
       });
+    });
   });
-
 });
 describe('Editing SINGLE time block', function() {
   describe('editing first of 3 time blocks', function() {
-      //setup database state 
-      var startDate = new Date(2015,10,3,4,00);
-      var newTime = new Date(startDate);
-      var endDate = new Date(2015,10,3,5,30);
-      var avv = new Availability();
-      avv.meetingId="newmeet";
-      it('should return block with new yellow color', function(done) {
-        avv.save(function(){
-          avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            avv.setBlockAtTimeColorAndCreationType(newTime,'yellow','manual',function(err,finalBlock){
-              assert.equal(err,null);
-              assert.equal(finalBlock.color,'yellow');
-              assert.equal(finalBlock.creationType,'manual');
-              done();
-            });
+    //setup database state 
+    var startDate = new Date(2015,10,3,4,00);
+    var newTime = new Date(startDate);
+    var endDate = new Date(2015,10,3,5,30);
+    var avv = new Availability();
+    avv.meetingId="newmeet";
+    it('should return block with new yellow color', function(done) {
+      avv.save(function(){
+        avv.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+          avv.setBlockAtTimeColorAndCreationType(newTime,'yellow','manual',function(err,finalBlock){
+            assert.equal(err,null);
+            assert.equal(finalBlock.color,'yellow');
+            assert.equal(finalBlock.creationType,'manual');
+            done();
           });
         });
       });
+    });
   });
 });
 describe('Editing SINGLE RANGE of time blocks', function() {
@@ -298,7 +322,7 @@ describe('Editing SINGLE RANGE of time blocks', function() {
         });
       });
     });
-    describe('Finding blocks in range from 48 blocks', function() {
+  describe('Finding blocks in range from 48 blocks', function() {
     //setup database state 
     var startDate = new Date(2015,10,3,4,00);
     var endDate = new Date(2015,10,4,4,00);
@@ -310,21 +334,21 @@ describe('Editing SINGLE RANGE of time blocks', function() {
     it('Changing 48 blocks in all', function(done) {
       av.save(function(){
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
-            av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
-              av.getTimeBlocks(function(e,allBlocks){
-                assert.equal(e,null);
-                assert.equal(allBlocks.length,48);
-                assert.equal(allBlocks[0].color,'green');
-                assert.equal(allBlocks[1].color,'yellow');
-                assert.equal(allBlocks[2].color,'yellow');
-                assert.equal(allBlocks[3].color,'green');
-                done();
-              })
+          av.setBlocksInTimeRangeColorAndCreationType(rangeStart, rangeEnd, 'yellow','manual',function(err,allIds){
+            av.getTimeBlocks(function(e,allBlocks){
+              assert.equal(e,null);
+              assert.equal(allBlocks.length,48);
+              assert.equal(allBlocks[0].color,'green');
+              assert.equal(allBlocks[1].color,'yellow');
+              assert.equal(allBlocks[2].color,'yellow');
+              assert.equal(allBlocks[3].color,'green');
+              done();
             });
           });
         });
       });
     });
+  });
 });
 
 describe('Editing MULTIPLE RANGES of time blocks', function() {
@@ -390,5 +414,336 @@ describe('Editing MULTIPLE RANGES of time blocks', function() {
         });
       });
     });
-
 });
+
+describe('Checking creation type power', function() {
+    //setup database state 
+  var startDate = new Date(2015,10,3,4,00);
+  var endDate = new Date(2015,10,3,5,30);
+  //makes blocks [4-4:30],[4:30-5],[5-5:30]
+  var rangeStart = new Date(2015,10,3,4,30);
+  var rangeEnd = new Date(2015,10,3,5,30);
+
+  var av = new Availability();
+  av.meetingId="newmeet";
+  //setup database state 
+  var startDate = new Date(2015,10,3,4,00);
+  var endDate = new Date(2015,10,4,4,00);
+
+  var rangeStart = new Date(2015,10,3,4,30);
+  var rangeEnd = new Date(2015,10,3,5,30);
+
+  var range2Start = new Date(2015,10,3,6,30);
+  var range2End = new Date(2015,10,3,8,00);
+  describe('Shouldnt be able to alter blocks with stronger creation type', function() {
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('Calendar won"t overrite manual', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+          av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'yellow','general',function(err,allIds){
+            av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'red','calendar',function(err,allIds){
+              av.getTimeBlocks(function(e,allBlocks){
+                assert.equal(e,null);
+                assert.equal(allBlocks.length,48);
+                assert.equal(allBlocks[0].color,'green'); //4-4.30
+                assert.equal(allBlocks[1].color,'yellow');//4.30-5
+                assert.equal(allBlocks[2].color,'yellow');//5-5:30
+                assert.equal(allBlocks[3].color,'green'); //5:30-6
+                assert.equal(allBlocks[4].color,'green');//6-6:30
+                assert.equal(allBlocks[5].color,'yellow');//6:30-7
+                assert.equal(allBlocks[6].color,'yellow');//7-7:30
+                assert.equal(allBlocks[7].color,'yellow');//7:30-8
+                assert.equal(allBlocks[8].color,'green');//8-8:30
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+  describe('Should be able to alter blocks with weaker creation type', function() {
+    var av = new Availability();
+    av.meetingId="newmeet";
+    it('Calendar won"t overrite manual', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
+          av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'yellow','general',function(err,allIds){
+            av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'red','manual',function(err,allIds){
+              av.getTimeBlocks(function(e,allBlocks){
+                assert.equal(e,null);
+                assert.equal(allBlocks.length,48);
+                assert.equal(allBlocks[0].color,'green'); //4-4.30
+                assert.equal(allBlocks[1].color,'red');//4.30-5
+                assert.equal(allBlocks[2].color,'red');//5-5:30
+                assert.equal(allBlocks[3].color,'green'); //5:30-6
+                assert.equal(allBlocks[4].color,'green');//6-6:30
+                assert.equal(allBlocks[5].color,'red');//6:30-7
+                assert.equal(allBlocks[6].color,'red');//7-7:30
+                assert.equal(allBlocks[7].color,'red');//7:30-8
+                assert.equal(allBlocks[8].color,'green');//8-8:30
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+});
+
+describe('Testing General Pref Helper Functions', function() {
+  describe('Testing getting found time ranges given single day preference, part of single day availabilty', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 1, 11);
+    it('should clip for start date and end date', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var preferences = [{'day':0, 'startHour':0, 'startMinute':30, 'endHour':11,'endMinute':30}];
+          var ranges = av.getTimeRangesForDayPreferences(preferences);
+          assert.equal(ranges.length, 1);
+          assert.equal(ranges[0][0].getTime(), startDate.getTime());
+          assert.equal(ranges[0][1].getTime(), endDate.getTime());
+          done();
+        });
+      });
+    });
+  });
+  describe('Testing getting found time ranges given single day preference, multiple day availabilty', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 29, 11);
+    it('should clip for start date and end date', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var preferences = [{'day':0, 'startHour':1, 'startMinute':30, 'endHour':11,'endMinute':30}];
+          var ranges = av.getTimeRangesForDayPreferences(preferences);
+          assert.equal(ranges.length, 5);
+          assert.equal(ranges[0][0].getTime(), startDate.getTime());
+          assert.equal(ranges[0][1].getHours(), 11);
+          assert.equal(ranges[0][1].getMinutes(), 30);
+
+          for (var i = 1 ; i < 4 ; i++){
+            assert.equal(ranges[i][0].getHours(), 1);
+            assert.equal(ranges[i][0].getMinutes(), 30);
+            assert.equal(ranges[i][1].getHours(), 11);
+            assert.equal(ranges[i][1].getMinutes(), 30);
+          }
+
+          assert.equal(ranges[4][0].getHours(), 1);
+          assert.equal(ranges[4][0].getMinutes(), 30);
+          assert.equal(ranges[4][1].getTime(),endDate.getTime());
+          done();
+        });
+      });
+    });
+  });
+  describe('Testing getting found time ranges given with day preferences (but only one), multiple day availabilty', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 29, 11);
+    it('should clip for start date and end date', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var preferences = [{'day':0, 'startHour':1, 'startMinute':30, 'endHour':11,'endMinute':30}];
+          var ranges = av.getTimeRangesForDayPreferences(preferences);
+          assert.equal(ranges.length, 5);
+          assert.equal(ranges[0][0].getTime(), startDate.getTime());
+          assert.equal(ranges[0][1].getHours(), 11);
+          assert.equal(ranges[0][1].getMinutes(), 30);
+
+          for (var i = 1 ; i < 4 ; i++){
+            assert.equal(ranges[i][0].getHours(), 1);
+            assert.equal(ranges[i][0].getMinutes(), 30);
+            assert.equal(ranges[i][1].getHours(), 11);
+            assert.equal(ranges[i][1].getMinutes(), 30);
+          }
+
+          assert.equal(ranges[4][0].getHours(), 1);
+          assert.equal(ranges[4][0].getMinutes(), 30);
+          assert.equal(ranges[4][1].getTime(),endDate.getTime());
+          done();
+        });
+      });
+    });
+  });
+  describe('Fining ranges of general preference with only one day filled out', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 2, 0);
+    it('finding ranges from general pref dict with small av. bounds', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["8:00 AM","8:00 PM"], 'Monday': ["",""],'Tuesday': ["",""], 
+                            'Wednesday': ["",""], 'Thursday':["",""], 
+                            'Friday':["",""], 'Saturday':["",""]};
+          var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
+          assert.equal(ranges.length, 2);
+          assert.equal(ranges[0][0].getHours(),4);
+          assert.equal(ranges[0][1].getHours(),8);
+
+          assert.equal(ranges[1][0].getHours(),20);
+          assert.equal(ranges[1][0].getDate(),1);
+          assert.equal(ranges[1][1].getHours(),0);
+          assert.equal(ranges[1][1].getDate(),2);
+          done();
+        });
+      });
+    });
+  });
+  describe('Fining ranges of general preference with only one day filled out', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 0);
+    var endDate = new Date(2015, 10, 1, 4);
+    it('finding ranges from general pref dict with small av. bounds', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["2:00 AM","8:00 PM"], 'Monday': ["",""],'Tuesday': ["",""], 
+                            'Wednesday': ["",""], 'Thursday':["",""], 
+                            'Friday':["",""], 'Saturday':["",""]};
+          var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
+          assert.equal(ranges.length, 1);
+          assert.equal(ranges[0][0].getHours(),0);
+          assert.equal(ranges[0][1].getHours(),2);
+          done();
+        });
+      });
+    });
+  });
+  describe('Fining ranges of general preference with only one day filled out', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 29, 7);
+    it('should clip for start date and end dates if they overlap av. bounds', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["8:00 AM","8:00 PM"], 'Monday': ["",""],'Tuesday': ["",""], 
+                            'Wednesday': ["",""], 'Thursday':["",""], 
+                            'Friday':["",""], 'Saturday':["",""]};
+          var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
+          assert.equal(ranges.length, 9);
+          assert.equal(ranges[0][0].getHours(),4);
+          assert.equal(ranges[0][1].getHours(),8);
+          assert.equal(ranges[1][0].getHours(),0);
+          assert.equal(ranges[1][1].getHours(),8);
+
+          assert.equal(ranges[4][0].getDate(),29);
+          assert.equal(ranges[4][1].getDate(),29);
+          assert.equal(ranges[4][0].getHours(),0);
+          assert.equal(ranges[4][1].getHours(),7);
+
+          assert.equal(ranges[8][0].getDate(),22);
+          assert.equal(ranges[8][0].getHours(),20);
+          assert.equal(ranges[8][1].getDate(),23);
+          assert.equal(ranges[8][1].getHours(),0);
+
+          done();
+        });
+      });
+    });
+  });
+  describe('Finding ranges of general preference with only one day filled out', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4, 30);
+    var endDate = new Date(2015, 10, 30, 0, 0);
+    it('should clip for start date and end dates if they overlap av. bounds, only start does', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["8:00 AM","8:00 PM"], 'Monday': ["",""],'Tuesday': ["",""], 
+                            'Wednesday': ["",""], 'Thursday':["",""], 
+                            'Friday':["",""], 'Saturday':["",""]};
+          var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
+          assert.equal(ranges.length, 10);
+          assert.equal(ranges[0][0].getHours(),4);
+          assert.equal(ranges[0][0].getMinutes(),30);
+          assert.equal(ranges[0][1].getHours(),8);
+          assert.equal(ranges[1][0].getHours(),0);
+          assert.equal(ranges[1][1].getHours(),8);
+
+          assert.equal(ranges[4][0].getDate(),29);
+          assert.equal(ranges[4][1].getDate(),29);
+          assert.equal(ranges[4][0].getHours(),0);
+          assert.equal(ranges[4][1].getHours(),8);
+
+          assert.equal(ranges[8][0].getDate(),22);
+          assert.equal(ranges[8][0].getHours(),20);
+          assert.equal(ranges[8][1].getDate(),23);
+          assert.equal(ranges[8][1].getHours(),0);
+
+          assert.equal(ranges[9][0].getDate(),29);
+          assert.equal(ranges[9][0].getHours(),20);
+          assert.equal(ranges[9][1].getDate(),30);
+          assert.equal(ranges[9][1].getHours(),0);
+          assert.equal(ranges[9][1].getMinutes(),0);
+          done();
+        });
+      });
+    });
+  });
+  describe('Testing getting found time ranges given multiple day preferences from, multiple day availabilty', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 30, 00);
+    it('should clip for start date and end date', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["8:00 AM","8:00 PM"], 'Monday': ["8:00 AM","8:00 PM"],'Tuesday': ["8:00 AM","8:00 PM"], 
+                            'Wednesday': ["8:00 AM","8:00 PM"], 'Thursday':["8:00 AM","8:00 PM"], 
+                            'Friday':["8:00 AM","8:00 PM"], 'Saturday':["8:00 AM","8:00 PM"]};
+          var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
+          assert.equal(ranges.length, 58);
+          done();
+        });
+      });
+    });
+  });
+});
+describe('Testing start to finish update via general pref dict', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 9, 31, 23,30);
+    var endDate = new Date(2015, 10, 1, 4);
+    it('updating av with small bounds that was tested above for ranges', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["2:00 AM","8:00 PM"], 'Monday': ["2:00 AM","8:00 PM"],'Tuesday': ["",""], 
+                            'Wednesday': ["",""], 'Thursday':["",""], 
+                            'Friday':["",""], 'Saturday':["",""]};
+          av.updateAvailabilityWithGeneralPreferences(genPrefDict,function(err,blockIds){
+            av.getTimeBlocks(function(e,foundBlocks){
+              assert.equal(foundBlocks.length,9);
+              assert.equal(foundBlocks[0].color,'green');
+              assert.equal(foundBlocks[0].creationType,'calendar');
+              assert.equal(foundBlocks[1].color,'red');
+              assert.equal(foundBlocks[1].creationType,'general');
+              assert.equal(foundBlocks[2].color,'red');
+              assert.equal(foundBlocks[2].creationType,'general');
+              assert.equal(foundBlocks[3].color,'red');
+              assert.equal(foundBlocks[3].creationType,'general');
+              assert.equal(foundBlocks[4].color,'red');
+              assert.equal(foundBlocks[4].creationType,'general');
+              assert.equal(foundBlocks[5].color,'green');
+              assert.equal(foundBlocks[5].creationType,'calendar');
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+describe('Testing getting found time ranges given single day preference, multiple day availabilty', function() {
+  it('should correctly convert am time strings to hours/mins', function(done) {
+    var hourmin = Availability.timeStringToHoursAndMins("8:00 AM");
+    assert.equal(hourmin[0],"8");
+    assert.equal(hourmin[1],"0");
+    done();
+  });
+  it('should correctly convert pm time strings to hours/mins', function(done) {
+    var hourmin = Availability.timeStringToHoursAndMins("8:30 PM");
+    assert.equal(hourmin[0],"20");
+    assert.equal(hourmin[1],"30");
+    done();
+  });
+});
+

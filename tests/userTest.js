@@ -49,7 +49,7 @@ describe('Meeting tests', function() {
             latestEndDate: latestEndDate,
             invitees: [user2]
           };
-          user.createMeeting(meetingObject,function(err,mtg){
+          user.createMeeting(meetingObject,function(mtgId){
             Meeting.findById(mtgId,function(err,meeting){
               assert.equal(meeting.invitedMembers.length,2);
               assert.equal(meeting.respondedMembers.length,0);
@@ -73,10 +73,18 @@ describe('Meeting tests', function() {
     user2.googleId = "69";
     user2.googleEmail = "user2@gmail.com";
     user2.fullName = "user 2";
+    meetingObject = {
+      title: "newMeeting",
+      location: "stud",
+      duration: 30,
+      earliestStartDate: earliestStartDate,
+      latestEndDate: latestEndDate,
+      invitees: [user2.googleEmail]
+    };
     it('testing single response', function(done) {
       user.save(function(err,savedUser){
         user2.save(function(err,newUser2){
-          user.createMeeting("newMeeting","stud",30,earliestStartDate,latestEndDate,[user2.googleEmail],function(mtgId){
+          user.createMeeting(meetingObject,function(mtgId){
             Meeting.findById(mtgId,function(err,meeting){
               meeting.recordMemberResponse("69",function(err,foundMeeting){
                 assert.equal(foundMeeting.respondedMembers.length,1);
@@ -91,7 +99,7 @@ describe('Meeting tests', function() {
     it('testing double response, second shouldnt be recorded', function(done) {
       user.save(function(err,savedUser){
         user2.save(function(err,newUser2){
-          user.createMeeting("newMeeting","stud",30,earliestStartDate,latestEndDate,[user2.googleEmail],function(mtgId){
+          user.createMeeting(meetingObject,function(mtgId){
             Meeting.findById(mtgId,function(err,meeting){
               meeting.recordMemberResponse("69",function(err,foundMeeting){
                 meeting.recordMemberResponse("69",function(err,foundMeeting2){
@@ -108,7 +116,7 @@ describe('Meeting tests', function() {
     it('testing 2 separate responses, both should be recorded', function(done) {
       user.save(function(err,savedUser){
         user2.save(function(err,newUser2){
-          user.createMeeting("newMeeting","stud",30,earliestStartDate,latestEndDate,[user2.googleEmail],function(mtgId){
+          user.createMeeting(meetingObject,function(mtgId){
             Meeting.findById(mtgId,function(err,meeting){
               meeting.recordMemberResponse("69",function(err,foundMeeting){
                 meeting.recordMemberResponse("12345",function(err,foundMeeting2){
@@ -135,10 +143,18 @@ describe('Meeting tests', function() {
     user2.googleId = "69";
     user2.googleEmail = "user2@gmail.com";
     user2.fullName = "user 2";
+    meetingObject = {
+      title: "newMeeting",
+      location: "stud",
+      duration: 30,
+      earliestStartDate: earliestStartDate,
+      latestEndDate: latestEndDate,
+      invitees: [user2.googleEmail]
+    };
     it('testing 2 separate responses, both should be recorded', function(done) {
       user.save(function(err,savedUser){
         user2.save(function(err,newUser2){
-          user.createMeeting("newMeeting","stud",30,earliestStartDate,latestEndDate,[user2.googleEmail],function(mtgId){
+          user.createMeeting(meetingObject,function(mtgId){
             Meeting.findById(mtgId,function(err,meeting){
               meeting.invitedMembers[0]=="user2@gmail.com";
               meeting.invitedMembers[1]=="person@gmail.com";
