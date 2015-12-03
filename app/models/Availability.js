@@ -204,8 +204,6 @@ AvailabilitySchema.methods =
   @result [[Date startDate, Date endDate]...] a list of time ranges that this day preference will apply to in this availabiltiy
   */
   getTimeRangesForDayPreferences: function(dayPreferences){
-    console.log("day preferences: ",dayPreferences);
-
     var ranges =[];
     for (var prefNum in dayPreferences){
       var currentDayStartDate = new Date(this.startDate.getFullYear(), this.startDate.getMonth(), this.startDate.getDate());
@@ -216,7 +214,6 @@ AvailabilitySchema.methods =
       var startMinute = pref.startMinute;
       var endHour = pref.endHour;
       var endMinute = pref.endMinute;
-      //console.log("pref is: ",pref);
       rangeStartDate.setHours(startHour);
       rangeStartDate.setMinutes(startMinute);
       while (rangeStartDate < this.endDate && currentDayStartDate < this.endDate){
@@ -227,8 +224,13 @@ AvailabilitySchema.methods =
           var rangeEndDate = new Date(currentDayStartDate);
           rangeEndDate.setHours(endHour);
           rangeEndDate.setMinutes(endMinute);
-          //console.log("pushing to ranges: ",[new Date(Math.max(this.startDate, rangeStartDate)), new Date(Math.min(this.endDate, rangeEndDate))]);
-          ranges.push([new Date(Math.max(this.startDate, rangeStartDate)), new Date(Math.min(this.endDate, rangeEndDate))]);
+          console.log("startdate: ",this.startDate," rangeStartDate: ",rangeStartDate);
+          console.log("adding: ", new Date(Math.max(this.startDate, rangeStartDate)));
+          console.log("enddate: ",this.endDate," rangeEndDate: ",rangeEndDate);
+          console.log("adding: ", new Date(Math.min(this.endDate, rangeEndDate)));
+          if (rangeStartDate < this.endDate){
+            ranges.push([new Date(Math.max(this.startDate, rangeStartDate)), new Date(Math.min(this.endDate, rangeEndDate))]);
+          }
         }
         currentDayStartDate = new Date(currentDayStartDate.getFullYear(), currentDayStartDate.getMonth(), currentDayStartDate.getDate()+1);
       }
