@@ -475,7 +475,8 @@ describe('Testing General Pref Helper Functions', function() {
     it('should clip for start date and end date', function(done) {
       av.save(function(){
         av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
-          var ranges = av.getTimeRangesForDayPreference(0,1,30,11,30);
+          var preferences = [{'day':0, 'startHour':0, 'startMinute':30, 'endHour':11,'endMinute':30}];
+          var ranges = av.getTimeRangesForDayPreferences(preferences);
           assert.equal(ranges.length, 1);
           assert.equal(ranges[0][0].getTime(), startDate.getTime());
           assert.equal(ranges[0][1].getTime(), endDate.getTime());
@@ -491,7 +492,8 @@ describe('Testing General Pref Helper Functions', function() {
     it('should clip for start date and end date', function(done) {
       av.save(function(){
         av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
-          var ranges = av.getTimeRangesForDayPreference(0,12,30,21,30);
+          var preferences = [{'day':0, 'startHour':12, 'startMinute':30, 'endHour':21,'endMinute':30}];
+          var ranges = av.getTimeRangesForDayPreferences(preferences);
           assert.equal(ranges.length, 0);
           done();
         });
@@ -505,7 +507,8 @@ describe('Testing General Pref Helper Functions', function() {
     it('should clip for start date and end date', function(done) {
       av.save(function(){
         av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
-          var ranges = av.getTimeRangesForDayPreference(0,1,30,11,30);
+          var preferences = [{'day':0, 'startHour':1, 'startMinute':30, 'endHour':11,'endMinute':30}];
+          var ranges = av.getTimeRangesForDayPreferences(preferences);
           assert.equal(ranges.length, 5);
           assert.equal(ranges[0][0].getTime(), startDate.getTime());
           assert.equal(ranges[0][1].getHours(), 11);

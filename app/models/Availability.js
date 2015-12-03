@@ -160,8 +160,12 @@ AvailabilitySchema.methods =
   */
   getTimeRangesOfGeneralPreferences: function(genPrefDict){
     var dayToNum = {'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday':4, 'Friday':5, 'Saturday':6};
-    var preferences = [];
+    var preferences = []; // will be a list of objects, such as:
+    //{'day':dayNum, 'startHour':0, 'startMinute':0, 'endHour':earliestStartHour,'endMinute':earliestStartMinute};
 
+    //the following code looks at each a general preference key/value and maps it into 2 different "day preference" objects,
+    //one is to apply the earliest start time of the general pref, the other is for the latest end time of the general pref
+    //it adds both of these 2 objects to the preferences list
     for (var dayString in genPrefDict){
       var timeStringList = genPrefDict[dayString];
       var dayNum = dayToNum[dayString];
