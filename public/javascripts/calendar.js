@@ -81,14 +81,16 @@ $(function() { // document ready
       //filter by only client created events 
       return event.className[0] === "userCreated"; 
     }); 
-    result = {red: []}; 
+    result = {red: [], green: [], orange: []}; 
     events.forEach( function(elem){
       startDate = elem.start.toString(); 
       endDate = elem.end.toString();
-      result.red.push([startDate, endDate]);
+      color = elem.color; 
+      result[color].push([startDate, endDate]);
     }); 
+    console.log(result); 
     $.post('/users/availabilities', {meetingId: meetingId, _csrf: _csrf, preferences: result}, function(res){
-      window.location.replace(res.content.redirect); 
+      //window.location.replace(res.content.redirect); 
     });
   }); 
 });
