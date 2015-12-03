@@ -158,10 +158,13 @@ router.post('/availabilities', function(req, res) {
       gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
           var timeRanges = schedulingUtils.convertEventsToTimeRanges(events);
           availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar', function (e,allIds){
-            availability.save(function(err)
+            availability.updateAvailabilityWithGeneralPreferences(req.user.preferences, function (err, blockIds)
             {
-              if (err) throw err;
-              recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
+              availability.save(function(err)
+              {
+                if (err) throw err;
+                recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
+              });
             });
           });
        });            
