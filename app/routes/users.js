@@ -169,8 +169,6 @@ router.post('/availabilities', function(req, res) {
                 if (err) throw err;
                 recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
               })
-              // if (err) throw err;
-              // recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
             });
           });
        });            
@@ -179,12 +177,26 @@ router.post('/availabilities', function(req, res) {
 });
 
 
+/*
+Save manual preferences 
+@param {availability} array of user availabilities
+@param {manualPreferences} object mapping color of preferences to start and end times 
+@param {cb} callback function
+*/
 var saveManualPreferences = function(availability, manualPreferences, cb) {
-  console.log('manual preferences ' , manualPreferences);
   var offset = manualPreferences.offset;
-  var redDates = dateStringToDate(manualPreferences.red, offset);
-  var yellowDates = dateStringToDate(manualPreferences.orange, offset);
-  var greenDates = dateStringToDate(manualPreferences.green, offset);
+  var redDates = [];
+  var yellowDates = [];
+  var greenDates = [];
+  if (manualPreferences.red) {
+    redDates = dateStringToDate(manualPreferences.red, offset);  
+  }
+  if (manualPreferences.orange) {
+    yellowDates = dateStringToDate(manualPreferences.orange, offset);  
+  }
+  if (manualPreferences.green) {
+    greenDates = dateStringToDate(manualPreferences.green, offset);  
+  }
 
   availability.setBlocksInTimeRangesColorAndCreationType(redDates, 'red', 'manual', function(err, redIds) {
     availability.setBlocksInTimeRangesColorAndCreationType(yellowDates, 'yellow', 'manual', function(err, yellowIds) {
@@ -195,12 +207,20 @@ var saveManualPreferences = function(availability, manualPreferences, cb) {
   });
 }
 
+/*
+converts an array of datestrings into date objects with the corresponding offset
+@param {dateStringArray} array of datestrings
+@param {offset} offset in minutes
+*/
 var dateStringToDate = function(dateStringArray, offset) {
-  var milisecondsOffset = (offset*-1)+MILISECONDS_IN_MINUTES;
+  var hourOffset = parseInt(offset)/60;
   var dateBlocks = dateStringArray.map(function (blockArray) {
     var dateArray = [];
     blockArray.forEach(function(datestring) {
-      dateArray.push(new Date((new Date(datestring)).getTime() + milisecondsOffset));
+      var prevDate = new Date(datestring);
+      var newDate = prevDate;
+      newDate.setHours(prevDate.getHours() + hourOffset);
+      dateArray.push(newDate);
     });
     return dateArray;
   });
