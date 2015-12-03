@@ -4,13 +4,13 @@ var TimeBlock = require('./TimeBlock');
 var Availability = require('./Availability');
 
 var AvailabilitySchema = mongoose.Schema({
-	meetingId : String,
+  meetingId : String,
   googleId: String,
   startDate: Date,
   endDate: Date,
 	timeBlocks : [{
-        type: mongoose.Schema.ObjectId,
-        ref: 'TimeBlock' 
+    type: mongoose.Schema.ObjectId,
+    ref: 'TimeBlock' 
   }]
 });
 AvailabilitySchema.methods = 
@@ -130,7 +130,7 @@ AvailabilitySchema.methods =
   */
   },
   setBlocksInTimeRangesColorAndCreationType: function(timeRanges, newColor, newCreationType, cb){
-    if (timeRanges.length==0){
+    if (timeRanges.length === 0){
       return cb(null,this.timeBlocks);
     }
     var availability = this;
