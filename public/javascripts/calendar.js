@@ -16,12 +16,17 @@ $(function() { // document ready
         right: 'month,agendaWeek,agendaDay'
       },
       defaultDate: '2015-11-12',
-      timezone: "America/New_York",
       editable: true,
       eventStartEditable: true,
       eventDurationEditable: true, 
       eventLimit: true, // allow "more" link when too many events
       eventColor: '#F74A34', //red-orange
+      eventOverlap: function(stillEvent, movingEvent){ //make sure that usercreated events don't overlap
+        if (stillEvent.className[0] === 'userCreated' && movingEvent.className[0] === 'userCreated'){
+          return false;
+        }
+        return true; 
+      }, 
       selectable: true, 
       selectHelper: true,
       select: function(start, end) {
@@ -82,13 +87,13 @@ $(function() { // document ready
       return event.className[0] === "userCreated"; 
     }); 
     result = {red: [], green: [], orange: []}; 
+    result.offset = (events[0].start.toDate()).getTimezoneOffset();
     events.forEach( function(elem){
-      startDate = elem.start.toString(); 
-      endDate = elem.end.toString();
+      startDate = elem.start.toDate(); 
+      endDate = elem.end.toDate();
       color = elem.color; 
       result[color].push([startDate, endDate]);
     }); 
-    console.log(result); 
     $.post('/users/availabilities', {meetingId: meetingId, _csrf: _csrf, preferences: result}, function(res){
       window.location.replace(res.content.redirect); 
     });
