@@ -75,7 +75,7 @@ MeetingSchema.methods=
   recordIn : function(startDate, endDate, cb) {
   	this.InStartDate = startDate;
   	this.InEndDate = endDate;
-  	this.save(cb);
+  	this.save(cb());
   }
 };
 
