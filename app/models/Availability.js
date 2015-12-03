@@ -153,8 +153,6 @@ AvailabilitySchema.methods =
   */
   updateAvailabilityWithGeneralPreferences: function(genPrefDict,cb){
     var ranges = this.getTimeRangesOfGeneralPreferences(genPrefDict);
-    console.log("ranges:");
-    console.log(ranges);
     this.setBlocksInTimeRangesColorAndCreationType(ranges,'red','general',cb);
   },
   /*
