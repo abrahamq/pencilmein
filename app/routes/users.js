@@ -94,17 +94,19 @@ router.get('/availabilities', function(req, res) {
       //List the upcoming events from the given time interval {mtg_StartDate} to {mtg_endDate}
       gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_startDate, mtg_endDate, function(err, events) {
         if (events) {
-          var stringEvents = JSON.stringify(events);
-          var withTitleInsteadOfSubmit = stringEvents.replace(/summary/g, 'title');
-          var jsonEvent = JSON.parse(withTitleInsteadOfSubmit);
-          //
+
+          events.forEach( function(evt){
+            evt.title = evt.summary; 
+            evt.start = evt.start.toString();
+            evt.end   = evt.end.toString();
+          }); 
           user.save(function(err)
           {
             if (err)
             {
               throw err;
             }
-            utils.sendSuccessResponse(res, {events: jsonEvent});
+            utils.sendSuccessResponse(res, {events: events});
             return;
           });
         }
@@ -242,7 +244,7 @@ var recordInAndAddEvents = function(meeting, inStartDate, inEndDate, calendar, o
       }
     });
   });
-}
+};
 
 
 module.exports = router;
