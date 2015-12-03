@@ -37,18 +37,14 @@
         <ul class="list-group" class="dropdown-header">
           {{#each meetings}}
           {{#unless this.InStartDate}}
-                {{#if submitted }}
                 <a href='/users/calendars/{{this.id}}' id={{this._id}}>
-                  {{/if}}
             <li class="list-group-item"><b class="fieldheader">Title</b>: {{this.title}} | <b class="fieldheader">Where</b>: {{this.location}}
 
               <br><b class="fieldheader">EarliestStart</b>: {{this.earliestStartDate}} <br>
                   <b class="fieldheader">LatestEnd</b>: {{this.latestEndDate}}
                   <br>
                   <span class="glyphicon glyphicon-calendar"></span>
-                  {{#if submitted}}
                       </a>
-                  {{/if}}
             </li>
             {{/unless}}
           {{/each}}
