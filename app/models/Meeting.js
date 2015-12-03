@@ -27,7 +27,7 @@ MeetingSchema.methods=
 	},
 
 	/*
-		Adds a member to the meeting
+		Adds a member to the meetinsg
 		@param {googleID} String -  GoogleID of the user to invite
     @param {cb} callback upon completion 
 	*/
