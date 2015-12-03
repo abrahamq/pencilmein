@@ -21,6 +21,8 @@ var refresh = require('passport-oauth2-refresh');
 var isLoggedIn = require('./authMiddleware');
 var logger = require('../../config/log');
 
+var MILISECONDS_IN_MINUTES = 60000;
+
 router.get('/', isLoggedIn, function(req, res) {
   //Get the user from the current session and look up user object
   User.getUser(req.user.googleEmail, function(err, user_orig) {
@@ -179,10 +181,10 @@ router.post('/availabilities', function(req, res) {
 
 var saveManualPreferences = function(availability, manualPreferences, cb) {
   console.log('manual preferences ' , manualPreferences);
-
-  var redDates = dateStringToDate(manualPreferences.red);
-  var yellowDates = dateStringToDate(manualPreferences.yellow);
-  var greenDates = dateStringToDate(manualPreferences.green);
+  var offset = manualPreferences.offset;
+  var redDates = dateStringToDate(manualPreferences.red, offset);
+  var yellowDates = dateStringToDate(manualPreferences.orange, offset);
+  var greenDates = dateStringToDate(manualPreferences.green, offset);
 
   availability.setBlocksInTimeRangesColorAndCreationType(redDates, 'red', 'manual', function(err, redIds) {
     availability.setBlocksInTimeRangesColorAndCreationType(yellowDates, 'yellow', 'manual', function(err, yellowIds) {
@@ -193,11 +195,12 @@ var saveManualPreferences = function(availability, manualPreferences, cb) {
   });
 }
 
-var dateStringToDate = function(dateStringArray) {
+var dateStringToDate = function(dateStringArray, offset) {
+  var milisecondsOffset = (offset*-1)+MILISECONDS_IN_MINUTES;
   var dateBlocks = dateStringArray.map(function (blockArray) {
     var dateArray = [];
     blockArray.forEach(function(datestring) {
-      dateArray.push(new Date(datestring));
+      dateArray.push(new Date((new Date(datestring)).getTime() + milisecondsOffset));
     });
     return dateArray;
   });
