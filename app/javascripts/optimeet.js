@@ -20,7 +20,7 @@ var optimeet = (function () {
     var durationBlocks = durationToBlocks(validateDuration(mtgDuration));
     var timeBlockToCount = assignCost(availabilities, earliestStartDate);
     var timeRangeCosts = getTimerangeCosts(timeBlockToCount, durationBlocks);
-    var bestIn = findBestIn(timeRangeCosts);
+    var bestIn = findBestIn(timeRangeCosts, earliestStartDate);
     if (bestIn !== null) {
       var inStartDate = blockIndexToTime(bestIn.startIndex, earliestStartDate);
       var inEndDate = blockIndexToTime(bestIn.endIndex, earliestStartDate);
@@ -95,7 +95,7 @@ var optimeet = (function () {
     Finds optimal meeting time
     @param {timeRangeCosts} array of time ranges and corresponding costs
   */
-  var findBestIn = function (timeRangeCosts) {
+  var findBestIn = function (timeRangeCosts, earliestStartDate) {
     var sortedPossibleIn = sortTimeRanges(timeRangeCosts);
     if (sortedPossibleIn.length === 0) {
       return null;
@@ -103,8 +103,34 @@ var optimeet = (function () {
     else if (sortedPossibleIn[0].cost == Number.POSITIVE_INFINITY) {
       return null;
     } else {
-     return sortedPossibleIn[0];  
+      if (sortedPossibleIn[0].cost == sortedPossibleIn[1].cost) {
+        return breakTies(sortedPossibleIn, earliestStartDate);
+      } else {
+        return sortedPossibleIn[0];    
+      }
     }
+  };
+
+  /*
+    breaks ties by distance from best meeting start time
+    @param {sortedPossibleIn} array of possible time ranges and their associated costs
+    @param {earliestStartDate} earliest potential time for the meeting
+  */
+  var breakTies = function(sortedPossibleIn, earliestStartDate) {
+    var bestCost = sortedPossibleIn[0].cost;
+    var ties = sortedPossibleIn.filter(function (timeCosts) {
+      return timeCosts.cost == bestCost;
+    });
+    var closestToBestHourIndex = {index: null, dist:Infinity};
+    ties.forEach(function(block, i) {
+      var bestTime = 14*60;
+      var time = blockIndexToTime(block.startIndex, earliestStartDate);
+      var curDist = Math.abs(time.getHours()*60 + time.getMinutes() - bestTime);
+      if (curDist < closestToBestHourIndex.dist) {
+        closestToBestHourIndex = {index: i, dist: curDist};
+      }
+    });
+    return ties[closestToBestHourIndex.index];
   };
 
   /*
