@@ -27,11 +27,18 @@
 <body>
   <div id='meetingId' data-meeting={{meetingId}}></div>
   <div id='_csrf' data-_csrf={{_csrf}}></div>
-  <div class="row text-center center-block control-group"> 
-    <div class="calendar-container"> 
-      <div id='calendar'></div>
+  <div class="container-fluid">
+    <div class="row text-center center-block control-group"> 
+      <div class="btn-group-vertical" role="group" style="float:left">
+        <button type="button" class="btn btn-danger" id="UnAvailable" >UnAvailable</button>
+        <button type="button" class="btn btn-success" id="Available" >Available</button>
+        <button type="button" class="btn btn-warning" id="IfNeedBe" >If Need Be</button>
+      </div> 
+      <div class="calendar-container"> 
+        <div id='calendar'></div>
         <div class="col-xs-12" style="height:5px;"></div>
-	<a class="btn btn-danger text-center btn-lg" id="calendar-submit">submit availability for {{meetingTitle}}</a> 
+        <a class="btn btn-danger text-center btn-lg" id="calendar-submit">submit availability for {{meetingTitle}}</a> 
+      </div>
     </div>
   </div>
 </body>
