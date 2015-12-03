@@ -142,6 +142,7 @@ router.post('/availabilities', function(req, res) {
   var curEmail = req.user.googleEmail;
   var userEvents = req.body.events;
   var meetingId = req.body.meetingId;
+  var manualPreferences = req.body.preferences;
 
   oAuth2Client.setCredentials({
     access_token : req.user.googleAccessToken,
@@ -162,14 +163,31 @@ router.post('/availabilities', function(req, res) {
           availability.setBlocksInTimeRangesColorAndCreationType(timeRanges,'red','calendar', function (e,allIds){
             availability.save(function(err)
             {
-              if (err) throw err;
-              recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
+              saveManualPreferences(availability, manualPreferences, function(err, ids) {
+                if (err) throw err;
+                recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
+              })
+              // if (err) throw err;
+              // recordAndSchedule(res, meeting, curEmail, calendar, oAuth2Client);
             });
           });
        });            
     });
   });
 });
+
+
+var saveManualPreferences = function(availability, manualPreferences, cb) {
+  console.log('manual preferences ' , manualPreferences);
+  availability.setBlocksInTimeRangesColorAndCreationType(manualPreferences.red, 'red', 'manual', function(err, redIds) {
+    // availability.setBlocksInTimeRangesColorAndCreationType(manualPreferences.yellow, 'yellow', 'manual', function(err, yellowIds) {
+      // availability.setBlocksInTimeRangesColorAndCreationType(manualPreferences.green, 'green', 'manual', function(err, greenIds) {)
+        cb(err, [redIds]);
+      // });
+    // });
+  });
+}
+
 /*
   Records a member's response and schedules an In if the meeting is closed,
   otherwise redirects to the user overview page without further option
