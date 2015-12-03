@@ -15,7 +15,7 @@ $(function() { // document ready
         center: 'title',
         right: 'month,agendaWeek,agendaDay'
       },
-      defaultDate: '2015-11-12',
+      defaultDate: new Date(),
       editable: true,
       eventStartEditable: true,
       eventDurationEditable: true, 
