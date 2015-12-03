@@ -27,6 +27,9 @@ $(function() { // document ready
         }
         return true; 
       }, 
+      eventClick: function(event){ //remove events on click
+        $('#calendar').fullCalendar('removeEvents',event._id);
+      },
       selectable: true, 
       selectHelper: true,
       select: function(start, end) {
