@@ -51,9 +51,9 @@ module.exports = function(passport, refresh)
    
                       newUser.googleRefreshToken = refreshToken;
                       
-
                       newUser.fullname = profile.displayName;
                       newUser.googleEmail = profile.emails[0].value; // pull the first email
+                      newUser.preferences = {Monday : ['',''], Tuesday : ['',''], Wednesday : ['',''], Thursday : ['',''], Friday : ['',''], Saturday : ['',''], Sunday : ['','']};
 
                       // save the user
                       newUser.save(function(err) {
