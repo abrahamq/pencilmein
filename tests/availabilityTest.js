@@ -417,7 +417,6 @@ describe('Checking creation type power', function() {
         av.initializeTimeBlocks(startDate,endDate,function(error,foundBlockList){
           av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'yellow','general',function(err,allIds){
             av.setBlocksInTimeRangesColorAndCreationType([[rangeStart, rangeEnd],[range2Start, range2End]], 'red','calendar',function(err,allIds){
-
               av.getTimeBlocks(function(e,allBlocks){
                 assert.equal(e,null);
                 assert.equal(allBlocks.length,48);
@@ -493,7 +492,6 @@ describe('Testing General Pref Helper Functions', function() {
       av.save(function(){
         av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
           var ranges = av.getTimeRangesForDayPreference(0,12,30,21,30);
-          console.log("RANGES: ",ranges);
           assert.equal(ranges.length, 0);
           done();
         });
@@ -528,6 +526,79 @@ describe('Testing General Pref Helper Functions', function() {
       });
     });
   });
+  describe('Testing getting found time ranges given with day preferences (but only one), multiple day availabilty', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 29, 11);
+    it('should clip for start date and end date', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var preferences = [{'day':0, 'startHour':1, 'startMinute':30, 'endHour':11,'endMinute':30}];
+          var ranges = av.getTimeRangesForDayPreferences(preferences);
+          console.log("single pref ranges: ",ranges);
+          assert.equal(ranges.length, 5);
+          assert.equal(ranges[0][0].getTime(), startDate.getTime());
+          assert.equal(ranges[0][1].getHours(), 11);
+          assert.equal(ranges[0][1].getMinutes(), 30);
+
+          for (var i = 1 ; i < 4 ; i++){
+            assert.equal(ranges[i][0].getHours(), 1);
+            assert.equal(ranges[i][0].getMinutes(), 30);
+            assert.equal(ranges[i][1].getHours(), 11);
+            assert.equal(ranges[i][1].getMinutes(), 30);
+          }
+
+          assert.equal(ranges[4][0].getHours(), 1);
+          assert.equal(ranges[4][0].getMinutes(), 30);
+          assert.equal(ranges[4][1].getTime(),endDate.getTime());
+          done();
+        });
+      });
+    });
+  });
+  describe('Testing getting found time ranges given multiple day preferences from, multiple day availabilty', function() {
+    var av = new Availability();
+    var startDate = new Date(2015, 10, 1, 4);
+    var endDate = new Date(2015, 10, 29, 11);
+    it('should clip for start date and end date', function(done) {
+      av.save(function(){
+        av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+          var genPrefDict = {'Sunday': ["8:00 AM","8:00 PM"], 'Monday': ["8:00 AM","8:00 PM"],'Tuesday': ["8:00 AM","8:00 PM"], 
+                            'Wednesday': ["8:00 AM","8:00 PM"], 'Thursday':["8:00 AM","8:00 PM"], 
+                            'Friday':["8:00 AM","8:00 PM"], 'Saturday':["8:00 AM","8:00 PM"]};
+          var ranges = av.getTimeRangesOfGeneralPreferences(genPrefDict);
+          console.log("ALL GEN PREF DICT RANGES: ",ranges);
+          done();
+        });
+      });
+    });
+  });
+  // describe('Testing getting found time ranges given single day preference, multiple day availabilty', function() {
+  //   var av = new Availability();
+  //   var startDate = new Date(2015, 10, 1, 4);
+  //   var endDate = new Date(2015, 10, 29, 11);
+  //   it('should clip for start date and end date', function(done) {
+  //     av.save(function(){
+  //       av.initializeTimeBlocks(startDate, endDate, function(err, founcBlockList){
+  //         av.updateBlocksForDayPreference(0,);
+  //       });
+  //     });
+  //   });
+  // });
 });
-    
+
+describe('Testing getting found time ranges given single day preference, multiple day availabilty', function() {
+  it('should correctly convert am time strings to hours/mins', function(done) {
+    var hourmin = Availability.timeStringToHoursAndMins("8:00 AM");
+    assert.equal(hourmin[0],"8");
+    assert.equal(hourmin[1],"0");
+    done();
+  });
+  it('should correctly convert pm time strings to hours/mins', function(done) {
+    var hourmin = Availability.timeStringToHoursAndMins("8:30 PM");
+    assert.equal(hourmin[0],"20");
+    assert.equal(hourmin[1],"30");
+    done();
+  });
+});
 

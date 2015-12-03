@@ -138,26 +138,105 @@ AvailabilitySchema.methods =
       availability.setBlocksInTimeRangesColorAndCreationType(nextRanges, newColor, newCreationType, cb);
     });
   },
+
   /*
-  Reds out all time in a given day before a certain earliest start time
-  @param int day (MUST BE 0-6): day of the week this applies to in the given availabilty
-  @param int earliestStartHour (MUST BE 0-23): earliest hour a meeting can start
-  @param int earliestStartMinute (MUST BE 0 or 30): earliest minute a meeting can start in the earliest hour
-  @param cb: will receive arg1) error, arg2) list of ids of all timeblocks in the availability 
+  [OUTERMOST FUNCTION] CALL FOR GENERAL PREFERENCES FROM END OUTPUT
+  Updates all time blocks on specific dates that correspond to the general preferences day-of-week earliestStart/latestEnd times
+  @param genPrefDict: Dictionary mapping String days of the week to a list containing 1) String earliest start time 2) String latest end time
+  eg. {"Monday": ["8:00 AM", "11:00 PM"],...}
+  @param cb will be given args 1) error and 2) list of time block ids for availability
   */
-  setDayEarliestStartTime: function(day, earliestStartHour, earliestStartMinute, cb){
-    updateBlocksForDayPreference(day, 0, 0, earliestStartHour, earliestStartMinute,'red', cb);
+  updateAvailabilityWithGeneralPreferences: function(genPrefDict,cb){
+    var ranges = this.getTimeRangesOfGeneralPreferences(genPrefDict);
+    this.setBlocksInTimeRangesColorAndCreationType(ranges,'red','general',cb);
   },
   /*
-  Reds out all time in a given day before a certain earliest start time
-  @param int day (MUST BE 0-6): day of the week this applies to in the given availabilty
-  @param int latestEndHour (MUST BE 0-23): latest hour a meeting can end
-  @param int latestEndMinute (MUST BE 0 or 30): latest minute a meeting can end in the latest hour
-  @param cb: will receive arg1) error, arg2) list of ids of all timeblocks in the availability 
+  [Helper function]
+  Gets a list of date specific [startDate,endDate] time ranges from the front-end general preferences day-of-week earliestStart/latestEnd times
+  @param genPrefDict: Dictionary mapping String days of the week to a list containing 1) String earliest start time 2) String latest end time
+  eg. {"Monday": ["8:00 AM", "11:00 PM"],...}
+  (genPrefDict is constructed by front end)
+  @result List [[Date start, Date end]] of all dates that fall on days of the general prefs
   */
-  setDayLatestEndTime: function(day, latestEndHour, latestEndMinute, cb){
-    updateBlocksForDayPreference(day, latestEndHour, latestEndMinute, 23, 59, 'red', cb);
+  getTimeRangesOfGeneralPreferences: function(genPrefDict){
+    var dayToNum = {'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday':4, 'Friday':5, 'Saturday':6};
+    var preferences = [];
+
+    for (var dayString in genPrefDict){
+      var timeStringList = genPrefDict[dayString];
+      var dayNum = dayToNum[dayString];
+
+      earliestStart = timeStringList[0];
+      var startHoursAndMins = this.model('Availability').timeStringToHoursAndMins(earliestStart);
+      var earliestStartHour = startHoursAndMins[0];
+      var earliestStartMinute = startHoursAndMins[1];
+      if (earliestStartHour!=="" && earliestStartMinute!==""){
+        var earliestStartPref = {'day':dayNum, 'startHour':0, 'startMinute':0, 'endHour':earliestStartHour,'endMinute':earliestStartMinute};
+        preferences.push(earliestStartPref);   
+      }
+      latestEnd = timeStringList[1];
+      var endHoursAndMins = this.model('Availability').timeStringToHoursAndMins(latestEnd);
+      var latestEndHour = endHoursAndMins[0];
+      var latestEndMinute = endHoursAndMins[1];
+      if (latestEndHour!=="" && latestEndMinute!==""){
+        var latestEndPref = {'day':dayNum, 'startHour':latestEndHour, 'startMinute':latestEndMinute, 'endHour':23,'endMinute':59};
+        preferences.push(latestEndPref);
+      }
+    }
+    return this.getTimeRangesForDayPreferences(preferences);
   },
+  /*
+  Given a general day-of-week preferences, returns all the specific date ranges that fall in this pref range on this day of the week
+  @param dayPreferences is a list of objects, each object contains the following keys: values
+    -@param  'day': int (MUST BE 0-6) day of the week of the given general prefernece
+    -@param  'startHour': int (MUST BE 0-23) start hour of the general preference
+    -@param  'startMinute': int (MUST BE 0 or 30) start minute in the start hour of the general preference
+    -@param  'endHour': int (MUST BE 0-23) end hour of the general preference
+    -@param  'endMinute': int (MUST BE 0 or 30) end minute in the end hour of the general preference
+  @result [[Date startDate, Date endDate]...] a list of time ranges that this day preference will apply to in this availabiltiy
+  */
+  getTimeRangesForDayPreferences: function(dayPreferences){
+    var ranges =[];
+    for (var prefNum in dayPreferences){
+      var currentDayStartDate = new Date(this.startDate.getFullYear(), this.startDate.getMonth(), this.startDate.getDate());
+      var rangeStartDate = new Date(currentDayStartDate);
+      var pref = dayPreferences[prefNum];
+      var day = pref.day;
+      var startHour = pref.startHour;
+      var startMinute = pref.startMinute;
+      var endHour = pref.endHour;
+      var endMinute = pref.endMinute;
+      rangeStartDate.setHours(startHour);
+      rangeStartDate.setMinutes(startMinute);
+      while (rangeStartDate < this.endDate && currentDayStartDate < this.endDate){
+        if (currentDayStartDate.getDay() == day){
+          var rangeStartDate = new Date(currentDayStartDate);
+          rangeStartDate.setHours(startHour);
+          rangeStartDate.setMinutes(startMinute);
+          var rangeEndDate = new Date(currentDayStartDate);
+          rangeEndDate.setHours(endHour);
+          rangeEndDate.setMinutes(endMinute);
+          ranges.push([new Date(Math.max(this.startDate, rangeStartDate)), new Date(Math.min(this.endDate, rangeEndDate))]);
+        }
+        currentDayStartDate = new Date(currentDayStartDate.getFullYear(), currentDayStartDate.getMonth(), currentDayStartDate.getDate()+1);
+      }
+    }
+    return ranges;
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /*
   Given a general day preference (day of week, start time, end time), updates all blocks in this availability that will fall
   on that day of the week in that time range
@@ -177,6 +256,25 @@ AvailabilitySchema.methods =
     this.setBlocksInTimeRangesColorAndCreationType(ranges,color,'general',cb);
   },
   /*
+  Given a general day preference (day of week, start time, end time), updates all blocks in this availability that will fall
+  on that day of the week in that time range
+  ex: 
+  ~~~Given: thisAvailability from Nov. 1, 12am - Nov. 30th 12am + "Never Available Sun 12am - 11am" --> 
+  ~~~updates blocks in ranges: [[Nov. 1, 12am, Nov. 1, 11am],[Nov. 8, 12am, Nov. 8, 11am],...,[Nov. 29, 12am, Nov. 29, 11am]] to red
+  @param int day (MUST BE 0-6) day: day of the week of the given general prefernece
+  @param int startHour (MUST BE 0-23): start hour of the general preference
+  @param int startMinute (MUST BE 0 or 30): start minute in the start hour of the general preference
+  @param int endHour (MUST BE 0-23): end hour of the general preference
+  @param int endMinute (MUST BE 0 or 30): end minute in the end hour of the general preference
+  @param cb: will be given arg1) error, arg2) list of time block ids in the availability
+  @result [[startDate, endDate]] a lits of time ranges that this day preference will apply to in this availabiltiy
+  */
+  updateBlocksForDayPreferences: function(dayPreferences, cb){
+    var ranges = this.getTimeRangesForDayPreferences(dayPreferences);
+    this.setBlocksInTimeRangesColorAndCreationType(ranges,'red','general',cb);
+  },
+  /*
+  Just used for testing
   Given a general day-of-week preference, returns all the specific date ranges that fall in this pref range on this day of the week
   @param int day (MUST BE 0-6) day: day of the week of the given general prefernece
   @param int startHour (MUST BE 0-23): start hour of the general preference
@@ -269,7 +367,12 @@ AvailabilitySchema.statics =
       timeBlocksLists.push(foundBlocks);
       thisRef.model('Availability').getTimeBlocksListsForAvailabilitiesRecurse(nextAvailabilities, timeBlocksLists, cb);
     });
-  } 
+  },
+  timeStringToHoursAndMins: function(timeString){
+    var fakeTime = "01/01/01 "+timeString;
+    var fakeDate = new Date(Date.parse(fakeTime));
+    return [fakeDate.getHours(), fakeDate.getMinutes()];
+  }
 };
 
 module.exports = mongoose.model('Availability', AvailabilitySchema);
