@@ -103,6 +103,9 @@ router.get('/availabilities', function(req, res) {
         access_token : user.googleAccessToken,
         refresh_token : user.googleRefreshToken
       });
+      if (err){
+        logger.info("Could not aquire access token for user: ", user.googleEmail, err);
+      }
       var mtg_startDate = (new Date());
       var mtg_endDate = new Date('2015-12-25T10:00:00-05:00');//TODO: make this reasonable
       var mtg_Date = {start : mtg_startDate, end : mtg_endDate}
