@@ -66,7 +66,7 @@ $(function() { // document ready
   
 
   //set up the calendar with the user's google calendar events  
-  $.getJSON("/users/availabilities", function(data){
+  $.getJSON("/users/availabilities/"+ meetingId, function(data){
     googleCalendarData = data.content.events; 
     googleCalendarData.forEach(function(evt){
       evt.start = moment.parseZone(evt.start);
@@ -75,13 +75,6 @@ $(function() { // document ready
     $('#calendar').fullCalendar('addEventSource', googleCalendarData);
   }); 
 
-  //now add the available slots in green 
-  $.getJSON("/users/availabilities/" + meetingId, function(data){
-    $('#calendar').fullCalendar('addEventSource', { 
-      events: data.content.avilability, 
-      color: 'green'
-    });
-  }); 
   
   //send post request when user clicks button 
   $('#calendar-submit').click( function(){

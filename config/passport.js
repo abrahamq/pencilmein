@@ -35,12 +35,23 @@ module.exports = function(passport, refresh)
             logger.info("Authenthicating new profile: " + profile + "token: " + token); 
               // try to find the user based on their google id
               User.findOne({ 'googleID' : profile.id }, function(err, user) {
-                  if (err)
-                      return done(err);
+                if (err){
+                  logger.info("error finding user:",  err);
+                  return done(err);
+                }
 
                   if (user) {
                       // if a user is found, log them in
-                      return done(null, user);
+                      logger.info("new access token: ", token);
+                      logger.info("new refresh token: ", refreshToken);
+                      user.googleAccessToken = token
+                      user.googleRefreshToken = refreshToken; 
+                      user.save(function(err){
+                        if(err){
+                          logger.info("error saving user", err);
+                        }
+                        return done(null, user);
+                      });
                   } else {
                       // if the user isnt in our database, create a new user
                       var newUser = new User();
