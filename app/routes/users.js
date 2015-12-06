@@ -103,7 +103,6 @@ router.get('/availabilities/:meetingId', function(req, res) {
         //List the upcoming events from the given time interval {mtg_StartDate} to {mtg_endDate}
         gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
           if (events) {
-
             events.forEach( function(evt){
               evt.title = evt.summary; 
               evt.start = evt.start.toString();
@@ -262,7 +261,7 @@ var recordAndSchedule = function(res, meeting, userEmail, calendar, oAuth2Client
     Availability.findByMeetingId(meeting._id, function(err, availabilities) {
       Availability.getTimeBlocksListsForAvailabilities(availabilities, function (err, blocksLists) {
         var optimal_in = optimeet.getIn(blocksLists, meeting);
-        recordInAndAddEvents(res, meeting, optimal_in.startDate, optimal_in.endDate, calendar, oAuth2Client);
+        recordInAndAddEvents(res, meeting, optimal_in, calendar, oAuth2Client);
       });
     });
    } else {
@@ -278,17 +277,19 @@ var recordAndSchedule = function(res, meeting, userEmail, calendar, oAuth2Client
 Records the finalized In for a meeting and adds the In to the google calendars of the invited members
 @param res HTTP Response
 @param Meeting meeting: meeting that the In is being scheduled for
+@param Optimal_In: object that contains the start and end times of the finalized meeting time
 @param Date inStartDate: start date/time of the finalized in
 @param Date inEndDate: end date/time of the finalized in
 @param calendar
 @param oAuth2Client
-@param String title
 @param cb will be given arg error
 */
-var recordInAndAddEvents = function(res, meeting, inStartDate, inEndDate, calendar, oAuth2Client){
+var recordInAndAddEvents = function(res, meeting, optimal_in, calendar, oAuth2Client){
+  var inStartDate = optimal_in.startDate;
+  var inEndDate = optimal_in.endDate;
   meeting.recordIn(inStartDate, inEndDate, function(err) {
     var invitee_emails = meeting.invitedMembers;
-    gcalAvailability.addEventToCalendar(calendar, oAuth2Client, invitee_emails, meeting.title, meeting.location, inStartDate, inEndDate, function(err){
+    gcalAvailability.addEventToCalendar(calendar, oAuth2Client, meeting, function(err){
       if (err) {
         utils.sendErrResponse(res, 400, "cannot create google calendar event");
       } else {
