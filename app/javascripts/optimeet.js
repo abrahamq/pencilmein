@@ -1,3 +1,12 @@
+/*
+The optimal meeting is found through the following steps:
+1. Attempts to find a window where all participants in the meeting are available
+2. If no such window exists, we find the window that minimizes the number of if-need-be time blocks
+3. If all possible meeting times have at least one 'unavailable' block, the algorithm returns null 
+- Break ties: by distance from a meeting start time of 2pm. This ensures that meetings will be held at a time that is 
+              neither too early nor too late and reduces the chance that a meeting will be scheduled in the middle of the night
+*/
+
 var optimeet = (function () {
 
   "use strict";

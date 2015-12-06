@@ -39,14 +39,15 @@ var gcalAvailability = (function () {
     Adds a new event to a user's google calendar
     @param {calendar} google calendar API entry point
     @param {OAuth2Client} Encapsulates refresh and access token 
-    @param {invitee_emails} Emails of the google accounts invited to the meeting 
-    @param {title} title of the new event
-    @param {location} location of new event 
-    @param {startDate} start of event
-    @param {endDate} end of event
+    @param {meeting} meeting object to add to calendar
     @param {cb} callback upon completion 
   */
-  _gcalAvailability.addEventToCalendar = function (calendar, oAuth2Client, invitee_emails, title, location, startDate, endDate, cb) {
+  _gcalAvailability.addEventToCalendar = function (calendar, oAuth2Client, meeting, cb) {
+    var invitee_emails = meeting.invitedMembers;
+    var title = meeting.title;
+    var location = meeting.location;
+    var startDate = meeting.InStartDate;
+    var endDate = meeting.InEndDate; 
     var attendees = [];
     //Set up invitee emails as json
     invitee_emails.forEach(function(invitee) {
