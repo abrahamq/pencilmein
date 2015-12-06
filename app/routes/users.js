@@ -76,58 +76,50 @@ router.get('/calendars/:meetingId', function(req, res, next){
 }); 
 
 //Gives you all events in user's google calendar 
-router.get('/availabilities', function(req, res) {
+router.get('/availabilities/:meetingId', function(req, res) {
   var oAuth2Client = new OAuth2();
-  var test = { "events": [ {
-        title: 'All Day Event',
-        start: '2014-11-01'
-      },
-      {
-        title: 'Long Event',
-        start: '2014-11-07',
-        end: '2014-11-10'
-      },
-      {
-        id: 999,
-        title: 'Repeating Event',
-        start: '2014-11-09T16:00:00'
-      }]
-  };
-  User.getUser(req.user.googleEmail, function(err, user)
-  {
-    //Get a new access token from passport 
-    refresh.requestNewAccessToken('google', user.googleRefreshToken, function(err, accessToken, refreshToken) {
-      logger.info("Acquiring new access token " + accessToken + " using refresh token " + user.googleRefreshToken);
-      user.googleAccessToken = accessToken;
-      oAuth2Client.setCredentials({
-        access_token : user.googleAccessToken,
-        refresh_token : user.googleRefreshToken
-      });
-      if (err){
-        logger.info("Could not aquire access token for user: ", user.googleEmail, err);
-      }
-      var mtg_startDate = (new Date());
-      var mtg_endDate = new Date('2015-12-25T10:00:00-05:00');//TODO: make this reasonable
-      var mtg_Date = {start : mtg_startDate, end : mtg_endDate}
-      //List the upcoming events from the given time interval {mtg_StartDate} to {mtg_endDate}
-      gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
-        if (events) {
-
-          events.forEach( function(evt){
-            evt.title = evt.summary; 
-            evt.start = evt.start.toString();
-            evt.end   = evt.end.toString();
-          }); 
-          user.save(function(err)
-          {
-            if (err)
-            {
-              throw err;
-            }
-            utils.sendSuccessResponse(res, {events: events});
-            return;
-          });
+  var meetingId = req.params.meetingId; 
+  logger.info("getting view page for meeting: ", meetingId); 
+  Meeting.findById(meetingId, function(err, meetingResult){
+    User.getUser(req.user.googleEmail, function(err, user)
+    {
+      //Get a new access token from passport 
+      refresh.requestNewAccessToken('google', user.googleRefreshToken, function(err, accessToken, refreshToken) {
+        logger.info("Acquiring new access token " + accessToken + " using refresh token " + user.googleRefreshToken);
+        user.googleAccessToken = accessToken;
+        oAuth2Client.setCredentials({
+          access_token : user.googleAccessToken,
+          refresh_token : user.googleRefreshToken
+        });
+        if (err){
+          logger.info("Could not aquire access token for user: ", user.googleEmail, err);
         }
+        var mtg_startDate = (new Date());
+        var mydate = meetingResult.latestEndDate; 
+        var olddate = mydate.getDate();
+        mydate.setDate(olddate+1);
+        var mtg_endDate = mydate; 
+        var mtg_Date = {start : mtg_startDate, end : mtg_endDate};
+        //List the upcoming events from the given time interval {mtg_StartDate} to {mtg_endDate}
+        gcalAvailability.listUpcomingEvents(calendar, oAuth2Client, mtg_Date, function(err, events) {
+          if (events) {
+
+            events.forEach( function(evt){
+              evt.title = evt.summary; 
+              evt.start = evt.start.toString();
+              evt.end   = evt.end.toString();
+            }); 
+            user.save(function(err)
+            {
+              if (err)
+              {
+                throw err;
+              }
+              utils.sendSuccessResponse(res, {events: events});
+              return;
+            });
+          }
+        });
       });
     });
   });
@@ -230,7 +222,7 @@ var saveManualPreferences = function(availability, manualPreferences, cb) {
       });
     });
   });
-}
+};
 
 /*
 converts an array of datestrings into date objects with the corresponding offset
@@ -250,7 +242,7 @@ var dateStringToDate = function(dateStringArray, offset) {
     return dateArray;
   });
   return dateBlocks;
-}
+};
 
 /*
   Records a member's response and schedules an In if the meeting is closed,
@@ -279,7 +271,7 @@ var recordAndSchedule = function(res, meeting, userEmail, calendar, oAuth2Client
     return;
     }
   });          
-}
+};
 
 
 /*
